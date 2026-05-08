@@ -1,9 +1,17 @@
-import { useMemo } from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useMemo, useState } from 'react';
+import {
+  Alert,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme';
-import type { AppScreen } from '../types';
+import type { AppScreen, ShoppingProduct } from '../types';
 import { shoppingCategories, shoppingProducts } from '../data/mockData';
 import { ScreenTitle } from '../components/ScreenTitle';
 import { SectionHeader } from '../components/SectionHeader';
@@ -23,6 +31,7 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   searchText: {
+    flex: 1,
     color: colors.mutedDark,
     fontSize: 15,
     marginLeft: 10,
@@ -85,27 +94,104 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 22,
   },
+  emptyState: {
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: 'rgba(255,255,255,0.045)',
+    borderRadius: 24,
+    padding: 20,
+    marginBottom: 18,
+  },
+  emptyTitle: {
+    color: colors.white,
+    fontSize: 16,
+    fontWeight: '900',
+  },
+  emptyText: {
+    color: colors.mutedDark,
+    fontSize: 13,
+    lineHeight: 19,
+    marginTop: 6,
+  },
 });
+
+const allCategoriesLabel = 'Todos';
+
 export function ShoppingScreen({
   setActiveScreen,
 }: {
   setActiveScreen: (screen: AppScreen) => void;
 }) {
-  const productSections = useMemo(
-    () => [
-      {
-        title: 'Destaques com cashback',
-        products: shoppingProducts.slice(0, 4),
-      },
-      ...shoppingCategories.map((category) => ({
-        title: category.label,
-        products: shoppingProducts.filter(
-          (product) => product.category === category.label
-        ),
-      })),
-    ],
-    []
+  const [activeCategory, setActiveCategory] = useState(allCategoriesLabel);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const normalizedSearch = searchTerm.trim().toLowerCase();
+  const visibleProducts = useMemo(
+    () =>
+      shoppingProducts.filter((product) => {
+        const matchesCategory =
+          activeCategory === allCategoriesLabel ||
+          product.category === activeCategory;
+        const matchesSearch =
+          !normalizedSearch ||
+          [product.name, product.store, product.category]
+            .join(' ')
+            .toLowerCase()
+            .includes(normalizedSearch);
+
+        return matchesCategory && matchesSearch;
+      }),
+    [activeCategory, normalizedSearch]
   );
+
+  const productSections = useMemo(
+    () => {
+      if (activeCategory !== allCategoriesLabel || normalizedSearch) {
+        return [
+          {
+            title:
+              activeCategory === allCategoriesLabel
+                ? 'Resultado da busca'
+                : activeCategory,
+            products: visibleProducts,
+          },
+        ];
+      }
+
+      return [
+        {
+          title: 'Destaques com cashback',
+          products: shoppingProducts.slice(0, 4),
+        },
+        ...shoppingCategories.map((category) => ({
+          title: category.label,
+          products: shoppingProducts.filter(
+            (product) => product.category === category.label
+          ),
+        })),
+      ];
+    },
+    [activeCategory, normalizedSearch, visibleProducts]
+  );
+
+  function handleProductPress(product: ShoppingProduct) {
+    Alert.alert(
+      product.name,
+      `${product.store}\n${product.price}\nCashback estimado: ${product.cashback}`
+    );
+  }
+
+  function handleSeeAll(title: string) {
+    if (title === 'Destaques com cashback') {
+      setActiveCategory(allCategoriesLabel);
+      setSearchTerm('');
+      Alert.alert('Destaques', 'Mostrando todos os produtos com cashback.');
+      return;
+    }
+
+    setActiveCategory(title);
+    setSearchTerm('');
+  }
 
   return (
     <>
@@ -116,7 +202,23 @@ export function ShoppingScreen({
 
       <View style={styles.searchBox}>
         <Ionicons name="search-outline" size={22} color={colors.mutedDark} />
-        <Text style={styles.searchText}>Buscar produtos, marcas ou lojas</Text>
+        <TextInput
+          value={searchTerm}
+          onChangeText={setSearchTerm}
+          placeholder="Buscar produtos, marcas ou lojas"
+          placeholderTextColor={colors.mutedDark}
+          autoCorrect={false}
+          style={styles.searchText}
+        />
+        {searchTerm ? (
+          <Pressable
+            accessibilityRole="button"
+            hitSlop={10}
+            onPress={() => setSearchTerm('')}
+          >
+            <Ionicons name="close-circle" size={20} color={colors.mutedDark} />
+          </Pressable>
+        ) : null}
       </View>
 
       <Pressable
@@ -150,22 +252,42 @@ export function ShoppingScreen({
       <SectionHeader title="Categorias" />
 
       <View style={styles.shoppingCategoriesGrid}>
+        <CategoryCard
+          active={activeCategory === allCategoriesLabel}
+          icon="apps-outline"
+          label={allCategoriesLabel}
+          onPress={() => setActiveCategory(allCategoriesLabel)}
+        />
+
         {shoppingCategories.map((category) => (
           <CategoryCard
+            active={activeCategory === category.label}
             key={category.label}
             icon={category.icon}
             label={category.label}
+            onPress={() => setActiveCategory(category.label)}
           />
         ))}
       </View>
 
-      {productSections.map((section) => (
-        <ProductSection
-          key={section.title}
-          title={section.title}
-          products={section.products}
-        />
-      ))}
+      {visibleProducts.length === 0 ? (
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyTitle}>Nenhum produto encontrado</Text>
+          <Text style={styles.emptyText}>
+            Tente buscar por outra loja, produto ou categoria.
+          </Text>
+        </View>
+      ) : (
+        productSections.map((section) => (
+          <ProductSection
+            key={section.title}
+            title={section.title}
+            products={section.products}
+            onProductPress={handleProductPress}
+            onSeeAll={() => handleSeeAll(section.title)}
+          />
+        ))
+      )}
     </>
   );
 }

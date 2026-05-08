@@ -65,9 +65,18 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
 });
-export function ProductCard({ product }: { product: ShoppingProduct }) {
+type ProductCardProps = {
+  product: ShoppingProduct;
+  onPress?: (product: ShoppingProduct) => void;
+};
+
+export function ProductCard({ product, onPress }: ProductCardProps) {
   return (
-    <Pressable accessibilityRole="button" style={styles.productCard}>
+    <Pressable
+      accessibilityRole="button"
+      style={styles.productCard}
+      onPress={() => onPress?.(product)}
+    >
       <Image
         source={{ uri: product.image }}
         style={styles.productImage}

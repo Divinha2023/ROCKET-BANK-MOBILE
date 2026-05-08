@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text } from 'react-native';
 import { colors } from '../theme';
 
 const styles = StyleSheet.create({
@@ -25,12 +25,23 @@ const styles = StyleSheet.create({
     color: colors.white,
   },
 });
-export function FilterChip({ label, active }: { label: string; active?: boolean }) {
+type FilterChipProps = {
+  active?: boolean;
+  label: string;
+  onPress?: () => void;
+};
+
+export function FilterChip({ label, active, onPress }: FilterChipProps) {
   return (
-    <View style={[styles.filterChip, active && styles.filterChipActive]}>
+    <Pressable
+      accessibilityRole="button"
+      accessibilityState={{ selected: active }}
+      onPress={onPress}
+      style={[styles.filterChip, active && styles.filterChipActive]}
+    >
       <Text style={[styles.filterText, active && styles.filterTextActive]}>
         {label}
       </Text>
-    </View>
+    </Pressable>
   );
 }

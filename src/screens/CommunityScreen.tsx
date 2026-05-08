@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme';
 import { ScreenTitle } from '../components/ScreenTitle';
@@ -77,6 +78,9 @@ const styles = StyleSheet.create({
   },
 });
 export function CommunityScreen() {
+  const [liked, setLiked] = useState(false);
+  const [saved, setSaved] = useState(false);
+
   return (
     <>
       <ScreenTitle
@@ -102,17 +106,40 @@ export function CommunityScreen() {
         </Text>
 
         <View style={styles.postActions}>
-          <Ionicons name="heart-outline" size={22} color={colors.mutedDark} />
-          <Ionicons
-            name="chatbubble-outline"
-            size={22}
-            color={colors.mutedDark}
-          />
-          <Ionicons
-            name="bookmark-outline"
-            size={22}
-            color={colors.mutedDark}
-          />
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => setLiked((current) => !current)}
+          >
+            <Ionicons
+              name={liked ? 'heart' : 'heart-outline'}
+              size={22}
+              color={liked ? colors.orange : colors.mutedDark}
+            />
+          </Pressable>
+
+          <Pressable
+            accessibilityRole="button"
+            onPress={() =>
+              Alert.alert('Comentários', 'Você abriu a conversa desta publicação.')
+            }
+          >
+            <Ionicons
+              name="chatbubble-outline"
+              size={22}
+              color={colors.mutedDark}
+            />
+          </Pressable>
+
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => setSaved((current) => !current)}
+          >
+            <Ionicons
+              name={saved ? 'bookmark' : 'bookmark-outline'}
+              size={22}
+              color={saved ? colors.purpleSoft : colors.mutedDark}
+            />
+          </Pressable>
         </View>
       </View>
 

@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
-import { SafeAreaView, ScrollView, StatusBar, StyleSheet } from 'react-native';
+import { ScrollView, StatusBar, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { AppScreen } from '../types';
 import { BottomTabs } from './BottomTabs';
@@ -33,7 +34,7 @@ export function AppLayout({
     >
       <StatusBar barStyle="light-content" backgroundColor="#05010F" />
 
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView edges={['top', 'left', 'right']} style={styles.safeArea}>
         <ScrollView
           contentContainerStyle={styles.appScroll}
           showsVerticalScrollIndicator={false}

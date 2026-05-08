@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, commonStyles } from '../theme';
@@ -76,13 +76,22 @@ export function HomeScreen({
           <Text style={styles.greetingSub}>Bem-vindo ao Rocket Bank</Text>
         </View>
 
-        <View style={styles.roundButton}>
+        <Pressable
+          accessibilityRole="button"
+          style={styles.roundButton}
+          onPress={() =>
+            Alert.alert(
+              'Notificações',
+              'Você tem 3 novidades: cashback recebido, limite atualizado e campanha Tech Rocket.'
+            )
+          }
+        >
           <Ionicons
             name="notifications-outline"
             size={24}
             color={colors.white}
           />
-        </View>
+        </Pressable>
       </View>
 
       <LinearGradient

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Alert, StyleSheet, Text, View } from 'react-native';
 import { colors, commonStyles } from '../theme';
 import type { AppScreen } from '../types';
 import { ScreenTitle } from '../components/ScreenTitle';
@@ -72,18 +72,27 @@ export function ProfileScreen({
           icon="person-outline"
           title="Dados pessoais"
           subtitle="Nome, telefone, e-mail e documentos."
+          onPress={() =>
+            Alert.alert('Dados pessoais', 'Perfil demo: João Silva, conta 123456-7.')
+          }
         />
 
         <MenuRow
           icon="shield-checkmark-outline"
           title="Segurança"
           subtitle="Biometria, senha e verificação."
+          onPress={() =>
+            Alert.alert('Segurança', 'Biometria ativa e verificação em duas etapas disponível.')
+          }
         />
 
         <MenuRow
           icon="notifications-outline"
           title="Notificações"
           subtitle="Alertas, compras, Pix e benefícios."
+          onPress={() =>
+            Alert.alert('Notificações', 'Todos os alertas principais estão habilitados.')
+          }
         />
 
         <MenuRow

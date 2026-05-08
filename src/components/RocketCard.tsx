@@ -5,20 +5,39 @@ import { colors } from '../theme';
 
 const styles = StyleSheet.create({
   rocketCard: {
-    height: 220,
-    borderRadius: 28,
-    padding: 22,
+    minHeight: 206,
+    borderRadius: 26,
+    padding: 18,
     marginBottom: 18,
     overflow: 'hidden',
     position: 'relative',
+    justifyContent: 'space-between',
+  },
+  glowCircle: {
+    position: 'absolute',
+    width: 190,
+    height: 190,
+    borderRadius: 95,
+    right: -78,
+    top: -58,
+    backgroundColor: 'rgba(255,255,255,0.12)',
+  },
+  lowerGlowCircle: {
+    position: 'absolute',
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+    left: -58,
+    bottom: -82,
+    backgroundColor: 'rgba(255,255,255,0.08)',
   },
   cardEyeButton: {
     position: 'absolute',
-    right: 20,
-    top: 68,
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    right: 16,
+    top: 58,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 5,
@@ -34,39 +53,81 @@ const styles = StyleSheet.create({
   rocketCardTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'flex-start',
   },
   rocketCardBrand: {
     color: colors.white,
-    fontSize: 22,
+    fontSize: 19,
     fontWeight: '900',
   },
   rocketCardType: {
     color: colors.white,
-    letterSpacing: 7,
-    fontSize: 13,
+    letterSpacing: 4,
+    fontSize: 11,
     marginTop: 4,
+    fontWeight: '800',
+  },
+  brandColumn: {
+    flex: 1,
+    paddingRight: 54,
+  },
+  cardStatus: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  statusDot: {
+    width: 7,
+    height: 7,
+    borderRadius: 4,
+    backgroundColor: colors.green,
+    marginRight: 6,
+  },
+  statusText: {
+    fontSize: 11,
+    fontWeight: '800',
+  },
+  contactlessBox: {
+    width: 38,
+    height: 38,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.14)',
   },
   cardChip: {
-    width: 48,
-    height: 36,
-    borderRadius: 10,
-    backgroundColor: 'rgba(255,255,255,0.45)',
-    marginTop: 24,
+    width: 46,
+    height: 34,
+    borderRadius: 9,
+    backgroundColor: 'rgba(255,255,255,0.50)',
+    marginBottom: 12,
   },
   cardChipGold: {
     backgroundColor: 'rgba(255,255,255,0.42)',
   },
+  cardMiddle: {
+    marginTop: 14,
+  },
   cardNumber: {
     color: colors.white,
-    fontSize: 22,
+    fontSize: 19,
     fontWeight: '800',
-    letterSpacing: 2,
-    marginTop: 18,
+    letterSpacing: 1,
+    flexShrink: 1,
   },
   cardFooter: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 22,
+    alignItems: 'flex-end',
+    marginTop: 16,
+  },
+  footerBlock: {
+    flex: 1,
+    marginRight: 14,
+  },
+  footerBlockRight: {
+    alignItems: 'flex-end',
+    marginRight: 0,
   },
   cardSmall: {
     color: 'rgba(255,255,255,0.65)',
@@ -75,9 +136,25 @@ const styles = StyleSheet.create({
   },
   cardHolder: {
     color: colors.white,
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '900',
     marginTop: 3,
+    flexShrink: 1,
+  },
+  cardNetwork: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  networkCircle: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: 'rgba(255,255,255,0.55)',
+  },
+  networkCircleOverlap: {
+    marginLeft: -8,
+    backgroundColor: 'rgba(255,123,84,0.72)',
   },
 });
 export function RocketCard({
@@ -91,19 +168,23 @@ export function RocketCard({
 }) {
   const isGold = variant === 'gold';
   const textColor = isGold ? '#261400' : colors.white;
-  const number = hidden ? '••••  ••••  ••••  3456' : '5412 7512 3412 3456';
+  const mutedTextColor = isGold ? 'rgba(38,20,0,0.68)' : 'rgba(255,255,255,0.68)';
+  const number = hidden ? '•••• •••• •••• 3456' : '5412 7512 3412 3456';
 
   return (
     <LinearGradient
       colors={
         isGold
-          ? ['#F8D777', '#C89512', '#F6C766']
-          : ['#080808', '#111111', '#2A2140']
+          ? ['#FDE68A', '#D6A21C', '#F8D777']
+          : ['#050505', '#141119', '#33235C']
       }
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={styles.rocketCard}
     >
+      <View style={styles.glowCircle} />
+      <View style={styles.lowerGlowCircle} />
+
       <Pressable
         accessibilityLabel={hidden ? 'Revelar número do cartão' : 'Ocultar número do cartão'}
         accessibilityRole="button"
@@ -116,13 +197,13 @@ export function RocketCard({
       >
         <Ionicons
           name={hidden ? 'eye-off-outline' : 'eye-outline'}
-          size={24}
+          size={22}
           color={textColor}
         />
       </Pressable>
 
       <View style={styles.rocketCardTop}>
-        <View>
+        <View style={styles.brandColumn}>
           <Text style={[styles.rocketCardBrand, { color: textColor }]}>
             Rocket Bank
           </Text>
@@ -130,40 +211,60 @@ export function RocketCard({
           <Text style={[styles.rocketCardType, { color: textColor }]}>
             {isGold ? 'GOLD' : 'BLACK'}
           </Text>
+
+          <View style={styles.cardStatus}>
+            <View style={styles.statusDot} />
+            <Text style={[styles.statusText, { color: mutedTextColor }]}>
+              Cartão ativo
+            </Text>
+          </View>
         </View>
 
-        <Ionicons
-          name="wifi-outline"
-          size={28}
-          color={textColor}
-        />
+        <View style={styles.contactlessBox}>
+          <Ionicons name="wifi-outline" size={24} color={textColor} />
+        </View>
       </View>
 
-      <View style={[styles.cardChip, isGold && styles.cardChipGold]} />
+      <View style={styles.cardMiddle}>
+        <View style={[styles.cardChip, isGold && styles.cardChipGold]} />
 
-      <Text style={[styles.cardNumber, { color: textColor }]}>
-        {number}
-      </Text>
+        <Text
+          numberOfLines={1}
+          adjustsFontSizeToFit
+          minimumFontScale={0.82}
+          style={[styles.cardNumber, { color: textColor }]}
+        >
+          {number}
+        </Text>
+      </View>
 
       <View style={styles.cardFooter}>
-        <View>
-          <Text style={[styles.cardSmall, { color: textColor }]}>
+        <View style={styles.footerBlock}>
+          <Text style={[styles.cardSmall, { color: mutedTextColor }]}>
             TITULAR
           </Text>
 
-          <Text style={[styles.cardHolder, { color: textColor }]}>
+          <Text
+            numberOfLines={1}
+            style={[styles.cardHolder, { color: textColor }]}
+          >
             ALEXANDER JAMES
           </Text>
         </View>
 
-        <View>
-          <Text style={[styles.cardSmall, { color: textColor }]}>
+        <View style={[styles.footerBlock, styles.footerBlockRight]}>
+          <Text style={[styles.cardSmall, { color: mutedTextColor }]}>
             VALIDADE
           </Text>
 
           <Text style={[styles.cardHolder, { color: textColor }]}>
             12/28
           </Text>
+
+          <View style={styles.cardNetwork}>
+            <View style={styles.networkCircle} />
+            <View style={[styles.networkCircle, styles.networkCircleOverlap]} />
+          </View>
         </View>
       </View>
     </LinearGradient>

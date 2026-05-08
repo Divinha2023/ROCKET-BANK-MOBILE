@@ -31,12 +31,33 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: '800',
   },
+  categoryCardActive: {
+    backgroundColor: 'rgba(139,92,246,0.18)',
+    borderColor: colors.purpleSoft,
+  },
 });
-export function CategoryCard({ icon, label }: { icon: IconName; label: string }) {
+
+type CategoryCardProps = {
+  active?: boolean;
+  icon: IconName;
+  label: string;
+  onPress?: () => void;
+};
+
+export function CategoryCard({ active, icon, label, onPress }: CategoryCardProps) {
   return (
-    <Pressable accessibilityRole="button" style={styles.categoryCard}>
+    <Pressable
+      accessibilityRole="button"
+      accessibilityState={{ selected: active }}
+      style={[styles.categoryCard, active && styles.categoryCardActive]}
+      onPress={onPress}
+    >
       <LinearGradient
-        colors={['rgba(139,92,246,0.25)', 'rgba(255,123,84,0.08)']}
+        colors={
+          active
+            ? [colors.purpleStrong, colors.purpleSoft]
+            : ['rgba(139,92,246,0.25)', 'rgba(255,123,84,0.08)']
+        }
         style={styles.categoryIconBox}
       >
         <Ionicons name={icon} size={24} color={colors.white} />

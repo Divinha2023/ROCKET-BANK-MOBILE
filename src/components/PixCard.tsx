@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme';
 import type { IconName } from '../types';
@@ -29,18 +29,24 @@ const styles = StyleSheet.create({
 });
 export function PixCard({
   icon,
+  onPress,
   title,
   text,
 }: {
   icon: IconName;
+  onPress?: () => void;
   title: string;
   text: string;
 }) {
   return (
-    <View style={styles.pixCard}>
+    <Pressable
+      accessibilityRole="button"
+      style={styles.pixCard}
+      onPress={onPress}
+    >
       <Ionicons name={icon} size={28} color={colors.purpleSoft} />
       <Text style={styles.pixCardTitle}>{title}</Text>
       <Text style={styles.pixCardText}>{text}</Text>
-    </View>
+    </Pressable>
   );
 }

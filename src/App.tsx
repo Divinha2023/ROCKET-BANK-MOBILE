@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import type { AppScreen } from './types';
 import { AppLayout } from './components/AppLayout';
 import { LoginScreen } from './screens/LoginScreen';
+import { SplashScreen } from './screens/SplashScreen';
 import { HomeScreen } from './screens/HomeScreen';
 import { CardsScreen } from './screens/CardsScreen';
 import { PixScreen } from './screens/PixScreen';
@@ -13,8 +15,27 @@ import { ProfileScreen } from './screens/ProfileScreen';
 import { StatementScreen } from './screens/StatementScreen';
 
 export default function App() {
+  return (
+    <SafeAreaProvider>
+      <AppContent />
+    </SafeAreaProvider>
+  );
+}
+
+function AppContent() {
+  const [showSplash, setShowSplash] = useState(true);
   const [logged, setLogged] = useState(false);
   const [activeScreen, setActiveScreen] = useState<AppScreen>('home');
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => setShowSplash(false), 3000);
+
+    return () => clearTimeout(timeoutId);
+  }, []);
+
+  if (showSplash) {
+    return <SplashScreen />;
+  }
 
   if (!logged) {
     return <LoginScreen onLogin={() => setLogged(true)} />;

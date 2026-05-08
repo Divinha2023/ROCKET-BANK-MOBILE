@@ -14,18 +14,26 @@ const styles = StyleSheet.create({
   },
 });
 export function ProductSection({
+  onProductPress,
+  onSeeAll,
   title,
   products,
 }: {
+  onProductPress?: (product: ShoppingProduct) => void;
+  onSeeAll?: () => void;
   title: string;
   products: ShoppingProduct[];
 }) {
   return (
     <View style={styles.productSection}>
-      <SectionHeader title={title} action="Ver tudo" />
+      <SectionHeader title={title} action="Ver tudo" onPress={onSeeAll} />
       <View style={styles.productGrid}>
         {products.map((product) => (
-          <ProductCard key={product.id} product={product} />
+          <ProductCard
+            key={product.id}
+            product={product}
+            onPress={onProductPress}
+          />
         ))}
       </View>
     </View>

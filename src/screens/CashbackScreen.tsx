@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Alert, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, commonStyles } from '../theme';
 import { ScreenTitle } from '../components/ScreenTitle';
@@ -59,12 +59,18 @@ export function CashbackScreen() {
           icon="sparkles-outline"
           title="Dobro de cashback"
           subtitle="Campanha ativa em lojas selecionadas."
+          onPress={() =>
+            Alert.alert('Campanha ativada', 'Compras elegíveis receberão cashback em dobro.')
+          }
         />
 
         <MenuRow
           icon="card-outline"
           title="Rocket Gold"
           subtitle="Compras no cartão geram benefícios extras."
+          onPress={() =>
+            Alert.alert('Benefício Gold', 'Seu cartão Gold adiciona até 2% extras em parceiros.')
+          }
         />
       </View>
     </>
