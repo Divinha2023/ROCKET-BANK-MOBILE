@@ -167,6 +167,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginLeft: 12,
   },
+  fieldHint: {
+    color: colors.mutedDark,
+    fontSize: 12,
+    lineHeight: 17,
+    marginTop: -2,
+    marginBottom: 10,
+    marginLeft: 4,
+  },
   optionsRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -345,6 +353,44 @@ const styles = StyleSheet.create({
   },
 });
 
+function onlyDigits(value: string) {
+  return value.replace(/\D/g, '');
+}
+
+function formatCpf(value: string) {
+  const digits = onlyDigits(value).slice(0, 11);
+
+  return digits
+    .replace(/^(\d{3})(\d)/, '$1.$2')
+    .replace(/^(\d{3})\.(\d{3})(\d)/, '$1.$2.$3')
+    .replace(/^(\d{3})\.(\d{3})\.(\d{3})(\d)/, '$1.$2.$3-$4');
+}
+
+function isValidEmail(value: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value.trim());
+}
+
+function isCpfInput(value: string) {
+  const trimmed = value.trim();
+  return /^\d/.test(trimmed) || /^[\d.-]+$/.test(trimmed);
+}
+
+function isValidAccess(value: string) {
+  if (isCpfInput(value)) {
+    return onlyDigits(value).length === 11;
+  }
+
+  return isValidEmail(value);
+}
+
+function getAccessValidationMessage(value: string) {
+  if (isCpfInput(value)) {
+    return 'Digite o CPF no formato 000.000.000-00.';
+  }
+
+  return 'Digite um e-mail válido, como test@mail.com.';
+}
+
 function getCopy(mode: LoginMode) {
   if (mode === 'recover') {
     return {
@@ -371,11 +417,23 @@ export function LoginScreen({ onLogin }: { onLogin: () => void }) {
     initialRegisterData
   );
   const copy = getCopy(mode);
+  const accessType = isCpfInput(emailOrCpf) ? 'cpf' : 'email';
+
+  function handleAccessValueChange(value: string) {
+    setEmailOrCpf(isCpfInput(value) ? formatCpf(value) : value.trim());
+  }
 
   function updateRegisterField(field: keyof RegisterData, value: string) {
+    const nextValue =
+      field === 'cpf'
+        ? formatCpf(value)
+        : field === 'email'
+          ? value.trim()
+          : value;
+
     setRegisterData((current) => ({
       ...current,
-      [field]: value,
+      [field]: nextValue,
     }));
   }
 
@@ -391,6 +449,16 @@ export function LoginScreen({ onLogin }: { onLogin: () => void }) {
         return;
       }
 
+      if (accessType === 'email' && !isValidEmail(emailOrCpf)) {
+        Alert.alert('E-mail inválido', 'Digite um e-mail válido, como test@mail.com.');
+        return;
+      }
+
+      if (accessType === 'cpf' && onlyDigits(emailOrCpf).length !== 11) {
+        Alert.alert('CPF inválido', 'Digite o CPF no formato 000.000.000-00.');
+        return;
+      }
+
       Alert.alert(
         'Link enviado',
         'Enviamos as instruções de recuperação para seu contato cadastrado.'
@@ -401,6 +469,16 @@ export function LoginScreen({ onLogin }: { onLogin: () => void }) {
 
     if (!emailOrCpf.trim() || !password.trim()) {
       Alert.alert('Atenção', 'Preencha seu e-mail ou CPF e sua senha.');
+      return;
+    }
+
+    if (accessType === 'email' && !isValidEmail(emailOrCpf)) {
+      Alert.alert('E-mail inválido', 'Digite um e-mail válido, como test@mail.com.');
+      return;
+    }
+
+    if (accessType === 'cpf' && onlyDigits(emailOrCpf).length !== 11) {
+      Alert.alert('CPF inválido', 'Digite o CPF no formato 000.000.000-00.');
       return;
     }
 
@@ -426,6 +504,16 @@ export function LoginScreen({ onLogin }: { onLogin: () => void }) {
 
     if (hasEmptyField) {
       Alert.alert('Cadastro incompleto', 'Preencha os dados obrigatórios para criar sua conta.');
+      return;
+    }
+
+    if (onlyDigits(registerData.cpf).length !== 11) {
+      Alert.alert('CPF inválido', 'Digite o CPF no formato 000.000.000-00.');
+      return;
+    }
+
+    if (!isValidEmail(registerData.email)) {
+      Alert.alert('E-mail inválido', 'Digite um e-mail válido, como test@mail.com.');
       return;
     }
 
@@ -662,17 +750,29 @@ export function LoginScreen({ onLogin }: { onLogin: () => void }) {
             )}
 
             <View style={styles.inputBox}>
-              <Ionicons name="person-outline" size={24} color={colors.purple} />
+              <Ionicons
+                name={accessType === 'cpf' ? 'id-card-outline' : 'mail-outline'}
+                size={24}
+                color={colors.purple}
+              />
               <TextInput
                 autoCapitalize="none"
                 autoCorrect={false}
-                onChangeText={setEmailOrCpf}
+                keyboardType={accessType === 'cpf' ? 'number-pad' : 'email-address'}
+                maxLength={accessType === 'cpf' ? 14 : undefined}
+                onChangeText={handleAccessValueChange}
                 placeholder="E-mail ou CPF"
                 placeholderTextColor="#9A9AAA"
                 style={styles.input}
                 value={emailOrCpf}
               />
             </View>
+
+            <Text style={styles.fieldHint}>
+              {accessType === 'email'
+                ? 'Use um e-mail válido, como test@mail.com.'
+                : 'O CPF será formatado automaticamente.'}
+            </Text>
 
             {mode !== 'recover' ? (
               <View style={styles.inputBox}>
