@@ -10,9 +10,9 @@ import {
   Text,
   View,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, commonStyles } from '../theme';
-import { ScreenTitle } from '../components/ScreenTitle';
 import { RocketCard } from '../components/RocketCard';
 import { MetricCard } from '../components/MetricCard';
 import { MenuRow } from '../components/MenuRow';
@@ -26,6 +26,76 @@ const cardWidth = screenWidth - 40;
 const snapInterval = cardWidth + cardGap;
 
 const styles = StyleSheet.create({
+  topBanner: {
+    borderRadius: 28,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.12)',
+    marginBottom: 22,
+  },
+  topBannerGradient: {
+    minHeight: 96,
+    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  topBannerText: {
+    flex: 1,
+    paddingRight: 16,
+  },
+  topBannerTitle: {
+    color: colors.white,
+    fontSize: 28,
+    lineHeight: 34,
+    fontWeight: '900',
+  },
+  topBannerArt: {
+    width: 72,
+    height: 72,
+    borderRadius: 24,
+    backgroundColor: 'rgba(255,255,255,0.10)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  topBannerOrb: {
+    position: 'absolute',
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    right: -36,
+    top: -38,
+    backgroundColor: 'rgba(248,215,119,0.28)',
+  },
+  topBannerMiniCard: {
+    width: 58,
+    height: 38,
+    borderRadius: 12,
+    backgroundColor: '#07070A',
+    borderWidth: 1,
+    borderColor: 'rgba(248,215,119,0.48)',
+    padding: 8,
+    justifyContent: 'space-between',
+    transform: [{ rotate: '-8deg' }],
+  },
+  topBannerMiniLine: {
+    width: 28,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: '#F8D777',
+  },
+  topBannerMiniDots: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  topBannerMiniDot: {
+    width: 9,
+    height: 9,
+    borderRadius: 5,
+    backgroundColor: 'rgba(255,255,255,0.72)',
+    marginLeft: -3,
+  },
   carouselHeader: {
     flexDirection: 'row',
     alignItems: 'flex-start',
@@ -166,6 +236,17 @@ export function CardsScreen({
     );
   }
 
+  function openBlackCard() {
+    const blackCardIndex = cards.findIndex((card) => card.variant === 'black');
+
+    if (blackCardIndex < 0) {
+      return;
+    }
+
+    setSelectedIndex(blackCardIndex);
+    scrollToCard(blackCardIndex);
+  }
+
   function addVirtualCard() {
     if (cards.length >= maxCardsPerUser) {
       Alert.alert(
@@ -216,10 +297,33 @@ export function CardsScreen({
 
   return (
     <>
-      <ScreenTitle
-        title="Meus cartoes"
-        subtitle="Arraste para alternar entre os cartoes criados."
-      />
+      <Pressable
+        accessibilityRole="button"
+        onPress={openBlackCard}
+        style={styles.topBanner}
+      >
+        <LinearGradient
+          colors={['#07070A', '#17121F', '#3A2B12']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.topBannerGradient}
+        >
+          <View style={styles.topBannerText}>
+            <Text style={styles.topBannerTitle}>Meus Cartões</Text>
+          </View>
+
+          <View style={styles.topBannerArt}>
+            <View style={styles.topBannerOrb} />
+            <View style={styles.topBannerMiniCard}>
+              <View style={styles.topBannerMiniLine} />
+              <View style={styles.topBannerMiniDots}>
+                <View style={styles.topBannerMiniDot} />
+                <View style={styles.topBannerMiniDot} />
+              </View>
+            </View>
+          </View>
+        </LinearGradient>
+      </Pressable>
 
       <View style={styles.carouselHeader}>
         <View style={styles.carouselHeaderInfo}>

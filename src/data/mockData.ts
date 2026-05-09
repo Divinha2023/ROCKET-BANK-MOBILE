@@ -187,8 +187,20 @@ export const userCards: UserCard[] = [
     holder: 'JOAO SILVA',
     kind: 'main',
     number: '5412751234123456',
-    title: 'Cartao Rocket',
+    title: 'Cartao Rocket Gold',
     variant: 'gold',
+  },
+  {
+    id: 'black-card',
+    badge: 'Black',
+    cvv: '518',
+    description: 'Cartao premium com beneficios exclusivos',
+    dueDate: '15/06',
+    holder: 'JOAO SILVA',
+    kind: 'virtual',
+    number: '5412759876541120',
+    title: 'Cartao Rocket Black',
+    variant: 'black',
   },
 ];
 
