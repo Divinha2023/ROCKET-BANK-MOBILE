@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { ComponentProps } from 'react';
 import {
   Alert,
+  Image,
   ImageBackground,
   KeyboardAvoidingView,
   Platform,
@@ -19,7 +20,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme';
-import { AppLogo } from '../components/AppLogo';
 
 type LoginMode = 'login' | 'register' | 'recover';
 
@@ -70,12 +70,8 @@ const styles = StyleSheet.create({
   },
   loginContent: {
     flexGrow: 1,
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     paddingBottom: 18,
-  },
-  brandHeader: {
-    paddingHorizontal: 22,
-    paddingTop: 10,
   },
   loginCardWrapper: {
     marginHorizontal: 22,
@@ -124,31 +120,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 19,
     marginBottom: 18,
-  },
-  benefitRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 12,
-  },
-  benefitPill: {
-    flex: 1,
-    minHeight: 50,
-    borderRadius: 18,
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.09)',
-    padding: 8,
-    marginRight: 8,
-  },
-  benefitPillLast: {
-    marginRight: 0,
-  },
-  benefitText: {
-    color: colors.white,
-    fontSize: 11,
-    lineHeight: 15,
-    fontWeight: '800',
-    marginTop: 6,
   },
   inputBox: {
     height: 52,
@@ -260,10 +231,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginRight: 12,
   },
-  googleLetter: {
-    color: '#4285F4',
-    fontSize: 18,
-    fontWeight: '900',
+  googleLogo: {
+    width: 22,
+    height: 22,
   },
   googleText: {
     color: colors.white,
@@ -710,10 +680,6 @@ export function LoginScreen({ onLogin }: { onLogin: () => void }) {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.brandHeader}>
-          <AppLogo />
-        </View>
-
         <View style={styles.loginCardWrapper}>
           <View style={styles.loginCard}>
             <View style={styles.loginCardGlow} />
@@ -721,33 +687,12 @@ export function LoginScreen({ onLogin }: { onLogin: () => void }) {
             <Text style={styles.title}>{copy.title}</Text>
             <Text style={styles.subtitle}>{copy.subtitle}</Text>
 
-            {mode === 'login' ? (
-              <View style={styles.benefitRow}>
-                <View style={styles.benefitPill}>
-                  <Ionicons
-                    name="shield-checkmark-outline"
-                    size={20}
-                    color={colors.green}
-                  />
-                  <Text style={styles.benefitText}>Proteção em tempo real</Text>
-                </View>
-
-                <View style={styles.benefitPill}>
-                  <Ionicons name="cash-outline" size={20} color={colors.gold} />
-                  <Text style={styles.benefitText}>Cashback automático</Text>
-                </View>
-
-                <View style={[styles.benefitPill, styles.benefitPillLast]}>
-                  <Ionicons name="flash-outline" size={20} color={colors.orange} />
-                  <Text style={styles.benefitText}>Pix instantâneo</Text>
-                </View>
-              </View>
-            ) : (
+            {mode === 'recover' ? (
               <Text style={styles.helperText}>
                 Use o mesmo e-mail ou CPF cadastrado. Este fluxo é local e
                 demonstra a jornada de recuperação.
               </Text>
-            )}
+            ) : null}
 
             <View style={styles.inputBox}>
               <Ionicons
@@ -850,7 +795,11 @@ export function LoginScreen({ onLogin }: { onLogin: () => void }) {
                   onPress={handleGoogleLogin}
                 >
                   <View style={styles.googleIcon}>
-                    <Text style={styles.googleLetter}>G</Text>
+                    <Image
+                      source={require('../../assets/images/google-logo.png')}
+                      style={styles.googleLogo}
+                      resizeMode="contain"
+                    />
                   </View>
                   <Text style={styles.googleText}>Continuar com Google</Text>
                 </Pressable>

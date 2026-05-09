@@ -2,7 +2,6 @@ import { Dimensions, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import LottieView from 'lottie-react-native';
 import { colors } from '../theme';
-import { AppLogo } from '../components/AppLogo';
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 
@@ -57,13 +56,6 @@ const styles = StyleSheet.create({
   starFour: {
     right: '12%',
     top: '57%',
-  },
-  brand: {
-    position: 'absolute',
-    top: 46,
-    left: 20,
-    right: 20,
-    alignItems: 'center',
   },
   bottomPanel: {
     position: 'absolute',
@@ -169,10 +161,6 @@ export function SplashScreen() {
         <View style={[styles.star, styles.starTwo]} />
         <View style={[styles.star, styles.starThree]} />
         <View style={[styles.star, styles.starFour]} />
-      </View>
-
-      <View style={styles.brand}>
-        <AppLogo size="large" />
       </View>
 
       <View style={styles.bottomPanel}>

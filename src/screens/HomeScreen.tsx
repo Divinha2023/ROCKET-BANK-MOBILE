@@ -1,4 +1,5 @@
-import { Alert, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { Alert, Image, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, commonStyles } from '../theme';
@@ -15,16 +16,29 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 22,
   },
-  greeting: {
-    color: colors.white,
-    fontSize: 28,
-    fontWeight: '900',
-    letterSpacing: -0.8,
+  customerProfile: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexShrink: 1,
   },
-  greetingSub: {
-    color: colors.mutedDark,
-    fontSize: 14,
-    marginTop: 4,
+  customerPhotoFrame: {
+    width: 58,
+    height: 58,
+    borderRadius: 20,
+    overflow: 'hidden',
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.18)',
+    backgroundColor: 'rgba(255,255,255,0.08)',
+  },
+  customerPhoto: {
+    width: '100%',
+    height: '100%',
+  },
+  customerName: {
+    color: colors.white,
+    fontSize: 22,
+    fontWeight: '900',
+    marginLeft: 12,
   },
   roundButton: {
     width: 48,
@@ -41,9 +55,24 @@ const styles = StyleSheet.create({
     padding: 24,
     marginBottom: 22,
   },
+  balanceHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
   balanceLabel: {
     color: 'rgba(255,255,255,0.78)',
     fontSize: 14,
+  },
+  balanceVisibilityButton: {
+    width: 42,
+    height: 42,
+    borderRadius: 14,
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.16)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   balanceValue: {
     color: colors.white,
@@ -51,11 +80,23 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     marginTop: 8,
   },
-  balanceSub: {
-    color: 'rgba(255,255,255,0.85)',
-    fontSize: 14,
-    marginTop: 8,
-    lineHeight: 21,
+  cashbackHighlight: {
+    alignSelf: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 18,
+    backgroundColor: 'rgba(34,197,94,0.18)',
+    borderWidth: 1,
+    borderColor: 'rgba(34,197,94,0.42)',
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+    marginTop: 14,
+  },
+  cashbackText: {
+    color: '#B8FFD2',
+    fontSize: 15,
+    fontWeight: '900',
+    marginLeft: 8,
   },
   quickGrid: {
     flexDirection: 'row',
@@ -68,6 +109,8 @@ export function HomeScreen({
 }: {
   setActiveScreen: (screen: AppScreen) => void;
 }) {
+  const [isBalanceVisible, setIsBalanceVisible] = useState(true);
+
   async function openRocketConnect() {
     try {
       await Linking.openURL('https://www.instagram.com/rocketbank/');
@@ -82,9 +125,15 @@ export function HomeScreen({
   return (
     <>
       <View style={styles.headerRow}>
-        <View>
-          <Text style={styles.greeting}>Olá, João 👋</Text>
-          <Text style={styles.greetingSub}>Bem-vindo ao Rocket Bank</Text>
+        <View style={styles.customerProfile}>
+          <View style={styles.customerPhotoFrame}>
+            <Image
+              source={require('../../assets/images/customer-photo.png')}
+              style={styles.customerPhoto}
+              resizeMode="cover"
+            />
+          </View>
+          <Text style={styles.customerName}>João Silva</Text>
         </View>
 
         <Pressable
@@ -115,11 +164,31 @@ export function HomeScreen({
         end={{ x: 1, y: 1 }}
         style={styles.balanceCard}
       >
-        <Text style={styles.balanceLabel}>Saldo disponível</Text>
-        <Text style={styles.balanceValue}>R$ 8.520,00</Text>
-        <Text style={styles.balanceSub}>
-          + R$ 248,90 em cashback acumulado
+        <View style={styles.balanceHeader}>
+          <Text style={styles.balanceLabel}>Saldo disponível</Text>
+          <Pressable
+            accessibilityLabel={
+              isBalanceVisible ? 'Ocultar saldo' : 'Mostrar saldo'
+            }
+            accessibilityRole="button"
+            hitSlop={8}
+            onPress={() => setIsBalanceVisible((visible) => !visible)}
+            style={styles.balanceVisibilityButton}
+          >
+            <Ionicons
+              name={isBalanceVisible ? 'eye-outline' : 'eye-off-outline'}
+              size={22}
+              color={colors.white}
+            />
+          </Pressable>
+        </View>
+        <Text style={styles.balanceValue}>
+          {isBalanceVisible ? 'R$ 8.520,00' : 'R$ ••••••'}
         </Text>
+        <View style={styles.cashbackHighlight}>
+          <Ionicons name="cash-outline" size={18} color="#86EFAC" />
+          <Text style={styles.cashbackText}>R$ 248,90 em cashback</Text>
+        </View>
       </LinearGradient>
 
       <View style={styles.quickGrid}>
