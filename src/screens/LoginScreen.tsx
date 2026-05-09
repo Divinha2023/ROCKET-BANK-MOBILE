@@ -149,13 +149,15 @@ const styles = StyleSheet.create({
   optionsRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
     marginTop: 2,
     marginBottom: 16,
   },
   rememberRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    flex: 1,
+    flexShrink: 1,
     marginRight: 10,
   },
   checkbox: {
@@ -176,6 +178,11 @@ const styles = StyleSheet.create({
   rememberText: {
     color: '#C8C8D4',
     fontSize: 13,
+    flexShrink: 1,
+  },
+  forgotButton: {
+    marginLeft: 'auto',
+    paddingVertical: 4,
   },
   forgotText: {
     color: '#C2A8FF',
@@ -763,7 +770,10 @@ export function LoginScreen({ onLogin }: { onLogin: () => void }) {
                   <Text style={styles.rememberText}>Lembrar meus dados</Text>
                 </Pressable>
 
-                <Pressable onPress={() => switchMode('recover')}>
+                <Pressable
+                  onPress={() => switchMode('recover')}
+                  style={styles.forgotButton}
+                >
                   <Text style={styles.forgotText}>Esqueci minha senha</Text>
                 </Pressable>
               </View>

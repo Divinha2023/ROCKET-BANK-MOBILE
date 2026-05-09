@@ -1,8 +1,14 @@
-import { useState } from 'react';
+import {
+  useMemo,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from 'react';
 import {
   Alert,
   Modal,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -10,247 +16,405 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, commonStyles } from '../theme';
-import { MetricCard } from '../components/MetricCard';
 import { ScreenTitle } from '../components/ScreenTitle';
+import { colors } from '../theme';
 import type { IconName } from '../types';
 import { formatCurrency, parseCurrency } from '../utils/currency';
 
-type InvestmentAsset = {
+type InvestmentKind = 'fixed' | 'variable';
+type ChartGroup = 'fixed' | 'rocket' | 'stocks';
+
+export type InvestmentAsset = {
+  annualRate: number;
+  chartGroup: ChartGroup;
   color: string;
-  featured?: boolean;
-  icon: IconName;
+  code?: string;
+  description: string;
   id: string;
-  rate: string;
-  subtitle: string;
-  ticker?: string;
-  title: string;
+  icon: IconName;
+  kind: InvestmentKind;
+  minAmount?: number;
+  name: string;
+  price?: number;
+  profitability: string;
+  risk: string;
 };
 
-type InvestmentOption = InvestmentAsset & {
-  suggestedAmount: number;
-};
-
-type PortfolioItem = InvestmentAsset & {
+export type PortfolioEntry = {
   amount: number;
+  asset: InvestmentAsset;
 };
 
-const ringSegmentCount = 72;
+export type InvestmentPortfolio = Record<string, PortfolioEntry>;
 
-const fixedInvestments: InvestmentOption[] = [
+type InvestmentsScreenProps = {
+  portfolio: InvestmentPortfolio;
+  setPortfolio: Dispatch<SetStateAction<InvestmentPortfolio>>;
+};
+
+const donutSegmentCount = 84;
+
+const primaryStock: InvestmentAsset = {
+  annualRate: 18.7,
+  chartGroup: 'rocket',
+  color: '#D946EF',
+  code: 'RCKT3',
+  description: 'Ação principal do ecossistema Rocket, com crescimento digital e risco moderado.',
+  icon: 'rocket-outline',
+  id: 'rocket-bank',
+  kind: 'variable',
+  name: 'ROCKET BANK',
+  price: 42.9,
+  profitability: '+18,7% ao ano',
+  risk: 'Moderado',
+};
+
+const extraStocks: InvestmentAsset[] = [
   {
-    color: '#22C55E',
-    icon: 'trending-up-outline',
-    id: 'cdi',
-    rate: '115% do CDI',
-    subtitle: 'Liquidez diaria e baixo risco.',
-    suggestedAmount: 600,
-    title: 'CDI',
-  },
-  {
+    annualRate: 12.4,
+    chartGroup: 'stocks',
     color: '#38BDF8',
-    icon: 'business-outline',
-    id: 'cdb',
-    rate: '120% do CDI',
-    subtitle: 'Renda fixa com prazo flexivel.',
-    suggestedAmount: 800,
-    title: 'CDB',
+    code: 'TECH4',
+    description: 'Empresa fictícia de tecnologia com foco em nuvem, dados e automação.',
+    icon: 'hardware-chip-outline',
+    id: 'tech-future',
+    kind: 'variable',
+    name: 'Tech Future',
+    price: 31.2,
+    profitability: '+12,4% ao ano',
+    risk: 'Moderado',
   },
   {
-    color: '#F8D777',
-    icon: 'shield-checkmark-outline',
-    id: 'tesouro-selic',
-    rate: 'Selic + custodia zero',
-    subtitle: 'Tesouro direto para reserva.',
-    suggestedAmount: 1000,
-    title: 'Tesouro Selic',
+    annualRate: 9.8,
+    chartGroup: 'stocks',
+    color: '#06B6D4',
+    code: 'SOLR3',
+    description: 'Companhia fictícia de energia solar com receita previsível e expansão gradual.',
+    icon: 'sunny-outline',
+    id: 'solar-energy',
+    kind: 'variable',
+    name: 'Solar Energy',
+    price: 24.5,
+    profitability: '+9,8% ao ano',
+    risk: 'Moderado',
   },
   {
-    color: '#A855F7',
-    icon: 'leaf-outline',
-    id: 'poupanca',
-    rate: 'Rendimento mensal',
-    subtitle: 'Aplicacao simples e tradicional.',
-    suggestedAmount: 350,
-    title: 'Poupanca',
+    annualRate: 11.6,
+    chartGroup: 'stocks',
+    color: '#818CF8',
+    code: 'DATA7',
+    description: 'Infraestrutura fictícia de dados para empresas digitais em crescimento.',
+    icon: 'server-outline',
+    id: 'data-cloud',
+    kind: 'variable',
+    name: 'Data Cloud',
+    price: 27.8,
+    profitability: '+11,6% ao ano',
+    risk: 'Moderado',
+  },
+  {
+    annualRate: 8.9,
+    chartGroup: 'stocks',
+    color: '#F97316',
+    code: 'HLTH5',
+    description: 'Rede fictícia de saúde e tecnologia com perfil defensivo dentro da bolsa.',
+    icon: 'medkit-outline',
+    id: 'health-prime',
+    kind: 'variable',
+    name: 'Health Prime',
+    price: 19.7,
+    profitability: '+8,9% ao ano',
+    risk: 'Moderado',
   },
 ];
 
-const stockAssets: InvestmentAsset[] = [
+const fixedIncomeAssets: InvestmentAsset[] = [
   {
-    color: '#FF7B54',
-    featured: true,
-    icon: 'rocket-outline',
-    id: 'rocket-bank',
-    rate: '+18,4% no mes',
-    subtitle: 'Banco digital em destaque.',
-    ticker: 'ROCK3',
-    title: 'ROCKET BANK',
+    annualRate: 13.5,
+    chartGroup: 'fixed',
+    color: '#2DD4BF',
+    description: 'Produto fictício de renda fixa com liquidez planejada e remuneração atrelada ao CDI.',
+    icon: 'shield-checkmark-outline',
+    id: 'cdb-rocket-plus',
+    kind: 'fixed',
+    minAmount: 100,
+    name: 'CDB Rocket Plus',
+    profitability: '115% do CDI',
+    risk: 'Risco baixo',
   },
   {
+    annualRate: 12.2,
+    chartGroup: 'fixed',
+    color: '#22C55E',
+    description: 'Título público fictício indexado à inflação para objetivos de médio prazo.',
+    icon: 'lock-closed-outline',
+    id: 'tesouro-digital-2029',
+    kind: 'fixed',
+    minAmount: 50,
+    name: 'Tesouro Digital 2029',
+    profitability: 'IPCA + 6,2%',
+    risk: 'Risco baixo',
+  },
+  {
+    annualRate: 12.8,
+    chartGroup: 'fixed',
+    color: '#84CC16',
+    description: 'Produto fictício isento com foco em estabilidade e previsibilidade.',
+    icon: 'business-outline',
+    id: 'lci-green-2030',
+    kind: 'fixed',
+    minAmount: 150,
+    name: 'LCI Green 2030',
+    profitability: '98% do CDI',
+    risk: 'Risco baixo',
+  },
+  {
+    annualRate: 14.1,
+    chartGroup: 'fixed',
     color: '#14B8A6',
+    description: 'Debênture fictícia de infraestrutura com retorno estimado maior e prazo alongado.',
     icon: 'bar-chart-outline',
-    id: 'petrobras',
-    rate: '+4,2% no mes',
-    subtitle: 'Energia e dividendos.',
-    ticker: 'PETR4',
-    title: 'Petrobras',
-  },
-  {
-    color: '#F97316',
-    icon: 'stats-chart-outline',
-    id: 'vale',
-    rate: '+2,8% no mes',
-    subtitle: 'Mineracao global.',
-    ticker: 'VALE3',
-    title: 'Vale',
-  },
-  {
-    color: '#60A5FA',
-    icon: 'wallet-outline',
-    id: 'itau',
-    rate: '+3,1% no mes',
-    subtitle: 'Banco consolidado.',
-    ticker: 'ITUB4',
-    title: 'Itau',
-  },
-  {
-    color: '#EC4899',
-    icon: 'pie-chart-outline',
-    id: 'b3',
-    rate: '+5,6% no mes',
-    subtitle: 'Bolsa brasileira.',
-    ticker: 'B3SA3',
-    title: 'B3',
+    id: 'debenture-infra',
+    kind: 'fixed',
+    minAmount: 250,
+    name: 'Debenture Infra Rocket',
+    profitability: 'IPCA + 7,1%',
+    risk: 'Risco baixo',
   },
 ];
 
 const styles = StyleSheet.create({
-  heroCard: {
-    borderRadius: 28,
+  summaryCard: {
+    borderRadius: 30,
     marginBottom: 22,
     overflow: 'hidden',
+    shadowColor: '#000000',
+    shadowOpacity: 0.22,
+    shadowRadius: 18,
+    elevation: 10,
   },
-  heroGradient: {
-    padding: 22,
+  summaryGradient: {
+    padding: 24,
   },
-  heroTop: {
+  summaryTop: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    marginBottom: 14,
   },
-  heroEyebrow: {
-    color: 'rgba(255,255,255,0.72)',
-    fontSize: 12,
-    fontWeight: '900',
-    letterSpacing: 0.7,
-    textTransform: 'uppercase',
-  },
-  heroTitle: {
-    color: colors.white,
-    fontSize: 34,
-    fontWeight: '900',
-    marginTop: 8,
-  },
-  heroSubtitle: {
-    color: 'rgba(255,255,255,0.82)',
+  summaryLabel: {
+    color: 'rgba(255,255,255,0.78)',
     fontSize: 14,
-    lineHeight: 21,
+    fontWeight: '700',
+  },
+  summaryTotal: {
+    color: colors.white,
+    fontSize: 38,
+    fontWeight: '900',
     marginTop: 8,
   },
-  heroIcon: {
-    width: 58,
-    height: 58,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.16)',
+  summaryIcon: {
+    width: 54,
+    height: 54,
+    borderRadius: 19,
+    backgroundColor: 'rgba(255,255,255,0.13)',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  accordionCard: {
-    borderRadius: 24,
+  summaryMetrics: {
+    flexDirection: 'row',
+    marginBottom: 14,
+  },
+  summaryMetric: {
+    flex: 1,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255,255,255,0.09)',
     borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: 'rgba(255,255,255,0.055)',
-    marginBottom: 16,
+    borderColor: 'rgba(255,255,255,0.10)',
+    padding: 12,
+  },
+  summaryMetricGap: {
+    marginLeft: 10,
+  },
+  summaryMetricLabel: {
+    color: 'rgba(255,255,255,0.63)',
+    fontSize: 11,
+    fontWeight: '800',
+  },
+  summaryMetricValue: {
+    color: colors.white,
+    fontSize: 14,
+    fontWeight: '900',
+    marginTop: 6,
+  },
+  summaryButton: {
+    height: 48,
+    borderRadius: 17,
+    backgroundColor: colors.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+  },
+  summaryButtonText: {
+    color: '#120721',
+    fontSize: 14,
+    fontWeight: '900',
+    marginLeft: 8,
+  },
+  section: {
+    marginTop: 18,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  sectionTitle: {
+    color: colors.white,
+    fontSize: 21,
+    fontWeight: '900',
+  },
+  sectionHint: {
+    color: colors.mutedDark,
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  featuredCard: {
+    borderRadius: 28,
+    marginBottom: 12,
     overflow: 'hidden',
   },
-  accordionHeader: {
+  featuredGradient: {
+    borderWidth: 1,
+    borderColor: 'rgba(217,70,239,0.36)',
+    padding: 18,
+  },
+  featuredTop: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
-  },
-  accordionHeaderInfo: {
-    flex: 1,
-  },
-  accordionTitle: {
-    color: colors.white,
-    fontSize: 18,
-    fontWeight: '900',
-  },
-  accordionSubtitle: {
-    color: colors.mutedDark,
-    fontSize: 12,
-    lineHeight: 18,
-    marginTop: 4,
-  },
-  accordionBody: {
-    paddingHorizontal: 16,
-    paddingBottom: 4,
-  },
-  productGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
     justifyContent: 'space-between',
+    marginBottom: 16,
   },
-  productCard: {
-    width: '48%',
-    minHeight: 176,
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: 'rgba(255,255,255,0.055)',
-    padding: 16,
-    marginBottom: 12,
-  },
-  productIcon: {
-    width: 42,
-    height: 42,
-    borderRadius: 15,
+  featuredIcon: {
+    width: 52,
+    height: 52,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255,255,255,0.13)',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 12,
   },
-  productTitle: {
+  badge: {
+    borderRadius: 999,
+    backgroundColor: 'rgba(255,255,255,0.14)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.18)',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+  },
+  badgeText: {
+    color: '#FCE7F3',
+    fontSize: 11,
+    fontWeight: '900',
+  },
+  featuredCode: {
+    color: '#F0ABFC',
+    fontSize: 12,
+    fontWeight: '900',
+    letterSpacing: 0.8,
+  },
+  featuredName: {
     color: colors.white,
-    fontSize: 17,
+    fontSize: 25,
     fontWeight: '900',
+    marginTop: 4,
   },
-  productRate: {
-    color: colors.green,
-    fontSize: 12,
-    fontWeight: '900',
-    marginTop: 6,
+  featuredMeta: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: 14,
   },
-  productText: {
-    color: colors.mutedDark,
-    fontSize: 12,
-    lineHeight: 17,
-    marginTop: 6,
-  },
-  applyPill: {
-    alignSelf: 'flex-start',
+  metaPill: {
     borderRadius: 999,
     backgroundColor: 'rgba(255,255,255,0.10)',
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.12)',
     paddingHorizontal: 10,
     paddingVertical: 7,
-    marginTop: 12,
+    marginRight: 8,
+    marginBottom: 8,
   },
-  applyText: {
+  metaText: {
     color: colors.white,
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  primaryAction: {
+    height: 48,
+    borderRadius: 17,
+    backgroundColor: colors.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    marginTop: 8,
+  },
+  primaryActionText: {
+    color: '#120721',
+    fontSize: 14,
+    fontWeight: '900',
+    marginLeft: 8,
+  },
+  assetGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  assetCard: {
+    width: '48%',
+    minHeight: 172,
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: 'rgba(255,255,255,0.055)',
+    padding: 15,
+    marginBottom: 12,
+  },
+  assetCardFull: {
+    width: '100%',
+    minHeight: 150,
+  },
+  assetIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+  },
+  assetCode: {
+    color: colors.mutedDark,
     fontSize: 11,
     fontWeight: '900',
+    letterSpacing: 0.6,
+  },
+  assetName: {
+    color: colors.white,
+    fontSize: 16,
+    fontWeight: '900',
+    marginTop: 4,
+  },
+  assetDetail: {
+    color: colors.green,
+    fontSize: 12,
+    fontWeight: '900',
+    marginTop: 8,
+  },
+  assetSecondary: {
+    color: colors.mutedDark,
+    fontSize: 12,
+    fontWeight: '700',
+    lineHeight: 17,
+    marginTop: 6,
   },
   showMoreButton: {
     height: 46,
@@ -260,98 +424,257 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.07)',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 14,
+    marginBottom: 2,
   },
   showMoreText: {
     color: colors.white,
     fontSize: 13,
     fontWeight: '900',
   },
-  chartCard: {
-    borderRadius: 28,
+  emptyPortfolio: {
+    borderRadius: 22,
     borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: 'rgba(255,255,255,0.055)',
-    padding: 18,
-    marginBottom: 22,
+    borderColor: 'rgba(255,255,255,0.10)',
+    backgroundColor: 'rgba(255,255,255,0.045)',
+    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  emptyPortfolioText: {
+    color: colors.mutedDark,
+    fontSize: 13,
+    lineHeight: 19,
+    marginLeft: 12,
+    flex: 1,
   },
   chartRing: {
-    width: 168,
-    height: 168,
-    borderRadius: 84,
+    width: 178,
+    height: 178,
+    borderRadius: 89,
     alignItems: 'center',
     justifyContent: 'center',
     alignSelf: 'center',
-    marginBottom: 18,
+    marginVertical: 10,
   },
   chartSegmentArm: {
     position: 'absolute',
     left: 8,
     top: 8,
-    width: 152,
-    height: 152,
+    width: 162,
+    height: 162,
     alignItems: 'center',
   },
   chartSegment: {
-    width: 5,
-    height: 16,
+    width: 6,
+    height: 18,
     borderRadius: 99,
   },
   chartCenter: {
-    width: 104,
-    height: 104,
-    borderRadius: 52,
-    backgroundColor: 'rgba(5,1,15,0.92)',
+    width: 112,
+    height: 112,
+    borderRadius: 56,
+    backgroundColor: 'rgba(5,1,15,0.94)',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.10)',
+    borderColor: 'rgba(255,255,255,0.11)',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 14,
+    paddingHorizontal: 12,
   },
   chartCenterLabel: {
     color: colors.mutedDark,
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '900',
     textAlign: 'center',
   },
   chartCenterValue: {
     color: colors.white,
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '900',
     marginTop: 6,
     textAlign: 'center',
   },
+  legendGrid: {
+    marginTop: 8,
+  },
   legendRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.07)',
-    paddingVertical: 12,
+    alignItems: 'flex-start',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.07)',
+    paddingVertical: 10,
   },
   legendDot: {
-    width: 12,
-    height: 12,
+    width: 11,
+    height: 11,
     borderRadius: 6,
-    marginRight: 10,
+    marginRight: 9,
+    marginTop: 3,
   },
   legendInfo: {
     flex: 1,
   },
-  legendTitle: {
+  legendLabel: {
     color: colors.white,
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '900',
+  },
+  legendDescription: {
+    color: colors.mutedDark,
+    fontSize: 11,
+    lineHeight: 16,
+    marginTop: 4,
+  },
+  legendValueBox: {
+    alignItems: 'flex-end',
+    marginLeft: 10,
   },
   legendValue: {
-    color: colors.mutedDark,
+    color: colors.white,
     fontSize: 12,
+    fontWeight: '900',
+  },
+  legendAmount: {
+    color: colors.mutedDark,
+    fontSize: 11,
+    fontWeight: '800',
     marginTop: 3,
   },
-  legendPercent: {
+  listTitle: {
     color: colors.white,
-    fontSize: 16,
+    fontSize: 18,
+    fontWeight: '900',
+    marginTop: 18,
+    marginBottom: 10,
+  },
+  investmentRow: {
+    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.055)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.10)',
+    padding: 14,
+    marginBottom: 10,
+  },
+  investmentRowTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  investmentName: {
+    color: colors.white,
+    fontSize: 15,
+    fontWeight: '900',
+    flex: 1,
+  },
+  investmentType: {
+    color: colors.mutedDark,
+    fontSize: 11,
     fontWeight: '900',
     marginLeft: 10,
+  },
+  investmentDescription: {
+    color: colors.mutedDark,
+    fontSize: 12,
+    lineHeight: 17,
+    marginBottom: 8,
+  },
+  rowMetrics: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  rowMetric: {
+    width: '50%',
+    marginTop: 6,
+  },
+  rowMetricLabel: {
+    color: colors.mutedDark,
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  rowMetricValue: {
+    color: colors.white,
+    fontSize: 12,
+    fontWeight: '800',
+    marginTop: 3,
+  },
+  modalBackdrop: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: 'rgba(2,0,8,0.74)',
+    padding: 24,
+  },
+  modalCard: {
+    borderRadius: 28,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: '#0B0716',
+    overflow: 'hidden',
+  },
+  portfolioModalCard: {
+    maxHeight: '88%',
+  },
+  modalAccent: {
+    height: 5,
+    width: '100%',
+  },
+  modalBody: {
+    padding: 20,
+  },
+  portfolioModalBody: {
+    padding: 20,
+    paddingBottom: 10,
+  },
+  portfolioModalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  portfolioModalTitleBlock: {
+    flex: 1,
+  },
+  portfolioCloseButton: {
+    width: 42,
+    height: 42,
+    borderRadius: 14,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    borderWidth: 1,
+    borderColor: colors.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 12,
+  },
+  portfolioStats: {
+    flexDirection: 'row',
+    marginBottom: 12,
+  },
+  portfolioMonthlyMetric: {
+    marginBottom: 12,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 14,
+  },
+  modalIcon: {
+    width: 46,
+    height: 46,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  modalTitle: {
+    color: colors.white,
+    fontSize: 20,
+    fontWeight: '900',
+    flex: 1,
+  },
+  modalSubtitle: {
+    color: colors.mutedDark,
+    fontSize: 13,
+    lineHeight: 20,
+    marginBottom: 16,
   },
   inputLabel: {
     color: colors.mutedDark,
@@ -372,145 +695,17 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     paddingHorizontal: 16,
   },
-  stockGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  stockCard: {
-    width: '48%',
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: 'rgba(255,255,255,0.055)',
-    padding: 16,
-    marginBottom: 12,
-  },
-  featuredStockCard: {
-    width: '100%',
-    borderColor: 'rgba(255,123,84,0.72)',
-    backgroundColor: 'rgba(255,123,84,0.14)',
-  },
-  stockHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 12,
-  },
-  stockIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  featuredBadge: {
-    borderRadius: 999,
-    backgroundColor: 'rgba(255,123,84,0.22)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,123,84,0.42)',
-    paddingHorizontal: 8,
-    paddingVertical: 5,
-  },
-  featuredBadgeText: {
-    color: '#FFD7C8',
-    fontSize: 10,
-    fontWeight: '900',
-  },
-  tickerText: {
-    color: colors.mutedDark,
-    fontSize: 11,
-    fontWeight: '900',
-    marginTop: 4,
-  },
-  statusCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: 22,
-    backgroundColor: 'rgba(34,197,94,0.10)',
-    borderWidth: 1,
-    borderColor: 'rgba(34,197,94,0.24)',
-    padding: 14,
-    marginBottom: 18,
-  },
-  statusText: {
-    flex: 1,
-    color: colors.white,
-    fontSize: 13,
-    fontWeight: '800',
-    lineHeight: 19,
-    marginLeft: 10,
-  },
-  resetButton: {
-    height: 50,
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: 'rgba(255,255,255,0.07)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 2,
-  },
-  resetButtonText: {
-    color: colors.white,
-    fontSize: 14,
-    fontWeight: '900',
-  },
-  modalBackdrop: {
-    flex: 1,
-    justifyContent: 'center',
-    backgroundColor: 'rgba(2,0,8,0.72)',
-    padding: 24,
-  },
-  modalCard: {
-    borderRadius: 28,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: '#0B0716',
-    overflow: 'hidden',
-  },
-  modalAccent: {
-    height: 5,
-    width: '100%',
-  },
-  modalBody: {
-    padding: 20,
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  modalIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  modalTitle: {
-    flex: 1,
-    color: colors.white,
-    fontSize: 20,
-    fontWeight: '900',
-  },
-  modalSubtitle: {
-    color: colors.mutedDark,
-    fontSize: 13,
-    lineHeight: 20,
-    marginBottom: 16,
-  },
   modalButtons: {
     flexDirection: 'row',
     marginTop: 16,
   },
   modalButton: {
     flex: 1,
-    height: 50,
+    minHeight: 50,
     borderRadius: 17,
     alignItems: 'center',
     justifyContent: 'center',
+    paddingHorizontal: 10,
   },
   modalCancelButton: {
     borderWidth: 1,
@@ -521,388 +716,504 @@ const styles = StyleSheet.create({
   modalApplyButton: {
     backgroundColor: colors.purpleStrong,
   },
+  modalApplyButtonDisabled: {
+    opacity: 0.45,
+  },
   modalButtonText: {
     color: colors.white,
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '900',
+    textAlign: 'center',
   },
 });
 
 function formatPercent(value: number) {
   return `${value.toLocaleString('pt-BR', {
     maximumFractionDigits: 1,
-    minimumFractionDigits: value >= 10 ? 0 : 1,
+    minimumFractionDigits: 1,
   })}%`;
 }
 
-export function InvestmentsScreen() {
-  const [portfolio, setPortfolio] = useState<Record<string, PortfolioItem>>({});
+function getAssetColor(asset: InvestmentAsset) {
+  return asset.color;
+}
+
+function getKindLabel(kind: InvestmentKind) {
+  return kind === 'variable' ? 'Renda Variável' : 'Renda Fixa';
+}
+
+function getApproxQuantity(entry: PortfolioEntry) {
+  if (entry.asset.price) {
+    return `${(entry.amount / entry.asset.price).toLocaleString('pt-BR', {
+      maximumFractionDigits: 2,
+      minimumFractionDigits: 2,
+    })} ações`;
+  }
+
+  const baseAmount = entry.asset.minAmount ?? entry.amount;
+  return `${(entry.amount / baseAmount).toLocaleString('pt-BR', {
+    maximumFractionDigits: 1,
+    minimumFractionDigits: 1,
+  })} aportes`;
+}
+
+export function InvestmentsScreen({
+  portfolio,
+  setPortfolio,
+}: InvestmentsScreenProps) {
+  const [selectedAsset, setSelectedAsset] = useState<InvestmentAsset | null>(null);
+  const [investmentValue, setInvestmentValue] = useState('');
   const [showAllStocks, setShowAllStocks] = useState(false);
   const [showAllFixed, setShowAllFixed] = useState(false);
-  const [selectedStock, setSelectedStock] = useState<InvestmentAsset | null>(
-    null
-  );
-  const [stockAmountValue, setStockAmountValue] = useState('');
-  const [lastApplied, setLastApplied] = useState<string | null>(null);
+  const [isPortfolioModalVisible, setPortfolioModalVisible] = useState(false);
 
-  const portfolioEntries = Object.values(portfolio);
+  const portfolioEntries = useMemo(() => Object.values(portfolio), [portfolio]);
   const totalInvested = portfolioEntries.reduce(
-    (total, item) => total + item.amount,
+    (total, entry) => total + entry.amount,
     0
   );
-  const visibleStocks = showAllStocks ? stockAssets : stockAssets.slice(0, 2);
+  const annualYield = portfolioEntries.reduce(
+    (total, entry) => total + entry.amount * (entry.asset.annualRate / 100),
+    0
+  );
+  const monthlyRate = totalInvested > 0 ? (annualYield / totalInvested / 12) * 100 : 0;
+  const visibleStocks = showAllStocks ? extraStocks : extraStocks.slice(0, 2);
   const visibleFixed = showAllFixed
-    ? fixedInvestments
-    : fixedInvestments.slice(0, 2);
+    ? fixedIncomeAssets
+    : fixedIncomeAssets.slice(0, 2);
+  const modalAmount = parseCurrency(investmentValue);
+  const canFinishInvestment = modalAmount > 0;
 
-  function applyInvestment(asset: InvestmentAsset, amount: number) {
-    if (amount <= 0) {
-      Alert.alert('Valor invalido', 'Informe um valor maior que zero.');
+  const portfolioBreakdown = portfolioEntries.map((entry) => ({
+    ...entry,
+    color: getAssetColor(entry.asset),
+    expectedYield: entry.amount * (entry.asset.annualRate / 100),
+    percent: totalInvested > 0 ? (entry.amount / totalInvested) * 100 : 0,
+  }));
+
+  function openInvestment(asset: InvestmentAsset) {
+    setSelectedAsset(asset);
+    setInvestmentValue('');
+  }
+
+  function closeInvestment() {
+    setSelectedAsset(null);
+    setInvestmentValue('');
+  }
+
+  function finishInvestment() {
+    if (!selectedAsset || !canFinishInvestment) {
+      Alert.alert('Valor inválido', 'Informe um valor maior que zero.');
       return;
     }
 
     setPortfolio((current) => {
-      const previousAmount = current[asset.id]?.amount ?? 0;
+      const previous = current[selectedAsset.id]?.amount ?? 0;
 
       return {
         ...current,
-        [asset.id]: {
-          ...asset,
-          amount: previousAmount + amount,
+        [selectedAsset.id]: {
+          amount: previous + modalAmount,
+          asset: selectedAsset,
         },
       };
     });
-    setLastApplied(`${asset.title} recebeu ${formatCurrency(amount)}.`);
+    closeInvestment();
   }
 
   function getSegmentColor(index: number) {
-    const segmentValue = ((index + 0.5) / ringSegmentCount) * totalInvested;
+    if (totalInvested <= 0) {
+      return 'rgba(255,255,255,0.14)';
+    }
+
+    const segmentValue = ((index + 0.5) / donutSegmentCount) * totalInvested;
     let accumulatedValue = 0;
-    const segmentEntry = portfolioEntries.find((entry) => {
+    const item = portfolioBreakdown.find((entry) => {
       accumulatedValue += entry.amount;
       return segmentValue <= accumulatedValue;
     });
 
-    return segmentEntry?.color ?? portfolioEntries[0]?.color ?? colors.border;
-  }
-
-  function openStockInvestment(asset: InvestmentAsset) {
-    setSelectedStock(asset);
-    setStockAmountValue('');
-  }
-
-  function closeStockInvestment() {
-    setSelectedStock(null);
-    setStockAmountValue('');
-  }
-
-  function confirmStockInvestment() {
-    if (!selectedStock) {
-      return;
-    }
-
-    const amount = parseCurrency(stockAmountValue);
-    if (amount <= 0) {
-      Alert.alert('Valor invalido', 'Informe um valor maior que zero.');
-      return;
-    }
-
-    applyInvestment(selectedStock, amount);
-    closeStockInvestment();
-  }
-
-  function resetPortfolio() {
-    setPortfolio({});
-    setLastApplied(null);
+    return item?.color ?? 'rgba(255,255,255,0.14)';
   }
 
   return (
     <>
       <ScreenTitle
         title="Investimentos"
-        subtitle="Escolha produtos, aplique valores simulados e veja sua carteira por porcentagem."
+        subtitle="Faça seu dinheiro decolar com segurança"
       />
 
-      {totalInvested > 0 && (
-        <>
-          <View style={styles.heroCard}>
-            <LinearGradient
-              colors={['rgba(34,197,94,0.88)', 'rgba(56,189,248,0.58)', 'rgba(111,44,255,0.72)']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.heroGradient}
+      <View style={styles.summaryCard}>
+        <LinearGradient
+          colors={['rgba(217,70,239,0.88)', 'rgba(56,189,248,0.56)', 'rgba(45,212,191,0.62)']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.summaryGradient}
+        >
+          <View style={styles.summaryTop}>
+            <View>
+              <Text style={styles.summaryLabel}>Patrimônio investido</Text>
+              <Text style={styles.summaryTotal}>{formatCurrency(totalInvested)}</Text>
+            </View>
+            <View style={styles.summaryIcon}>
+              <Ionicons name="analytics-outline" size={28} color={colors.white} />
+            </View>
+          </View>
+
+          <View style={styles.summaryMetrics}>
+            <View style={styles.summaryMetric}>
+              <Text style={styles.summaryMetricLabel}>Rendimento aprox.</Text>
+              <Text style={styles.summaryMetricValue}>{formatCurrency(annualYield)}</Text>
+            </View>
+            <View style={[styles.summaryMetric, styles.summaryMetricGap]}>
+              <Text style={styles.summaryMetricLabel}>Rentabilidade mensal</Text>
+              <Text style={styles.summaryMetricValue}>+{formatPercent(monthlyRate)}</Text>
+            </View>
+          </View>
+
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => setPortfolioModalVisible(true)}
+            style={styles.summaryButton}
+          >
+            <Ionicons name="pie-chart-outline" size={18} color="#120721" />
+            <Text style={styles.summaryButtonText}>Ver carteira</Text>
+          </Pressable>
+        </LinearGradient>
+      </View>
+
+      <View style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Renda Variável</Text>
+          <Text style={styles.sectionHint}>Ações fictícias</Text>
+        </View>
+
+        <View style={styles.featuredCard}>
+          <LinearGradient
+            colors={['rgba(217,70,239,0.36)', 'rgba(111,44,255,0.20)', 'rgba(255,255,255,0.05)']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.featuredGradient}
+          >
+            <View style={styles.featuredTop}>
+              <View style={styles.featuredIcon}>
+                <Ionicons name={primaryStock.icon} size={28} color="#F0ABFC" />
+              </View>
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>Destaque</Text>
+              </View>
+            </View>
+
+            <Text style={styles.featuredCode}>{primaryStock.code}</Text>
+            <Text style={styles.featuredName}>{primaryStock.name}</Text>
+
+            <View style={styles.featuredMeta}>
+              <View style={styles.metaPill}>
+                <Text style={styles.metaText}>
+                  Preço: {formatCurrency(primaryStock.price ?? 0)}
+                </Text>
+              </View>
+              <View style={styles.metaPill}>
+                <Text style={styles.metaText}>
+                  Rendimento: {primaryStock.profitability}
+                </Text>
+              </View>
+              <View style={styles.metaPill}>
+                <Text style={styles.metaText}>Risco: {primaryStock.risk}</Text>
+              </View>
+            </View>
+
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => openInvestment(primaryStock)}
+              style={styles.primaryAction}
             >
-              <View style={styles.heroTop}>
-                <View>
-                  <Text style={styles.heroEyebrow}>Carteira Rocket</Text>
-                  <Text style={styles.heroTitle}>
-                    {formatCurrency(totalInvested)}
-                  </Text>
-                </View>
+              <Ionicons name="trending-up-outline" size={18} color="#120721" />
+              <Text style={styles.primaryActionText}>Investir agora</Text>
+            </Pressable>
+          </LinearGradient>
+        </View>
 
-                <View style={styles.heroIcon}>
-                  <Ionicons name="pie-chart-outline" size={30} color={colors.white} />
-                </View>
+        <View style={styles.assetGrid}>
+          {visibleStocks.map((asset) => (
+            <Pressable
+              accessibilityRole="button"
+              key={asset.id}
+              onPress={() => openInvestment(asset)}
+              style={styles.assetCard}
+            >
+              <View
+                style={[
+                  styles.assetIcon,
+                  { backgroundColor: `${getAssetColor(asset)}24` },
+                ]}
+              >
+                <Ionicons name={asset.icon} size={22} color={getAssetColor(asset)} />
               </View>
-
-              <Text style={styles.heroSubtitle}>
-                O grafico redondo mostra a porcentagem de cada investimento.
+              <Text style={styles.assetCode}>{asset.code}</Text>
+              <Text style={styles.assetName}>{asset.name}</Text>
+              <Text style={styles.assetDetail}>{asset.profitability}</Text>
+              <Text style={styles.assetSecondary}>
+                {formatCurrency(asset.price ?? 0)}
               </Text>
-            </LinearGradient>
-          </View>
+            </Pressable>
+          ))}
+        </View>
 
-          {lastApplied && (
-            <View style={styles.statusCard}>
-              <Ionicons name="checkmark-circle" size={24} color={colors.green} />
-              <Text style={styles.statusText}>{lastApplied}</Text>
-            </View>
-          )}
+        {extraStocks.length > 2 && (
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => setShowAllStocks((current) => !current)}
+            style={styles.showMoreButton}
+          >
+            <Text style={styles.showMoreText}>
+              {showAllStocks ? 'Mostrar menos' : 'Exibir mais'}
+            </Text>
+          </Pressable>
+        )}
+      </View>
 
-          <View style={commonStyles.twoColumns}>
-            <MetricCard
-              label="Ativos escolhidos"
-              value={String(portfolioEntries.length)}
-            />
-            <MetricCard
-              label="Maior posicao"
-              value={
-                portfolioEntries.reduce((leader, entry) =>
-                  entry.amount > leader.amount ? entry : leader
-                ).title
-              }
-            />
-          </View>
+      <View style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Renda Fixa</Text>
+          <Text style={styles.sectionHint}>Baixo risco</Text>
+        </View>
 
-          <View style={styles.chartCard}>
-            <View style={styles.chartRing}>
-              {Array.from({ length: ringSegmentCount }, (_, index) => (
-                <View
-                  key={index}
-                  style={[
-                    styles.chartSegmentArm,
-                    { transform: [{ rotate: `${index * (360 / ringSegmentCount)}deg` }] },
-                  ]}
-                >
-                  <View
-                    style={[
-                      styles.chartSegment,
-                      { backgroundColor: getSegmentColor(index) },
-                    ]}
-                  />
-                </View>
-              ))}
-
-              <View style={styles.chartCenter}>
-                <Text style={styles.chartCenterLabel}>Total investido</Text>
-                <Text style={styles.chartCenterValue}>
-                  {formatCurrency(totalInvested)}
-                </Text>
+        <View style={styles.assetGrid}>
+          {visibleFixed.map((asset) => (
+            <Pressable
+              accessibilityRole="button"
+              key={asset.id}
+              onPress={() => openInvestment(asset)}
+              style={[styles.assetCard, styles.assetCardFull]}
+            >
+              <View
+                style={[
+                  styles.assetIcon,
+                  { backgroundColor: `${getAssetColor(asset)}24` },
+                ]}
+              >
+                <Ionicons name={asset.icon} size={22} color={getAssetColor(asset)} />
               </View>
-            </View>
+              <Text style={styles.assetName}>{asset.name}</Text>
+              <Text style={styles.assetDetail}>{asset.profitability}</Text>
+              <Text style={styles.assetSecondary}>
+                {asset.risk} - Aplicação mínima {formatCurrency(asset.minAmount ?? 0)}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
 
-            {portfolioEntries.map((entry) => {
-              const percent = (entry.amount / totalInvested) * 100;
-
-              return (
-                <View key={entry.id} style={styles.legendRow}>
-                  <View
-                    style={[styles.legendDot, { backgroundColor: entry.color }]}
-                  />
-                  <View style={styles.legendInfo}>
-                    <Text style={styles.legendTitle}>{entry.title}</Text>
-                    <Text style={styles.legendValue}>
-                      {entry.ticker ? `${entry.ticker} - ` : ''}
-                      {formatCurrency(entry.amount)}
-                    </Text>
-                  </View>
-                  <Text style={styles.legendPercent}>
-                    {formatPercent(percent)}
-                  </Text>
-                </View>
-              );
-            })}
-          </View>
-        </>
-      )}
-
-      <View style={styles.accordionCard}>
-        <Pressable
-          accessibilityRole="button"
-          onPress={() =>
-            setExpandedSection((current) =>
-              current === 'variable' ? null : 'variable'
-            )
-          }
-          style={styles.accordionHeader}
-        >
-          <View style={styles.accordionHeaderInfo}>
-            <Text style={styles.accordionTitle}>Renda variavel</Text>
-            <Text style={styles.accordionSubtitle}>
-              Acoes disponiveis, com ROCKET BANK em destaque.
+        {fixedIncomeAssets.length > 2 && (
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => setShowAllFixed((current) => !current)}
+            style={styles.showMoreButton}
+          >
+            <Text style={styles.showMoreText}>
+              {showAllFixed ? 'Mostrar menos' : 'Exibir mais'}
             </Text>
-          </View>
-          <View style={styles.accordionIcon}>
-            <Ionicons
-              name={
-                expandedSection === 'variable' ? 'chevron-up' : 'chevron-down'
-              }
-              size={20}
-              color={colors.white}
-            />
-          </View>
-        </Pressable>
-
-        {expandedSection === 'variable' && (
-          <View style={styles.accordionBody}>
-            <View style={styles.stockGrid}>
-              {visibleStocks.map((stock) => (
-                <Pressable
-                  accessibilityRole="button"
-                  key={stock.id}
-                  onPress={() => openStockInvestment(stock)}
-                  style={[
-                    styles.stockCard,
-                    stock.featured && styles.featuredStockCard,
-                  ]}
-                >
-                  <View style={styles.stockHeader}>
-                    <View
-                      style={[
-                        styles.stockIcon,
-                        { backgroundColor: `${stock.color}24` },
-                      ]}
-                    >
-                      <Ionicons name={stock.icon} size={23} color={stock.color} />
-                    </View>
-
-                    {stock.featured && (
-                      <View style={styles.featuredBadge}>
-                        <Text style={styles.featuredBadgeText}>Destaque</Text>
-                      </View>
-                    )}
-                  </View>
-
-                  <Text style={styles.productTitle}>{stock.title}</Text>
-                  <Text style={styles.tickerText}>{stock.ticker}</Text>
-                  <Text style={styles.productRate}>{stock.rate}</Text>
-                  <Text style={styles.productText}>{stock.subtitle}</Text>
-                </Pressable>
-              ))}
-            </View>
-
-            {stockAssets.length > 2 && (
-              <Pressable
-                accessibilityRole="button"
-                onPress={() => setShowAllStocks((current) => !current)}
-                style={styles.showMoreButton}
-              >
-                <Text style={styles.showMoreText}>
-                  {showAllStocks ? 'Mostrar menos' : 'Exibir mais'}
-                </Text>
-              </Pressable>
-            )}
-          </View>
+          </Pressable>
         )}
       </View>
-
-      <View style={styles.accordionCard}>
-        <Pressable
-          accessibilityRole="button"
-          onPress={() =>
-            setExpandedSection((current) =>
-              current === 'fixed' ? null : 'fixed'
-            )
-          }
-          style={styles.accordionHeader}
-        >
-          <View style={styles.accordionHeaderInfo}>
-            <Text style={styles.accordionTitle}>Renda fixa</Text>
-            <Text style={styles.accordionSubtitle}>
-              CDI, CDB, Tesouro Selic e poupanca.
-            </Text>
-          </View>
-          <View style={styles.accordionIcon}>
-            <Ionicons
-              name={expandedSection === 'fixed' ? 'chevron-up' : 'chevron-down'}
-              size={20}
-              color={colors.white}
-            />
-          </View>
-        </Pressable>
-
-        {expandedSection === 'fixed' && (
-          <View style={styles.accordionBody}>
-            <View style={styles.productGrid}>
-              {visibleFixed.map((investment) => (
-                <Pressable
-                  accessibilityRole="button"
-                  key={investment.id}
-                  onPress={() =>
-                    applyInvestment(investment, investment.suggestedAmount)
-                  }
-                  style={styles.productCard}
-                >
-                  <View
-                    style={[
-                      styles.productIcon,
-                      { backgroundColor: `${investment.color}22` },
-                    ]}
-                  >
-                    <Ionicons
-                      name={investment.icon}
-                      size={24}
-                      color={investment.color}
-                    />
-                  </View>
-
-                  <Text style={styles.productTitle}>{investment.title}</Text>
-                  <Text style={styles.productRate}>{investment.rate}</Text>
-                  <Text style={styles.productText}>{investment.subtitle}</Text>
-
-                  <View style={styles.applyPill}>
-                    <Text style={styles.applyText}>
-                      Aplicar {formatCurrency(investment.suggestedAmount)}
-                    </Text>
-                  </View>
-                </Pressable>
-              ))}
-            </View>
-
-            {fixedInvestments.length > 2 && (
-              <Pressable
-                accessibilityRole="button"
-                onPress={() => setShowAllFixed((current) => !current)}
-                style={styles.showMoreButton}
-              >
-                <Text style={styles.showMoreText}>
-                  {showAllFixed ? 'Mostrar menos' : 'Exibir mais'}
-                </Text>
-              </Pressable>
-            )}
-          </View>
-        )}
-      </View>
-
-      {totalInvested > 0 && (
-        <Pressable
-          accessibilityRole="button"
-          onPress={resetPortfolio}
-          style={styles.resetButton}
-        >
-          <Text style={styles.resetButtonText}>Limpar carteira</Text>
-        </Pressable>
-      )}
 
       <Modal
         animationType="fade"
-        onRequestClose={closeStockInvestment}
+        onRequestClose={() => setPortfolioModalVisible(false)}
         transparent
-        visible={Boolean(selectedStock)}
+        visible={isPortfolioModalVisible}
+      >
+        <View style={styles.modalBackdrop}>
+          <View style={[styles.modalCard, styles.portfolioModalCard]}>
+            <LinearGradient
+              colors={['#D946EF', '#38BDF8', '#2DD4BF']}
+              style={styles.modalAccent}
+            />
+            <ScrollView
+              contentContainerStyle={styles.portfolioModalBody}
+              showsVerticalScrollIndicator={false}
+            >
+              <View style={styles.portfolioModalHeader}>
+                <View style={styles.portfolioModalTitleBlock}>
+                  <Text style={styles.modalTitle}>Carteira</Text>
+                  <Text style={styles.modalSubtitle}>
+                    Resumo detalhado dos seus investimentos
+                  </Text>
+                </View>
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={() => setPortfolioModalVisible(false)}
+                  style={styles.portfolioCloseButton}
+                >
+                  <Ionicons name="close-outline" size={24} color={colors.white} />
+                </Pressable>
+              </View>
+
+              <View style={styles.portfolioStats}>
+                <View style={styles.summaryMetric}>
+                  <Text style={styles.summaryMetricLabel}>Patrimônio</Text>
+                  <Text style={styles.summaryMetricValue}>
+                    {formatCurrency(totalInvested)}
+                  </Text>
+                </View>
+                <View style={[styles.summaryMetric, styles.summaryMetricGap]}>
+                  <Text style={styles.summaryMetricLabel}>Rendimento</Text>
+                  <Text style={styles.summaryMetricValue}>
+                    {formatCurrency(annualYield)}
+                  </Text>
+                </View>
+              </View>
+
+              <View style={[styles.summaryMetric, styles.portfolioMonthlyMetric]}>
+                <Text style={styles.summaryMetricLabel}>Rentabilidade mensal</Text>
+                <Text style={styles.summaryMetricValue}>
+                  +{formatPercent(monthlyRate)}
+                </Text>
+              </View>
+
+              {totalInvested > 0 ? (
+                <>
+                  <View style={styles.chartRing}>
+                    {Array.from({ length: donutSegmentCount }, (_, index) => (
+                      <View
+                        key={index}
+                        style={[
+                          styles.chartSegmentArm,
+                          {
+                            transform: [
+                              { rotate: `${index * (360 / donutSegmentCount)}deg` },
+                            ],
+                          },
+                        ]}
+                      >
+                        <View
+                          style={[
+                            styles.chartSegment,
+                            { backgroundColor: getSegmentColor(index) },
+                          ]}
+                        />
+                      </View>
+                    ))}
+
+                    <View style={styles.chartCenter}>
+                      <Text style={styles.chartCenterLabel}>Total investido</Text>
+                      <Text style={styles.chartCenterValue}>
+                        {formatCurrency(totalInvested)}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View style={styles.legendGrid}>
+                    {portfolioBreakdown.map((entry) => (
+                      <View key={entry.asset.id} style={styles.legendRow}>
+                        <View
+                          style={[
+                            styles.legendDot,
+                            { backgroundColor: entry.color },
+                          ]}
+                        />
+                        <View style={styles.legendInfo}>
+                          <Text style={styles.legendLabel}>
+                            {entry.asset.code
+                              ? `${entry.asset.code} - ${entry.asset.name}`
+                              : entry.asset.name}
+                          </Text>
+                          <Text style={styles.legendDescription}>
+                            {entry.asset.description}
+                          </Text>
+                        </View>
+                        <View style={styles.legendValueBox}>
+                          <Text style={styles.legendValue}>
+                            {formatPercent(entry.percent)}
+                          </Text>
+                          <Text style={styles.legendAmount}>
+                            {formatCurrency(entry.amount)}
+                          </Text>
+                        </View>
+                      </View>
+                    ))}
+                  </View>
+
+                  <Text style={styles.listTitle}>Meus investimentos</Text>
+                  {portfolioBreakdown.map((entry) => (
+                      <View
+                        key={entry.asset.id}
+                        style={[
+                          styles.investmentRow,
+                          { borderColor: `${entry.color}55` },
+                        ]}
+                      >
+                        <View style={styles.investmentRowTop}>
+                          <Text style={styles.investmentName}>
+                            {entry.asset.name}
+                          </Text>
+                          <Text style={styles.investmentType}>
+                            {getKindLabel(entry.asset.kind)}
+                          </Text>
+                        </View>
+
+                        <Text style={styles.investmentDescription}>
+                          {entry.asset.description}
+                        </Text>
+
+                        <View style={styles.rowMetrics}>
+                          <View style={styles.rowMetric}>
+                            <Text style={styles.rowMetricLabel}>Quantidade</Text>
+                            <Text style={styles.rowMetricValue}>
+                              {getApproxQuantity(entry)}
+                            </Text>
+                          </View>
+                          <View style={styles.rowMetric}>
+                            <Text style={styles.rowMetricLabel}>
+                              Valor investido
+                            </Text>
+                            <Text style={styles.rowMetricValue}>
+                              {formatCurrency(entry.amount)}
+                            </Text>
+                          </View>
+                          <View style={styles.rowMetric}>
+                            <Text style={styles.rowMetricLabel}>Tipo</Text>
+                            <Text style={styles.rowMetricValue}>
+                              {getKindLabel(entry.asset.kind)}
+                            </Text>
+                          </View>
+                          <View style={styles.rowMetric}>
+                            <Text style={styles.rowMetricLabel}>Rendimento</Text>
+                            <Text style={styles.rowMetricValue}>
+                              {formatCurrency(entry.expectedYield)}
+                            </Text>
+                          </View>
+                        </View>
+                      </View>
+                  ))}
+                </>
+              ) : (
+                <View style={styles.emptyPortfolio}>
+                  <Ionicons
+                    name="pie-chart-outline"
+                    size={24}
+                    color={colors.purpleSoft}
+                  />
+                  <Text style={styles.emptyPortfolioText}>
+                    Sua carteira aparecerá aqui depois do primeiro investimento.
+                  </Text>
+                </View>
+              )}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        animationType="fade"
+        onRequestClose={closeInvestment}
+        transparent
+        visible={Boolean(selectedAsset)}
       >
         <View style={styles.modalBackdrop}>
           <View style={styles.modalCard}>
             <LinearGradient
-              colors={[selectedStock?.color ?? colors.purpleStrong, colors.purpleSoft]}
+              colors={[selectedAsset ? getAssetColor(selectedAsset) : colors.purpleStrong, colors.purpleSoft]}
               style={styles.modalAccent}
             />
             <View style={styles.modalBody}>
@@ -910,49 +1221,57 @@ export function InvestmentsScreen() {
                 <View
                   style={[
                     styles.modalIcon,
-                    { backgroundColor: `${selectedStock?.color ?? colors.purple}24` },
+                    {
+                      backgroundColor: selectedAsset
+                        ? `${getAssetColor(selectedAsset)}24`
+                        : 'rgba(168,85,247,0.18)',
+                    },
                   ]}
                 >
                   <Ionicons
-                    name={selectedStock?.icon ?? 'trending-up-outline'}
+                    name={selectedAsset?.icon ?? 'trending-up-outline'}
                     size={24}
-                    color={selectedStock?.color ?? colors.purpleSoft}
+                    color={selectedAsset ? getAssetColor(selectedAsset) : colors.purpleSoft}
                   />
                 </View>
-                <Text style={styles.modalTitle}>
-                  Investir em {selectedStock?.title}
-                </Text>
+                <Text style={styles.modalTitle}>{selectedAsset?.name}</Text>
               </View>
 
               <Text style={styles.modalSubtitle}>
-                Informe o valor que deseja aplicar em {selectedStock?.ticker}.
+                {selectedAsset ? getKindLabel(selectedAsset.kind) : ''} -{' '}
+                {selectedAsset?.profitability}
               </Text>
 
               <Text style={styles.inputLabel}>Valor</Text>
               <TextInput
                 autoFocus
                 keyboardType="decimal-pad"
-                onChangeText={setStockAmountValue}
+                onChangeText={setInvestmentValue}
                 placeholder="R$ 0,00"
                 placeholderTextColor={colors.mutedDark}
                 style={styles.amountInput}
-                value={stockAmountValue}
+                value={investmentValue}
               />
 
               <View style={styles.modalButtons}>
                 <Pressable
                   accessibilityRole="button"
-                  onPress={closeStockInvestment}
+                  onPress={closeInvestment}
                   style={[styles.modalButton, styles.modalCancelButton]}
                 >
                   <Text style={styles.modalButtonText}>Cancelar</Text>
                 </Pressable>
                 <Pressable
                   accessibilityRole="button"
-                  onPress={confirmStockInvestment}
-                  style={[styles.modalButton, styles.modalApplyButton]}
+                  disabled={!canFinishInvestment}
+                  onPress={finishInvestment}
+                  style={[
+                    styles.modalButton,
+                    styles.modalApplyButton,
+                    !canFinishInvestment && styles.modalApplyButtonDisabled,
+                  ]}
                 >
-                  <Text style={styles.modalButtonText}>Investir</Text>
+                  <Text style={styles.modalButtonText}>Finalizar investimento</Text>
                 </Pressable>
               </View>
             </View>

@@ -113,9 +113,11 @@ const styles = StyleSheet.create({
 });
 export function HomeScreen({
   accountBalance,
+  cashbackBalance,
   setActiveScreen,
 }: {
   accountBalance: number;
+  cashbackBalance: number;
   setActiveScreen: (screen: AppScreen) => void;
 }) {
   const [isBalanceVisible, setIsBalanceVisible] = useState(true);
@@ -198,7 +200,9 @@ export function HomeScreen({
         <View style={styles.cashbackHighlight}>
           <Ionicons name="cash-outline" size={18} color="#86EFAC" />
           <Text style={styles.cashbackText}>
-            {isBalanceVisible ? 'R$ 248,90 em cashback' : 'R$ •••••• em cashback'}
+            {isBalanceVisible
+              ? `${formatCurrency(cashbackBalance)} em cashback`
+              : 'R$ •••••• em cashback'}
           </Text>
         </View>
       </LinearGradient>

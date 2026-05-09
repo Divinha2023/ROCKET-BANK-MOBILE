@@ -32,11 +32,16 @@ type CartItem = {
 };
 
 type TrackingOrder = {
+  cashback: number;
   code: string;
   discount: number;
   itemCount: number;
   total: number;
 };
+
+function parseCashbackRate(value: string) {
+  return (Number(value.replace('%', '').replace(',', '.')) || 0) / 100;
+}
 
 const styles = StyleSheet.create({
   shoppingScreen: {
@@ -545,10 +550,12 @@ const styles = StyleSheet.create({
 
 export function ShoppingScreen({
   accountBalance,
+  onEarnCashback,
   onDebitAccount,
   setActiveScreen,
 }: {
   accountBalance: number;
+  onEarnCashback: (amount: number) => void;
   onDebitAccount: (amount: number) => boolean;
   setActiveScreen: (screen: AppScreen) => void;
 }) {
@@ -637,6 +644,18 @@ export function ShoppingScreen({
       ? Math.min(cartSubtotal * couponDiscountRate, couponDiscountLimit)
       : 0;
   const cartTotal = Math.max(cartSubtotal - couponDiscount, 0);
+  const cartCashback = useMemo(
+    () =>
+      cartItems.reduce(
+        (total, item) =>
+          total +
+          parseCurrency(item.product.price) *
+            parseCashbackRate(item.product.cashback) *
+            item.quantity,
+        0
+      ),
+    [cartItems]
+  );
 
   useEffect(() => {
     if (cartItems.length === 0) {
@@ -739,11 +758,13 @@ export function ShoppingScreen({
     }
 
     setTrackingOrder({
+      cashback: cartCashback,
       code: `RB${Date.now().toString().slice(-6)}`,
       discount: couponDiscount,
       itemCount: cartItemCount,
       total: cartTotal,
     });
+    onEarnCashback(cartCashback);
     setCartItems([]);
     setCartVisible(false);
   }
@@ -957,6 +978,12 @@ export function ShoppingScreen({
               <Text style={styles.trackingSummaryLabel}>Desconto</Text>
               <Text style={[styles.trackingSummaryValue, styles.summaryDiscount]}>
                 -{formatCurrency(trackingOrder.discount)}
+              </Text>
+            </View>
+            <View style={styles.trackingSummaryRow}>
+              <Text style={styles.trackingSummaryLabel}>Cashback gerado</Text>
+              <Text style={[styles.trackingSummaryValue, styles.summaryDiscount]}>
+                +{formatCurrency(trackingOrder.cashback)}
               </Text>
             </View>
             <View

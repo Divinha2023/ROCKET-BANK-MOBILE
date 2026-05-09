@@ -8,7 +8,10 @@ import { SplashScreen } from './screens/SplashScreen';
 import { HomeScreen } from './screens/HomeScreen';
 import { CardsScreen } from './screens/CardsScreen';
 import { PixScreen } from './screens/PixScreen';
-import { InvestmentsScreen } from './screens/InvestmentsScreen';
+import {
+  InvestmentsScreen,
+  type InvestmentPortfolio,
+} from './screens/InvestmentsScreen';
 import { ShoppingScreen } from './screens/ShoppingScreen';
 import { CashbackScreen } from './screens/CashbackScreen';
 import { CommunityScreen } from './screens/CommunityScreen';
@@ -17,7 +20,7 @@ import { ProfileScreen } from './screens/ProfileScreen';
 import { StatementScreen } from './screens/StatementScreen';
 import { InvoiceScreen } from './screens/InvoiceScreen';
 import { userCards } from './data/mockData';
-import type { InvestmentAsset, PortfolioItem, UserCard } from './types';
+import type { UserCard } from './types';
 import { parseCurrency } from './utils/currency';
 
 export default function App() {
@@ -36,10 +39,10 @@ function AppContent() {
   const [logged, setLogged] = useState(false);
   const [activeScreen, setActiveScreen] = useState<AppScreen>('home');
   const [accountBalance, setAccountBalance] = useState(accountLimit);
+  const [cashbackBalance, setCashbackBalance] = useState(248.9);
   const [cards, setCards] = useState<UserCard[]>(userCards);
-  const [investmentPortfolio, setInvestmentPortfolio] = useState<
-    Record<string, PortfolioItem>
-  >({});
+  const [investmentPortfolio, setInvestmentPortfolio] =
+    useState<InvestmentPortfolio>({});
   const [paidInvoiceCardIds, setPaidInvoiceCardIds] = useState<
     Record<string, boolean>
   >({});
@@ -94,23 +97,12 @@ function AppContent() {
       return true;
     }
 
-    function investInAsset(asset: InvestmentAsset, amount: number) {
-      if (!debitAccount(amount)) {
-        return false;
+    function addShoppingCashback(amount: number) {
+      if (amount <= 0) {
+        return;
       }
 
-      setInvestmentPortfolio((current) => {
-        const previousAmount = current[asset.id]?.amount ?? 0;
-
-        return {
-          ...current,
-          [asset.id]: {
-            ...asset,
-            amount: previousAmount + amount,
-          },
-        };
-      });
-      return true;
+      setCashbackBalance((current) => current + amount);
     }
 
     switch (activeScreen) {
@@ -118,6 +110,7 @@ function AppContent() {
         return (
           <HomeScreen
             accountBalance={accountBalance}
+            cashbackBalance={cashbackBalance}
             setActiveScreen={setActiveScreen}
           />
         );
@@ -141,20 +134,21 @@ function AppContent() {
       case 'investments':
         return (
           <InvestmentsScreen
-            onInvest={investInAsset}
             portfolio={investmentPortfolio}
+            setPortfolio={setInvestmentPortfolio}
           />
         );
       case 'shopping':
         return (
           <ShoppingScreen
             accountBalance={accountBalance}
+            onEarnCashback={addShoppingCashback}
             onDebitAccount={debitAccount}
             setActiveScreen={setActiveScreen}
           />
         );
       case 'cashback':
-        return <CashbackScreen />;
+        return <CashbackScreen cashbackBalance={cashbackBalance} />;
       case 'community':
         return <CommunityScreen />;
       case 'support':
@@ -183,6 +177,7 @@ function AppContent() {
         return (
           <HomeScreen
             accountBalance={accountBalance}
+            cashbackBalance={cashbackBalance}
             setActiveScreen={setActiveScreen}
           />
         );

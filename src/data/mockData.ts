@@ -17,7 +17,7 @@ export const shoppingProducts: ShoppingProduct[] = [
     store: 'Rocket Tech',
     price: 'R$ 4.799,00',
     oldPrice: 'R$ 5.299,00',
-    cashback: '8%',
+    cashback: '5%',
     image:
       'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80',
   },

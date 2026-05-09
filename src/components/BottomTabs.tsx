@@ -62,7 +62,7 @@ export function BottomTabs({
 
         <TabButton
           icon="trending-up-outline"
-          label="Investir"
+          label="Invest"
           active={activeScreen === 'investments'}
           onPress={() => setActiveScreen('investments')}
         />

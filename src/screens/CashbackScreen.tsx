@@ -4,6 +4,7 @@ import { colors, commonStyles } from '../theme';
 import { ScreenTitle } from '../components/ScreenTitle';
 import { MetricCard } from '../components/MetricCard';
 import { MenuRow } from '../components/MenuRow';
+import { formatCurrency } from '../utils/currency';
 
 const styles = StyleSheet.create({
   cashbackCard: {
@@ -28,7 +29,11 @@ const styles = StyleSheet.create({
     lineHeight: 21,
   },
 });
-export function CashbackScreen() {
+export function CashbackScreen({
+  cashbackBalance,
+}: {
+  cashbackBalance: number;
+}) {
   return (
     <>
       <ScreenTitle
@@ -43,7 +48,7 @@ export function CashbackScreen() {
         style={styles.cashbackCard}
       >
         <Text style={styles.balanceLabel}>Saldo de cashback</Text>
-        <Text style={styles.balanceValue}>R$ 248,90</Text>
+        <Text style={styles.balanceValue}>{formatCurrency(cashbackBalance)}</Text>
         <Text style={styles.balanceSub}>
           Use no shopping, abata na fatura ou transfira para sua conta.
         </Text>

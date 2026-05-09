@@ -50,18 +50,3 @@ export type UserCard = {
   title: string;
   variant: CardVariant;
 };
-
-export type InvestmentAsset = {
-  color: string;
-  featured?: boolean;
-  icon: IconName;
-  id: string;
-  rate: string;
-  subtitle: string;
-  ticker?: string;
-  title: string;
-};
-
-export type PortfolioItem = InvestmentAsset & {
-  amount: number;
-};
