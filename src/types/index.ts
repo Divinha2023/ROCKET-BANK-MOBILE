@@ -32,7 +32,7 @@ export type ShoppingProduct = {
   image: string;
 };
 
-export type CardVariant = 'standard' | 'gold' | 'black';
+export type CardVariant = 'standard' | 'gold' | 'platinum' | 'black';
 
 export type UserCard = {
   id: string;
@@ -41,7 +41,10 @@ export type UserCard = {
   description: string;
   dueDate: string;
   holder: string;
+  invoiceDueDate: string;
+  invoiceTotal: string;
   kind: 'main' | 'virtual';
+  limit: string;
   number: string;
   title: string;
   variant: CardVariant;

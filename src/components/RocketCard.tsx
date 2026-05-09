@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme';
@@ -14,6 +14,26 @@ const styles = StyleSheet.create({
   cardShellSelected: {
     borderColor: colors.purpleSoft,
   },
+  cardShellPlatinum: {
+    borderColor: 'rgba(226,232,240,0.28)',
+    shadowColor: '#E5E7EB',
+    shadowOpacity: 0.18,
+    shadowRadius: 18,
+    elevation: 8,
+  },
+  cardShellPlatinumSelected: {
+    borderColor: 'rgba(241,245,249,0.78)',
+  },
+  cardShellBlack: {
+    borderColor: 'rgba(255,255,255,0.16)',
+    shadowColor: '#000000',
+    shadowOpacity: 0.38,
+    shadowRadius: 20,
+    elevation: 10,
+  },
+  cardShellBlackSelected: {
+    borderColor: 'rgba(255,255,255,0.46)',
+  },
   rocketCard: {
     minHeight: 176,
     borderRadius: 23,
@@ -25,6 +45,14 @@ const styles = StyleSheet.create({
   rocketCardBlocked: {
     opacity: 0.42,
   },
+  rocketCardPlatinum: {
+    borderWidth: 1,
+    borderColor: 'rgba(226,232,240,0.16)',
+  },
+  rocketCardBlack: {
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.10)',
+  },
   glowCircle: {
     position: 'absolute',
     width: 168,
@@ -34,6 +62,22 @@ const styles = StyleSheet.create({
     top: -64,
     backgroundColor: 'rgba(255,255,255,0.12)',
   },
+  glowCirclePlatinum: {
+    width: 190,
+    height: 190,
+    borderRadius: 95,
+    right: -78,
+    top: -84,
+    backgroundColor: 'rgba(255,255,255,0.13)',
+  },
+  glowCircleBlack: {
+    width: 198,
+    height: 198,
+    borderRadius: 99,
+    right: -84,
+    top: -92,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+  },
   lowerGlowCircle: {
     position: 'absolute',
     width: 128,
@@ -42,6 +86,74 @@ const styles = StyleSheet.create({
     left: -54,
     bottom: -76,
     backgroundColor: 'rgba(255,255,255,0.08)',
+  },
+  lowerGlowCirclePlatinum: {
+    width: 160,
+    height: 160,
+    borderRadius: 80,
+    left: -66,
+    bottom: -92,
+    backgroundColor: 'rgba(148,163,184,0.18)',
+  },
+  lowerGlowCircleBlack: {
+    width: 170,
+    height: 170,
+    borderRadius: 85,
+    left: -72,
+    bottom: -98,
+    backgroundColor: 'rgba(75,85,99,0.18)',
+  },
+  reflectiveSheen: {
+    position: 'absolute',
+    left: -28,
+    right: -28,
+    top: 58,
+    height: 34,
+    opacity: 0.82,
+    transform: [{ rotate: '-14deg' }],
+  },
+  reflectiveSheenLower: {
+    position: 'absolute',
+    left: -36,
+    right: -36,
+    bottom: 34,
+    height: 20,
+    opacity: 0.45,
+    transform: [{ rotate: '-14deg' }],
+  },
+  blackSheen: {
+    position: 'absolute',
+    left: -34,
+    right: -34,
+    top: 48,
+    height: 42,
+    opacity: 0.56,
+    transform: [{ rotate: '-16deg' }],
+  },
+  blackSheenLower: {
+    position: 'absolute',
+    left: -34,
+    right: -34,
+    bottom: 36,
+    height: 24,
+    opacity: 0.34,
+    transform: [{ rotate: '-16deg' }],
+  },
+  metalAccentLine: {
+    position: 'absolute',
+    left: 16,
+    right: 16,
+    top: 14,
+    height: 1,
+    backgroundColor: 'rgba(226,232,240,0.22)',
+  },
+  blackAccentLine: {
+    position: 'absolute',
+    left: 16,
+    right: 16,
+    top: 14,
+    height: 1,
+    backgroundColor: 'rgba(255,255,255,0.12)',
   },
   cardEyeButton: {
     position: 'absolute',
@@ -55,41 +167,36 @@ const styles = StyleSheet.create({
     zIndex: 5,
     backgroundColor: 'rgba(255,255,255,0.12)',
   },
+  cardEyeButtonPlatinum: {
+    backgroundColor: 'rgba(226,232,240,0.10)',
+    borderWidth: 1,
+    borderColor: 'rgba(226,232,240,0.18)',
+  },
+  cardEyeButtonBlack: {
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.13)',
+  },
   rocketCardTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
   },
-  rocketCardBrand: {
-    color: colors.white,
-    fontSize: 18,
-    fontWeight: '900',
-  },
-  rocketCardType: {
-    color: colors.white,
-    letterSpacing: 3,
-    fontSize: 10,
-    marginTop: 4,
-    fontWeight: '800',
-  },
   brandColumn: {
     flex: 1,
     paddingRight: 52,
   },
-  cardStatus: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 8,
+  cardLogo: {
+    width: 116,
+    height: 52,
   },
-  statusDot: {
-    width: 7,
-    height: 7,
-    borderRadius: 4,
-    marginRight: 6,
+  cardLogoMark: {
+    width: 42,
+    height: 52,
   },
-  statusText: {
-    fontSize: 11,
-    fontWeight: '800',
+  cardLogoBlack: {
+    width: 42,
+    height: 52,
   },
   contactlessBox: {
     width: 36,
@@ -99,12 +206,32 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: 'rgba(255,255,255,0.14)',
   },
+  contactlessBoxPlatinum: {
+    backgroundColor: 'rgba(226,232,240,0.10)',
+    borderWidth: 1,
+    borderColor: 'rgba(226,232,240,0.18)',
+  },
+  contactlessBoxBlack: {
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.13)',
+  },
   cardChip: {
     width: 42,
     height: 30,
     borderRadius: 8,
     backgroundColor: 'rgba(255,255,255,0.50)',
     marginBottom: 10,
+  },
+  cardChipPlatinum: {
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.40)',
+  },
+  cardChipBlack: {
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.24)',
   },
   cardMiddle: {
     marginTop: 10,
@@ -153,9 +280,21 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: 'rgba(255,255,255,0.55)',
   },
+  networkCirclePlatinum: {
+    backgroundColor: 'rgba(226,232,240,0.82)',
+  },
+  networkCircleBlack: {
+    backgroundColor: 'rgba(209,213,219,0.72)',
+  },
   networkCircleOverlap: {
     marginLeft: -8,
     backgroundColor: 'rgba(255,123,84,0.72)',
+  },
+  networkCircleOverlapPlatinum: {
+    backgroundColor: 'rgba(100,116,139,0.82)',
+  },
+  networkCircleOverlapBlack: {
+    backgroundColor: 'rgba(31,41,55,0.88)',
   },
   lockOverlay: {
     position: 'absolute',
@@ -194,21 +333,23 @@ const styles = StyleSheet.create({
 const cardConfig = {
   standard: {
     colors: ['#202433', '#3B4258', '#596179'],
-    label: 'PADRÃO',
     textColor: colors.white,
     mutedTextColor: 'rgba(255,255,255,0.68)',
   },
   gold: {
     colors: ['#FDE68A', '#D6A21C', '#F8D777'],
-    label: 'GOLD',
     textColor: '#261400',
     mutedTextColor: 'rgba(38,20,0,0.68)',
   },
+  platinum: {
+    colors: ['#030406', '#12151A', '#2B3038', '#07080B'],
+    textColor: '#F8FAFC',
+    mutedTextColor: 'rgba(226,232,240,0.66)',
+  },
   black: {
-    colors: ['#050505', '#141119', '#33235C'],
-    label: 'BLACK',
-    textColor: colors.white,
-    mutedTextColor: 'rgba(255,255,255,0.68)',
+    colors: ['#000000', '#050506', '#111217', '#010101'],
+    textColor: '#F9FAFB',
+    mutedTextColor: 'rgba(209,213,219,0.62)',
   },
 } as const;
 
@@ -217,7 +358,7 @@ export function RocketCard({
   cvv,
   dueDate,
   hidden,
-  holder = 'JOÃO SILVA',
+  holder = 'JOAO SILVA',
   number,
   onPress,
   onToggleVisibility,
@@ -236,77 +377,179 @@ export function RocketCard({
   variant: CardVariant;
 }) {
   const config = cardConfig[variant];
+  const isPlatinumCard = variant === 'platinum';
+  const isBlackCard = variant === 'black';
   const displayNumber = hidden
     ? `•••• •••• •••• ${number.slice(-4)}`
     : number.replace(/(.{4})/g, '$1 ').trim();
   const displayCvv = hidden ? '•••' : cvv;
+  const accentColor = isPlatinumCard
+    ? '#E2E8F0'
+    : isBlackCard
+      ? '#D1D5DB'
+      : config.textColor;
+  const logoSource = isBlackCard
+    ? require('../../assets/images/card-logo-black.png')
+    : isPlatinumCard
+      ? require('../../assets/images/card-logo-mark.png')
+      : require('../../assets/images/card-logo.png');
+  const logoStyle = isBlackCard
+    ? styles.cardLogoBlack
+    : isPlatinumCard
+      ? styles.cardLogoMark
+      : styles.cardLogo;
 
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityState={{ selected }}
-      style={[styles.cardShell, selected && styles.cardShellSelected]}
+      style={[
+        styles.cardShell,
+        isPlatinumCard && styles.cardShellPlatinum,
+        isBlackCard && styles.cardShellBlack,
+        selected &&
+          (isPlatinumCard
+            ? styles.cardShellPlatinumSelected
+            : isBlackCard
+              ? styles.cardShellBlackSelected
+              : styles.cardShellSelected),
+      ]}
       onPress={onPress}
     >
       <LinearGradient
         colors={config.colors}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        style={[styles.rocketCard, blocked && styles.rocketCardBlocked]}
+        style={[
+          styles.rocketCard,
+          isPlatinumCard && styles.rocketCardPlatinum,
+          isBlackCard && styles.rocketCardBlack,
+          blocked && styles.rocketCardBlocked,
+        ]}
       >
-        <View style={styles.glowCircle} />
-        <View style={styles.lowerGlowCircle} />
+        <View
+          style={[
+            styles.glowCircle,
+            isPlatinumCard && styles.glowCirclePlatinum,
+            isBlackCard && styles.glowCircleBlack,
+          ]}
+        />
+        <View
+          style={[
+            styles.lowerGlowCircle,
+            isPlatinumCard && styles.lowerGlowCirclePlatinum,
+            isBlackCard && styles.lowerGlowCircleBlack,
+          ]}
+        />
+
+        {isPlatinumCard ? (
+          <>
+            <LinearGradient
+              colors={[
+                'rgba(255,255,255,0)',
+                'rgba(255,255,255,0.24)',
+                'rgba(255,255,255,0)',
+              ]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.reflectiveSheen}
+            />
+            <LinearGradient
+              colors={[
+                'rgba(255,255,255,0)',
+                'rgba(148,163,184,0.28)',
+                'rgba(255,255,255,0)',
+              ]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.reflectiveSheenLower}
+            />
+            <View style={styles.metalAccentLine} />
+          </>
+        ) : null}
+
+        {isBlackCard ? (
+          <>
+            <LinearGradient
+              colors={[
+                'rgba(255,255,255,0)',
+                'rgba(255,255,255,0.11)',
+                'rgba(255,255,255,0)',
+              ]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.blackSheen}
+            />
+            <LinearGradient
+              colors={[
+                'rgba(255,255,255,0)',
+                'rgba(107,114,128,0.20)',
+                'rgba(255,255,255,0)',
+              ]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.blackSheenLower}
+            />
+            <View style={styles.blackAccentLine} />
+          </>
+        ) : null}
 
         {onToggleVisibility ? (
           <Pressable
             accessibilityLabel={
-              hidden ? 'Revelar número do cartão' : 'Ocultar número do cartão'
+              hidden ? 'Revelar numero do cartao' : 'Ocultar numero do cartao'
             }
             accessibilityRole="button"
-            style={styles.cardEyeButton}
+            style={[
+              styles.cardEyeButton,
+              isPlatinumCard && styles.cardEyeButtonPlatinum,
+              isBlackCard && styles.cardEyeButtonBlack,
+            ]}
             onPress={onToggleVisibility}
             hitSlop={12}
           >
             <Ionicons
               name={hidden ? 'eye-off-outline' : 'eye-outline'}
               size={20}
-              color={config.textColor}
+              color={accentColor}
             />
           </Pressable>
         ) : null}
 
         <View style={styles.rocketCardTop}>
           <View style={styles.brandColumn}>
-            <Text style={[styles.rocketCardBrand, { color: config.textColor }]}>
-              Rocket Bank
-            </Text>
-
-            <Text style={[styles.rocketCardType, { color: config.textColor }]}>
-              {config.label}
-            </Text>
-
-            <View style={styles.cardStatus}>
-              <View
-                style={[
-                  styles.statusDot,
-                  { backgroundColor: blocked ? colors.orange : colors.green },
-                ]}
-              />
-              <Text
-                style={[styles.statusText, { color: config.mutedTextColor }]}
-              >
-                {blocked ? 'Cartão bloqueado' : 'Cartão ativo'}
-              </Text>
-            </View>
+            <Image source={logoSource} style={logoStyle} resizeMode="contain" />
           </View>
 
-          <View style={styles.contactlessBox}>
-            <Ionicons name="wifi-outline" size={22} color={config.textColor} />
+          <View
+            style={[
+              styles.contactlessBox,
+              isPlatinumCard && styles.contactlessBoxPlatinum,
+              isBlackCard && styles.contactlessBoxBlack,
+            ]}
+          >
+            <Ionicons name="wifi-outline" size={22} color={accentColor} />
           </View>
         </View>
 
         <View style={styles.cardMiddle}>
-          <View style={styles.cardChip} />
+          {isPlatinumCard ? (
+            <LinearGradient
+              colors={['#F8FAFC', '#94A3B8', '#E5E7EB', '#64748B']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={[styles.cardChip, styles.cardChipPlatinum]}
+            />
+          ) : isBlackCard ? (
+            <LinearGradient
+              colors={['#4B5563', '#111827', '#6B7280', '#030303']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={[styles.cardChip, styles.cardChipBlack]}
+            />
+          ) : (
+            <View style={styles.cardChip} />
+          )}
 
           <Text
             numberOfLines={1}
@@ -350,8 +593,21 @@ export function RocketCard({
             </Text>
 
             <View style={styles.cardNetwork}>
-              <View style={styles.networkCircle} />
-              <View style={[styles.networkCircle, styles.networkCircleOverlap]} />
+              <View
+                style={[
+                  styles.networkCircle,
+                  isPlatinumCard && styles.networkCirclePlatinum,
+                  isBlackCard && styles.networkCircleBlack,
+                ]}
+              />
+              <View
+                style={[
+                  styles.networkCircle,
+                  styles.networkCircleOverlap,
+                  isPlatinumCard && styles.networkCircleOverlapPlatinum,
+                  isBlackCard && styles.networkCircleOverlapBlack,
+                ]}
+              />
             </View>
           </View>
         </View>

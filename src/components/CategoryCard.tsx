@@ -84,9 +84,7 @@ export function CategoryCard({
         <Ionicons name={icon} size={24} color={colors.white} />
       </LinearGradient>
       <Text style={styles.categoryLabel}>{label}</Text>
-      {disabled ? (
-        <Text style={styles.unavailableBadge}>Indisponível</Text>
-      ) : null}
+      {disabled ? <Text style={styles.unavailableBadge}>Em breve</Text> : null}
     </Pressable>
   );
 }

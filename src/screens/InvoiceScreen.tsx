@@ -5,7 +5,8 @@ import { colors } from '../theme';
 import { ScreenTitle } from '../components/ScreenTitle';
 import { MetricCard } from '../components/MetricCard';
 import { cardInvoice } from '../data/mockData';
-import type { AppScreen } from '../types';
+import type { AppScreen, UserCard } from '../types';
+import { formatCurrency } from '../utils/currency';
 
 const styles = StyleSheet.create({
   heroCard: {
@@ -154,12 +155,18 @@ const styles = StyleSheet.create({
 });
 
 export function InvoiceScreen({
+  accountBalance,
+  accountLimit,
+  invoiceCard,
   invoicePaid,
   onPayInvoice,
   setActiveScreen,
 }: {
+  accountBalance: number;
+  accountLimit: number;
+  invoiceCard: UserCard;
   invoicePaid: boolean;
-  onPayInvoice: () => void;
+  onPayInvoice: () => boolean;
   setActiveScreen: (screen: AppScreen) => void;
 }) {
   function handlePayInvoice() {
@@ -168,10 +175,17 @@ export function InvoiceScreen({
       return;
     }
 
-    onPayInvoice();
+    if (!onPayInvoice()) {
+      Alert.alert(
+        'Saldo insuficiente',
+        'Nao ha saldo suficiente para pagar esta fatura agora.'
+      );
+      return;
+    }
+
     Alert.alert(
       'Fatura paga',
-      'Pagamento confirmado. A fatura foi marcada como paga.'
+      'Pagamento confirmado. O saldo da conta foi atualizado.'
     );
   }
 
@@ -179,7 +193,7 @@ export function InvoiceScreen({
     <>
       <ScreenTitle
         title="Fatura"
-        subtitle="Fatura gerada com detalhes, vencimento e pagamento."
+        subtitle={invoiceCard.title}
       />
 
       <LinearGradient
@@ -196,7 +210,7 @@ export function InvoiceScreen({
           <View>
             <Text style={styles.heroLabel}>Total da fatura</Text>
             <Text style={styles.heroValue}>
-              {invoicePaid ? 'R$ 0' : cardInvoice.total}
+              {invoicePaid ? 'R$ 0' : invoiceCard.invoiceTotal}
             </Text>
           </View>
 
@@ -208,13 +222,20 @@ export function InvoiceScreen({
         </View>
 
         <View style={styles.heroBottom}>
-          <Text style={styles.heroDetail}>Vencimento {cardInvoice.dueDate}</Text>
+          <Text style={styles.heroDetail}>
+            Vencimento {invoiceCard.invoiceDueDate}
+          </Text>
           <Ionicons name="receipt-outline" size={26} color={colors.white} />
         </View>
       </LinearGradient>
 
       <View style={styles.metricRow}>
-        <MetricCard label="Limite disponivel" value={cardInvoice.limit} />
+        <MetricCard label="Saldo da conta" value={formatCurrency(accountBalance)} />
+        <MetricCard label="Limite da conta" value={formatCurrency(accountLimit)} />
+      </View>
+
+      <View style={styles.metricRow}>
+        <MetricCard label="Limite do cartao" value={invoiceCard.limit} />
         <MetricCard label="Status" value={invoicePaid ? 'Paga' : 'Aberta'} />
       </View>
 
@@ -245,8 +266,8 @@ export function InvoiceScreen({
       <View style={styles.paymentCard}>
         <Text style={styles.paymentTitle}>Pagamento da fatura</Text>
         <Text style={styles.paymentText}>
-          Ao pagar, a fatura atual sera baixada e o valor em aberto volta para
-          zero na area de cartoes.
+          Ao pagar, a fatura atual sera baixada, o saldo da conta sera
+          descontado e o valor em aberto volta para zero na area de cartoes.
         </Text>
 
         <Pressable

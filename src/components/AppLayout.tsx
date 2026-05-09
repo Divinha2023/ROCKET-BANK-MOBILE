@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { ScrollView, StatusBar, StyleSheet } from 'react-native';
+import { ScrollView, StatusBar, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { AppScreen } from '../types';
@@ -17,14 +17,19 @@ const styles = StyleSheet.create({
     paddingTop: 24,
     paddingBottom: 116,
   },
+  appContent: {
+    flex: 1,
+  },
 });
 export function AppLayout({
   children,
   activeScreen,
+  scrollEnabled = true,
   setActiveScreen,
 }: {
   children: ReactNode;
   activeScreen: AppScreen;
+  scrollEnabled?: boolean;
   setActiveScreen: (screen: AppScreen) => void;
 }) {
   return (
@@ -35,12 +40,16 @@ export function AppLayout({
       <StatusBar barStyle="light-content" backgroundColor="#05010F" />
 
       <SafeAreaView edges={['top', 'left', 'right']} style={styles.safeArea}>
-        <ScrollView
-          contentContainerStyle={styles.appScroll}
-          showsVerticalScrollIndicator={false}
-        >
-          {children}
-        </ScrollView>
+        {scrollEnabled ? (
+          <ScrollView
+            contentContainerStyle={styles.appScroll}
+            showsVerticalScrollIndicator={false}
+          >
+            {children}
+          </ScrollView>
+        ) : (
+          <View style={styles.appContent}>{children}</View>
+        )}
 
         <BottomTabs
           activeScreen={activeScreen}

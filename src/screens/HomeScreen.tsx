@@ -8,6 +8,7 @@ import { SectionHeader } from '../components/SectionHeader';
 import { QuickAction } from '../components/QuickAction';
 import { FeatureCard } from '../components/FeatureCard';
 import { Transaction } from '../components/Transaction';
+import { formatCurrency } from '../utils/currency';
 
 const styles = StyleSheet.create({
   headerRow: {
@@ -105,8 +106,10 @@ const styles = StyleSheet.create({
   },
 });
 export function HomeScreen({
+  accountBalance,
   setActiveScreen,
 }: {
+  accountBalance: number;
   setActiveScreen: (screen: AppScreen) => void;
 }) {
   const [isBalanceVisible, setIsBalanceVisible] = useState(true);
@@ -183,11 +186,13 @@ export function HomeScreen({
           </Pressable>
         </View>
         <Text style={styles.balanceValue}>
-          {isBalanceVisible ? 'R$ 8.520,00' : 'R$ ••••••'}
+          {isBalanceVisible ? formatCurrency(accountBalance) : 'R$ ••••••'}
         </Text>
         <View style={styles.cashbackHighlight}>
           <Ionicons name="cash-outline" size={18} color="#86EFAC" />
-          <Text style={styles.cashbackText}>R$ 248,90 em cashback</Text>
+          <Text style={styles.cashbackText}>
+            {isBalanceVisible ? 'R$ 248,90 em cashback' : 'R$ •••••• em cashback'}
+          </Text>
         </View>
       </LinearGradient>
 

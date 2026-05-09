@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { type Dispatch, type SetStateAction, useRef, useState } from 'react';
 import {
   Alert,
   Dimensions,
@@ -16,7 +16,7 @@ import { colors, commonStyles } from '../theme';
 import { RocketCard } from '../components/RocketCard';
 import { MetricCard } from '../components/MetricCard';
 import { MenuRow } from '../components/MenuRow';
-import { availableVirtualCards, cardInvoice, userCards } from '../data/mockData';
+import { availableVirtualCards, userCards } from '../data/mockData';
 import type { AppScreen, UserCard } from '../types';
 
 const maxCardsPerUser = 3;
@@ -172,14 +172,19 @@ const styles = StyleSheet.create({
 });
 
 export function CardsScreen({
-  invoicePaid,
+  cards,
+  paidInvoiceCardIds,
+  setCards,
   setActiveScreen,
+  setSelectedInvoiceCardId,
 }: {
-  invoicePaid: boolean;
+  cards: UserCard[];
+  paidInvoiceCardIds: Record<string, boolean>;
+  setCards: Dispatch<SetStateAction<UserCard[]>>;
   setActiveScreen: (screen: AppScreen) => void;
+  setSelectedInvoiceCardId: (cardId: string) => void;
 }) {
   const carouselRef = useRef<ScrollView>(null);
-  const [cards, setCards] = useState<UserCard[]>(userCards);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [hiddenCardIds, setHiddenCardIds] = useState<Record<string, boolean>>({
     [userCards[0].id]: true,
@@ -190,7 +195,23 @@ export function CardsScreen({
   const selectedCard = cards[Math.min(selectedIndex, cards.length - 1)];
   const selectedCardBlocked = Boolean(blockedCardIds[selectedCard.id]);
   const selectedCardHidden = hiddenCardIds[selectedCard.id] ?? true;
-  const statementValue = invoicePaid ? 'R$ 0' : cardInvoice.total;
+  const selectedCardInvoicePaid = Boolean(paidInvoiceCardIds[selectedCard.id]);
+  const hiddenInvoiceValue = '••••••';
+  const displayedLimitValue = selectedCardHidden
+    ? hiddenInvoiceValue
+    : selectedCard.limit;
+  const statementValue = selectedCardInvoicePaid ? 'R$ 0' : selectedCard.invoiceTotal;
+  const displayedStatementValue = selectedCardHidden
+    ? hiddenInvoiceValue
+    : statementValue;
+  const displayedDueDate = selectedCardHidden
+    ? '••/••'
+    : selectedCard.invoiceDueDate;
+  const displayedInvoiceStatus = selectedCardHidden
+    ? hiddenInvoiceValue
+    : selectedCardInvoicePaid
+      ? 'Paga'
+      : 'Aberta';
 
   function scrollToCard(index: number) {
     carouselRef.current?.scrollTo({
@@ -392,13 +413,13 @@ export function CardsScreen({
       </View>
 
       <View style={commonStyles.twoColumns}>
-        <MetricCard label="Limite disponivel" value={cardInvoice.limit} />
-        <MetricCard label="Fatura atual" value={statementValue} />
+        <MetricCard label="Limite disponivel" value={displayedLimitValue} />
+        <MetricCard label="Fatura atual" value={displayedStatementValue} />
       </View>
 
       <View style={commonStyles.twoColumns}>
-        <MetricCard label="Data de vencimento" value={cardInvoice.dueDate} />
-        <MetricCard label="Status da fatura" value={invoicePaid ? 'Paga' : 'Aberta'} />
+        <MetricCard label="Data de vencimento" value={displayedDueDate} />
+        <MetricCard label="Status da fatura" value={displayedInvoiceStatus} />
       </View>
 
       <View style={commonStyles.listCard}>
@@ -424,7 +445,10 @@ export function CardsScreen({
           icon="receipt-outline"
           title="Gerar fatura"
           subtitle="Abre a fatura em uma tela propria com itens e pagamento."
-          onPress={() => setActiveScreen('invoice')}
+          onPress={() => {
+            setSelectedInvoiceCardId(selectedCard.id);
+            setActiveScreen('invoice');
+          }}
         />
 
         <MenuRow
