@@ -372,7 +372,7 @@ function isValidEmail(value: string) {
 
 function isCpfInput(value: string) {
   const trimmed = value.trim();
-  return /^\d/.test(trimmed) || /^[\d.-]+$/.test(trimmed);
+  return trimmed.length > 0 && /^[\d.-]+$/.test(trimmed);
 }
 
 function isValidAccess(value: string) {
@@ -385,10 +385,10 @@ function isValidAccess(value: string) {
 
 function getAccessValidationMessage(value: string) {
   if (isCpfInput(value)) {
-    return 'Digite o CPF no formato 000.000.000-00.';
+    return 'Digite o CPF ';
   }
 
-  return 'Digite um e-mail válido, como test@mail.com.';
+  return 'Digite um e-mail válido';
 }
 
 function getCopy(mode: LoginMode) {
@@ -758,8 +758,7 @@ export function LoginScreen({ onLogin }: { onLogin: () => void }) {
               <TextInput
                 autoCapitalize="none"
                 autoCorrect={false}
-                keyboardType={accessType === 'cpf' ? 'number-pad' : 'email-address'}
-                maxLength={accessType === 'cpf' ? 14 : undefined}
+                keyboardType="email-address"
                 onChangeText={handleAccessValueChange}
                 placeholder="E-mail ou CPF"
                 placeholderTextColor="#9A9AAA"
