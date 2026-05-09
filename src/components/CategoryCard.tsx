@@ -35,21 +35,42 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(139,92,246,0.18)',
     borderColor: colors.purpleSoft,
   },
+  categoryCardDisabled: {
+    opacity: 0.42,
+  },
+  unavailableBadge: {
+    color: colors.mutedDark,
+    fontSize: 10,
+    fontWeight: '800',
+    marginTop: 4,
+  },
 });
 
 type CategoryCardProps = {
   active?: boolean;
+  disabled?: boolean;
   icon: IconName;
   label: string;
   onPress?: () => void;
 };
 
-export function CategoryCard({ active, icon, label, onPress }: CategoryCardProps) {
+export function CategoryCard({
+  active,
+  disabled,
+  icon,
+  label,
+  onPress,
+}: CategoryCardProps) {
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityState={{ selected: active }}
-      style={[styles.categoryCard, active && styles.categoryCardActive]}
+      accessibilityState={{ disabled, selected: active }}
+      disabled={disabled}
+      style={[
+        styles.categoryCard,
+        active && styles.categoryCardActive,
+        disabled && styles.categoryCardDisabled,
+      ]}
       onPress={onPress}
     >
       <LinearGradient
@@ -63,6 +84,9 @@ export function CategoryCard({ active, icon, label, onPress }: CategoryCardProps
         <Ionicons name={icon} size={24} color={colors.white} />
       </LinearGradient>
       <Text style={styles.categoryLabel}>{label}</Text>
+      {disabled ? (
+        <Text style={styles.unavailableBadge}>Indisponível</Text>
+      ) : null}
     </Pressable>
   );
 }

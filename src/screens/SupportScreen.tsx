@@ -29,12 +29,13 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
 });
+
 export function SupportScreen() {
   return (
     <>
       <ScreenTitle
         title="Atendimento"
-        subtitle="Resolva dúvidas e acompanhe solicitações."
+        subtitle="Resolva dúvidas pelos canais Rocket."
       />
 
       <View style={styles.supportCard}>
@@ -80,15 +81,6 @@ export function SupportScreen() {
           subtitle="Pedidos, cashback e lojas parceiras."
           onPress={() =>
             Alert.alert('Rocket Shopping', 'Central de compras e cashback aberta.')
-          }
-        />
-
-        <MenuRow
-          icon="help-circle-outline"
-          title="Abrir chamado"
-          subtitle="Acompanhe solicitações dentro do app."
-          onPress={() =>
-            Alert.alert('Chamado criado', 'Protocolo RB-2026-058 aberto com sucesso.')
           }
         />
       </View>

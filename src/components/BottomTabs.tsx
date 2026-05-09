@@ -54,8 +54,8 @@ export function BottomTabs({
         />
 
         <TabButton
-          icon="qr-code-outline"
-          label="Pix"
+          icon="swap-horizontal-outline"
+          label="Transferir"
           active={activeScreen === 'pix'}
           onPress={() => setActiveScreen('pix')}
         />

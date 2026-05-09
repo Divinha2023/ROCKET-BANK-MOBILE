@@ -124,11 +124,22 @@ export function ShoppingScreen({
 }) {
   const [activeCategory, setActiveCategory] = useState(allCategoriesLabel);
   const [searchTerm, setSearchTerm] = useState('');
+  const availableCategories = useMemo(
+    () => shoppingCategories.filter((category) => category.available !== false),
+    []
+  );
+  const availableCategoryLabels = useMemo(
+    () => availableCategories.map((category) => category.label),
+    [availableCategories]
+  );
 
   const normalizedSearch = searchTerm.trim().toLowerCase();
   const visibleProducts = useMemo(
     () =>
       shoppingProducts.filter((product) => {
+        const matchesAvailability = availableCategoryLabels.includes(
+          product.category
+        );
         const matchesCategory =
           activeCategory === allCategoriesLabel ||
           product.category === activeCategory;
@@ -139,9 +150,9 @@ export function ShoppingScreen({
             .toLowerCase()
             .includes(normalizedSearch);
 
-        return matchesCategory && matchesSearch;
+        return matchesAvailability && matchesCategory && matchesSearch;
       }),
-    [activeCategory, normalizedSearch]
+    [activeCategory, availableCategoryLabels, normalizedSearch]
   );
 
   const productSections = useMemo(
@@ -161,17 +172,17 @@ export function ShoppingScreen({
       return [
         {
           title: 'Destaques com cashback',
-          products: shoppingProducts.slice(0, 4),
+          products: visibleProducts.slice(0, 4),
         },
-        ...shoppingCategories.map((category) => ({
+        ...availableCategories.map((category) => ({
           title: category.label,
-          products: shoppingProducts.filter(
+          products: visibleProducts.filter(
             (product) => product.category === category.label
           ),
         })),
       ];
     },
-    [activeCategory, normalizedSearch, visibleProducts]
+    [activeCategory, availableCategories, normalizedSearch, visibleProducts]
   );
 
   function handleProductPress(product: ShoppingProduct) {
@@ -262,6 +273,7 @@ export function ShoppingScreen({
         {shoppingCategories.map((category) => (
           <CategoryCard
             active={activeCategory === category.label}
+            disabled={category.available === false}
             key={category.label}
             icon={category.icon}
             label={category.label}

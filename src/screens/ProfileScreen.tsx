@@ -40,6 +40,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
 });
+
 export function ProfileScreen({
   setActiveScreen,
   onLogout,
@@ -51,7 +52,7 @@ export function ProfileScreen({
     <>
       <ScreenTitle
         title="Perfil"
-        subtitle="Dados, segurança e configurações."
+        subtitle="Dados, notificações e configurações."
       />
 
       <View style={styles.profileCard}>
@@ -78,15 +79,6 @@ export function ProfileScreen({
         />
 
         <MenuRow
-          icon="shield-checkmark-outline"
-          title="Segurança"
-          subtitle="Biometria, senha e verificação."
-          onPress={() =>
-            Alert.alert('Segurança', 'Biometria ativa e verificação em duas etapas disponível.')
-          }
-        />
-
-        <MenuRow
           icon="notifications-outline"
           title="Notificações"
           subtitle="Alertas, compras, Pix e benefícios."
@@ -98,7 +90,7 @@ export function ProfileScreen({
         <MenuRow
           icon="chatbubble-ellipses-outline"
           title="Central de atendimento"
-          subtitle="Fale conosco e acompanhe chamados."
+          subtitle="Fale conosco e acompanhe solicitações."
           onPress={() => setActiveScreen('support')}
         />
 

@@ -1,15 +1,19 @@
 import { useState } from 'react';
+import type { ComponentProps } from 'react';
 import {
   Alert,
   ImageBackground,
   KeyboardAvoidingView,
   Platform,
   Pressable,
+  ScrollView,
   StatusBar,
+  type StyleProp,
   StyleSheet,
   Text,
   TextInput,
   View,
+  type ViewStyle,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -19,6 +23,34 @@ import { AppLogo } from '../components/AppLogo';
 
 type LoginMode = 'login' | 'register' | 'recover';
 
+type RegisterData = {
+  firstName: string;
+  lastName: string;
+  cpf: string;
+  birthDate: string;
+  email: string;
+  password: string;
+  cep: string;
+  number: string;
+  street: string;
+  city: string;
+  uf: string;
+};
+
+const initialRegisterData: RegisterData = {
+  firstName: '',
+  lastName: '',
+  cpf: '',
+  birthDate: '',
+  email: '',
+  password: '',
+  cep: '',
+  number: '',
+  street: 'Preenchido automaticamente',
+  city: '',
+  uf: '',
+};
+
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
@@ -27,7 +59,7 @@ const styles = StyleSheet.create({
   background: {
     flex: 1,
   },
-  loginOverlay: {
+  overlay: {
     flex: 1,
   },
   safeArea: {
@@ -37,7 +69,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   loginContent: {
-    flex: 1,
+    flexGrow: 1,
     justifyContent: 'space-between',
     paddingBottom: 18,
   },
@@ -73,13 +105,16 @@ const styles = StyleSheet.create({
     borderRadius: 75,
     backgroundColor: 'rgba(168,85,247,0.16)',
   },
-  loginTitle: {
+  title: {
     color: colors.white,
     fontSize: 25,
     fontWeight: '900',
     marginBottom: 6,
   },
-  loginSubtitle: {
+  titleAccent: {
+    color: '#B86CFF',
+  },
+  subtitle: {
     color: colors.muted,
     fontSize: 14,
     marginBottom: 12,
@@ -168,7 +203,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '700',
   },
-  loginButton: {
+  primaryButton: {
     height: 52,
     borderRadius: 20,
     justifyContent: 'center',
@@ -178,7 +213,7 @@ const styles = StyleSheet.create({
     shadowRadius: 18,
     elevation: 8,
   },
-  loginButtonText: {
+  primaryButtonText: {
     color: colors.white,
     fontSize: 18,
     fontWeight: '900',
@@ -227,32 +262,90 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '700',
   },
-  registerRow: {
+  switchRow: {
     flexDirection: 'row',
     justifyContent: 'center',
     flexWrap: 'wrap',
     marginTop: 18,
   },
-  registerText: {
+  switchText: {
     color: colors.muted,
     fontSize: 14,
   },
-  registerLink: {
+  switchLink: {
     color: '#C2A8FF',
     fontSize: 14,
     fontWeight: '800',
   },
+  registerScroll: {
+    paddingHorizontal: 28,
+    paddingTop: 42,
+    paddingBottom: 36,
+  },
+  registerHeader: {
+    marginBottom: 22,
+  },
+  registerTitle: {
+    color: colors.white,
+    fontSize: 28,
+    fontWeight: '900',
+    lineHeight: 34,
+  },
+  registerSubtitle: {
+    color: 'rgba(194,194,208,0.58)',
+    fontSize: 14,
+    marginTop: 10,
+    fontWeight: '700',
+  },
+  registerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  registerField: {
+    marginBottom: 14,
+  },
+  registerHalfField: {
+    width: '48%',
+  },
+  registerCityField: {
+    width: '68%',
+  },
+  registerUfField: {
+    width: '28%',
+  },
+  registerLabel: {
+    color: 'rgba(194,194,208,0.56)',
+    fontSize: 11,
+    fontWeight: '900',
+    letterSpacing: 0.8,
+    marginBottom: 8,
+    textTransform: 'uppercase',
+  },
+  registerInputBox: {
+    minHeight: 54,
+    borderRadius: 15,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.09)',
+    backgroundColor: 'rgba(255,255,255,0.07)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+  },
+  registerInput: {
+    flex: 1,
+    color: colors.white,
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  registerInputIcon: {
+    marginLeft: 10,
+  },
+  registerActions: {
+    marginTop: 10,
+  },
 });
 
 function getCopy(mode: LoginMode) {
-  if (mode === 'register') {
-    return {
-      title: 'Abra sua conta',
-      subtitle: 'Crie seu acesso digital em poucos passos.',
-      button: 'Criar conta',
-    };
-  }
-
   if (mode === 'recover') {
     return {
       title: 'Recuperar acesso',
@@ -270,17 +363,31 @@ function getCopy(mode: LoginMode) {
 
 export function LoginScreen({ onLogin }: { onLogin: () => void }) {
   const [mode, setMode] = useState<LoginMode>('login');
-  const [name, setName] = useState('');
   const [emailOrCpf, setEmailOrCpf] = useState('');
   const [password, setPassword] = useState('');
   const [hidePassword, setHidePassword] = useState(true);
   const [remember, setRemember] = useState(false);
+  const [registerData, setRegisterData] = useState<RegisterData>(
+    initialRegisterData
+  );
   const copy = getCopy(mode);
+
+  function updateRegisterField(field: keyof RegisterData, value: string) {
+    setRegisterData((current) => ({
+      ...current,
+      [field]: value,
+    }));
+  }
+
+  function switchMode(nextMode: LoginMode) {
+    setMode(nextMode);
+    setPassword('');
+  }
 
   function handlePrimaryAction() {
     if (mode === 'recover') {
       if (!emailOrCpf.trim()) {
-        Alert.alert('Informe seu acesso', 'Digite seu Email ou CPF para recuperar a conta.');
+        Alert.alert('Informe seu acesso', 'Digite seu e-mail ou CPF para recuperar a conta.');
         return;
       }
 
@@ -288,29 +395,44 @@ export function LoginScreen({ onLogin }: { onLogin: () => void }) {
         'Link enviado',
         'Enviamos as instruções de recuperação para seu contato cadastrado.'
       );
-      setMode('login');
-      return;
-    }
-
-    if (mode === 'register') {
-      if (!name.trim() || !emailOrCpf.trim() || !password.trim()) {
-        Alert.alert('Cadastro incompleto', 'Preencha nome, Email ou CPF e senha.');
-        return;
-      }
-
-      Alert.alert(
-        'Conta criada',
-        'Seu acesso demo foi criado. Entrando no Rocket Bank agora.'
-      );
-      onLogin();
+      switchMode('login');
       return;
     }
 
     if (!emailOrCpf.trim() || !password.trim()) {
-      Alert.alert('Atenção', 'Preencha seu Email ou CPF e sua senha.');
+      Alert.alert('Atenção', 'Preencha seu e-mail ou CPF e sua senha.');
       return;
     }
 
+    onLogin();
+  }
+
+  function handleRegisterAction() {
+    const requiredFields: Array<keyof RegisterData> = [
+      'firstName',
+      'lastName',
+      'cpf',
+      'birthDate',
+      'email',
+      'password',
+      'cep',
+      'number',
+      'city',
+      'uf',
+    ];
+    const hasEmptyField = requiredFields.some(
+      (field) => !registerData[field].trim()
+    );
+
+    if (hasEmptyField) {
+      Alert.alert('Cadastro incompleto', 'Preencha os dados obrigatórios para criar sua conta.');
+      return;
+    }
+
+    Alert.alert(
+      'Conta criada',
+      'Seu acesso demo foi criado. Entrando no Rocket Bank agora.'
+    );
     onLogin();
   }
 
@@ -322,15 +444,341 @@ export function LoginScreen({ onLogin }: { onLogin: () => void }) {
     onLogin();
   }
 
-  function switchMode(nextMode: LoginMode) {
-    setMode(nextMode);
-    setPassword('');
+  function renderRegisterField({
+    autoCapitalize = 'none',
+    editable = true,
+    field,
+    icon,
+    keyboardType = 'default',
+    label,
+    placeholder,
+    secureTextEntry = false,
+    style,
+  }: {
+    autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
+    editable?: boolean;
+    field: keyof RegisterData;
+    icon?: ComponentProps<typeof Ionicons>['name'];
+    keyboardType?: 'default' | 'email-address' | 'numeric' | 'number-pad';
+    label: string;
+    placeholder: string;
+    secureTextEntry?: boolean;
+    style?: StyleProp<ViewStyle>;
+  }) {
+    return (
+      <View style={[styles.registerField, style]}>
+        <Text style={styles.registerLabel}>{label}</Text>
+        <View style={styles.registerInputBox}>
+          <TextInput
+            autoCapitalize={autoCapitalize}
+            autoCorrect={false}
+            editable={editable}
+            keyboardType={keyboardType}
+            onChangeText={(value) => updateRegisterField(field, value)}
+            placeholder={placeholder}
+            placeholderTextColor="#A3A0B4"
+            secureTextEntry={secureTextEntry}
+            style={styles.registerInput}
+            value={registerData[field]}
+          />
+
+          {icon ? (
+            <Ionicons
+              name={icon}
+              size={18}
+              color="#6F6A84"
+              style={styles.registerInputIcon}
+            />
+          ) : null}
+        </View>
+      </View>
+    );
+  }
+
+  function renderRegister() {
+    return (
+      <ScrollView
+        contentContainerStyle={styles.registerScroll}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.registerHeader}>
+          <Text style={styles.registerTitle}>
+            Crie sua conta{'\n'}
+            <Text style={styles.titleAccent}>e decole.</Text>
+          </Text>
+          <Text style={styles.registerSubtitle}>
+            Preencha os dados para criar sua conta.
+          </Text>
+        </View>
+
+        <View style={styles.registerRow}>
+          {renderRegisterField({
+            autoCapitalize: 'words',
+            field: 'firstName',
+            label: 'Nome',
+            placeholder: 'João',
+            style: styles.registerHalfField,
+          })}
+          {renderRegisterField({
+            autoCapitalize: 'words',
+            field: 'lastName',
+            label: 'Sobrenome',
+            placeholder: 'Silva',
+            style: styles.registerHalfField,
+          })}
+        </View>
+
+        {renderRegisterField({
+          field: 'cpf',
+          keyboardType: 'number-pad',
+          label: 'CPF',
+          placeholder: '000.000.000-00',
+        })}
+        {renderRegisterField({
+          field: 'birthDate',
+          icon: 'calendar-outline',
+          keyboardType: 'number-pad',
+          label: 'Data de nascimento',
+          placeholder: 'dd/mm/aaaa',
+        })}
+        {renderRegisterField({
+          field: 'email',
+          keyboardType: 'email-address',
+          label: 'E-mail',
+          placeholder: 'seu@email.com',
+        })}
+        {renderRegisterField({
+          field: 'password',
+          label: 'Senha',
+          placeholder: 'Mínimo 8 caracteres',
+          secureTextEntry: hidePassword,
+        })}
+        {renderRegisterField({
+          field: 'cep',
+          keyboardType: 'number-pad',
+          label: 'CEP',
+          placeholder: '00000-000',
+        })}
+        {renderRegisterField({
+          field: 'number',
+          label: 'Número',
+          placeholder: 'Ex: 123, Apto 45',
+        })}
+        {renderRegisterField({
+          editable: false,
+          field: 'street',
+          label: 'Rua',
+          placeholder: 'Preenchido automaticamente',
+        })}
+
+        <View style={styles.registerRow}>
+          {renderRegisterField({
+            autoCapitalize: 'words',
+            field: 'city',
+            label: 'Cidade',
+            placeholder: 'João Pessoa',
+            style: styles.registerCityField,
+          })}
+          {renderRegisterField({
+            autoCapitalize: 'characters',
+            field: 'uf',
+            label: 'UF',
+            placeholder: 'PB',
+            style: styles.registerUfField,
+          })}
+        </View>
+
+        <View style={styles.registerActions}>
+          <Pressable accessibilityRole="button" onPress={handleRegisterAction}>
+            <LinearGradient
+              colors={[colors.purpleStrong, colors.purpleSoft, colors.orange]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.primaryButton}
+            >
+              <Text style={styles.primaryButtonText}>Criar conta</Text>
+            </LinearGradient>
+          </Pressable>
+
+          <View style={styles.switchRow}>
+            <Text style={styles.switchText}>Já tem uma conta?</Text>
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => switchMode('login')}
+            >
+              <Text style={styles.switchLink}> Entrar</Text>
+            </Pressable>
+          </View>
+        </View>
+      </ScrollView>
+    );
+  }
+
+  function renderLogin() {
+    return (
+      <ScrollView
+        contentContainerStyle={styles.loginContent}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.brandHeader}>
+          <AppLogo />
+        </View>
+
+        <View style={styles.loginCardWrapper}>
+          <View style={styles.loginCard}>
+            <View style={styles.loginCardGlow} />
+
+            <Text style={styles.title}>{copy.title}</Text>
+            <Text style={styles.subtitle}>{copy.subtitle}</Text>
+
+            {mode === 'login' ? (
+              <View style={styles.benefitRow}>
+                <View style={styles.benefitPill}>
+                  <Ionicons
+                    name="shield-checkmark-outline"
+                    size={20}
+                    color={colors.green}
+                  />
+                  <Text style={styles.benefitText}>Proteção em tempo real</Text>
+                </View>
+
+                <View style={styles.benefitPill}>
+                  <Ionicons name="cash-outline" size={20} color={colors.gold} />
+                  <Text style={styles.benefitText}>Cashback automático</Text>
+                </View>
+
+                <View style={[styles.benefitPill, styles.benefitPillLast]}>
+                  <Ionicons name="flash-outline" size={20} color={colors.orange} />
+                  <Text style={styles.benefitText}>Pix instantâneo</Text>
+                </View>
+              </View>
+            ) : (
+              <Text style={styles.helperText}>
+                Use o mesmo e-mail ou CPF cadastrado. Este fluxo é local e
+                demonstra a jornada de recuperação.
+              </Text>
+            )}
+
+            <View style={styles.inputBox}>
+              <Ionicons name="person-outline" size={24} color={colors.purple} />
+              <TextInput
+                autoCapitalize="none"
+                autoCorrect={false}
+                onChangeText={setEmailOrCpf}
+                placeholder="E-mail ou CPF"
+                placeholderTextColor="#9A9AAA"
+                style={styles.input}
+                value={emailOrCpf}
+              />
+            </View>
+
+            {mode !== 'recover' ? (
+              <View style={styles.inputBox}>
+                <Ionicons
+                  name="lock-closed-outline"
+                  size={24}
+                  color={colors.purple}
+                />
+                <TextInput
+                  onChangeText={setPassword}
+                  placeholder="Senha"
+                  placeholderTextColor="#9A9AAA"
+                  secureTextEntry={hidePassword}
+                  style={styles.input}
+                  value={password}
+                />
+                <Pressable
+                  accessibilityRole="button"
+                  hitSlop={12}
+                  onPress={() => setHidePassword(!hidePassword)}
+                >
+                  <Ionicons
+                    name={hidePassword ? 'eye-outline' : 'eye-off-outline'}
+                    size={24}
+                    color="#C2A8FF"
+                  />
+                </Pressable>
+              </View>
+            ) : null}
+
+            {mode === 'login' ? (
+              <View style={styles.optionsRow}>
+                <Pressable
+                  style={styles.rememberRow}
+                  onPress={() => setRemember(!remember)}
+                >
+                  <View
+                    style={[styles.checkbox, remember && styles.checkboxActive]}
+                  >
+                    {remember ? (
+                      <Ionicons name="checkmark" size={16} color={colors.white} />
+                    ) : null}
+                  </View>
+                  <Text style={styles.rememberText}>Lembrar meus dados</Text>
+                </Pressable>
+
+                <Pressable onPress={() => switchMode('recover')}>
+                  <Text style={styles.forgotText}>Esqueci minha senha</Text>
+                </Pressable>
+              </View>
+            ) : null}
+
+            <Pressable accessibilityRole="button" onPress={handlePrimaryAction}>
+              <LinearGradient
+                colors={[colors.purpleStrong, colors.purpleSoft, colors.orange]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.primaryButton}
+              >
+                <Text style={styles.primaryButtonText}>{copy.button}</Text>
+              </LinearGradient>
+            </Pressable>
+
+            {mode !== 'recover' ? (
+              <>
+                <View style={styles.dividerRow}>
+                  <View style={styles.divider} />
+                  <Text style={styles.dividerText}>ou continue com</Text>
+                  <View style={styles.divider} />
+                </View>
+
+                <Pressable
+                  accessibilityRole="button"
+                  style={styles.googleButton}
+                  onPress={handleGoogleLogin}
+                >
+                  <View style={styles.googleIcon}>
+                    <Text style={styles.googleLetter}>G</Text>
+                  </View>
+                  <Text style={styles.googleText}>Continuar com Google</Text>
+                </Pressable>
+              </>
+            ) : null}
+
+            <View style={styles.switchRow}>
+              <Text style={styles.switchText}>
+                {mode === 'login' ? 'Ainda não tem uma conta?' : 'Já tem uma conta?'}
+              </Text>
+              <Pressable
+                accessibilityRole="button"
+                onPress={() => switchMode(mode === 'login' ? 'register' : 'login')}
+              >
+                <Text style={styles.switchLink}>
+                  {mode === 'login' ? ' Abra sua conta' : ' Entrar'}
+                </Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </ScrollView>
+    );
   }
 
   return (
     <View style={styles.screen}>
       <StatusBar barStyle="light-content" backgroundColor="#04010D" />
-
       <ImageBackground
         source={require('../../assets/images/login-background.png')}
         style={styles.background}
@@ -341,229 +789,19 @@ export function LoginScreen({ onLogin }: { onLogin: () => void }) {
             'rgba(4,1,13,0.04)',
             'rgba(4,1,13,0.12)',
             'rgba(4,1,13,0.35)',
-            'rgba(4,1,13,0.92)',
+            'rgba(4,1,13,0.96)',
           ]}
-          style={styles.loginOverlay}
+          style={styles.overlay}
         >
           <SafeAreaView
             edges={['top', 'bottom', 'left', 'right']}
             style={styles.safeArea}
           >
             <KeyboardAvoidingView
-              style={styles.flex}
               behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+              style={styles.flex}
             >
-              <View style={styles.loginContent}>
-                <View style={styles.brandHeader}>
-                  <AppLogo />
-                </View>
-
-                <View style={styles.loginCardWrapper}>
-                  <View style={styles.loginCard}>
-                    <View style={styles.loginCardGlow} />
-
-                    <Text style={styles.loginTitle}>{copy.title}</Text>
-
-                    <Text style={styles.loginSubtitle}>{copy.subtitle}</Text>
-
-                    {mode === 'login' && (
-                      <View style={styles.benefitRow}>
-                        <View style={styles.benefitPill}>
-                          <Ionicons
-                            name="shield-checkmark-outline"
-                            size={20}
-                            color={colors.green}
-                          />
-                          <Text style={styles.benefitText}>Proteção em tempo real</Text>
-                        </View>
-
-                        <View style={styles.benefitPill}>
-                          <Ionicons
-                            name="cash-outline"
-                            size={20}
-                            color={colors.gold}
-                          />
-                          <Text style={styles.benefitText}>Cashback automático</Text>
-                        </View>
-
-                        <View style={[styles.benefitPill, styles.benefitPillLast]}>
-                          <Ionicons
-                            name="flash-outline"
-                            size={20}
-                            color={colors.orange}
-                          />
-                          <Text style={styles.benefitText}>Pix instantâneo</Text>
-                        </View>
-                      </View>
-                    )}
-
-                    {mode === 'recover' && (
-                      <Text style={styles.helperText}>
-                        Use o mesmo Email ou CPF cadastrado. Este fluxo é local e
-                        demonstra a jornada de recuperação.
-                      </Text>
-                    )}
-
-                    {mode === 'register' && (
-                      <View style={styles.inputBox}>
-                        <Ionicons
-                          name="person-add-outline"
-                          size={24}
-                          color={colors.purple}
-                        />
-
-                        <TextInput
-                          value={name}
-                          onChangeText={setName}
-                          placeholder="Nome completo"
-                          placeholderTextColor="#9A9AAA"
-                          autoCapitalize="words"
-                          style={styles.input}
-                        />
-                      </View>
-                    )}
-
-                    <View style={styles.inputBox}>
-                      <Ionicons
-                        name="person-outline"
-                        size={24}
-                        color={colors.purple}
-                      />
-
-                      <TextInput
-                        value={emailOrCpf}
-                        onChangeText={setEmailOrCpf}
-                        placeholder="Email ou CPF"
-                        placeholderTextColor="#9A9AAA"
-                        autoCapitalize="none"
-                        autoCorrect={false}
-                        style={styles.input}
-                      />
-                    </View>
-
-                    {mode !== 'recover' && (
-                      <View style={styles.inputBox}>
-                        <Ionicons
-                          name="lock-closed-outline"
-                          size={24}
-                          color={colors.purple}
-                        />
-
-                        <TextInput
-                          value={password}
-                          onChangeText={setPassword}
-                          placeholder={mode === 'register' ? 'Crie uma senha' : 'Senha'}
-                          placeholderTextColor="#9A9AAA"
-                          secureTextEntry={hidePassword}
-                          style={styles.input}
-                        />
-
-                        <Pressable
-                          accessibilityRole="button"
-                          onPress={() => setHidePassword(!hidePassword)}
-                          hitSlop={12}
-                        >
-                          <Ionicons
-                            name={hidePassword ? 'eye-outline' : 'eye-off-outline'}
-                            size={24}
-                            color="#C2A8FF"
-                          />
-                        </Pressable>
-                      </View>
-                    )}
-
-                    {mode === 'login' && (
-                      <View style={styles.optionsRow}>
-                      <Pressable
-                        style={styles.rememberRow}
-                        onPress={() => setRemember(!remember)}
-                      >
-                        <View
-                          style={[
-                            styles.checkbox,
-                            remember && styles.checkboxActive,
-                          ]}
-                        >
-                          {remember && (
-                            <Ionicons
-                              name="checkmark"
-                              size={16}
-                              color={colors.white}
-                            />
-                          )}
-                        </View>
-
-                        <Text style={styles.rememberText}>
-                          Lembrar meus dados
-                        </Text>
-                      </Pressable>
-
-                      <Pressable onPress={() => switchMode('recover')}>
-                        <Text style={styles.forgotText}>
-                          Esqueci minha senha
-                        </Text>
-                      </Pressable>
-                      </View>
-                    )}
-
-                    <Pressable accessibilityRole="button" onPress={handlePrimaryAction}>
-                      <LinearGradient
-                        colors={[
-                          colors.purpleStrong,
-                          colors.purpleSoft,
-                          colors.orange,
-                        ]}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 0 }}
-                        style={styles.loginButton}
-                      >
-                        <Text style={styles.loginButtonText}>{copy.button}</Text>
-                      </LinearGradient>
-                    </Pressable>
-
-                    {mode !== 'recover' && (
-                      <>
-                        <View style={styles.dividerRow}>
-                          <View style={styles.divider} />
-                          <Text style={styles.dividerText}>ou continue com</Text>
-                          <View style={styles.divider} />
-                        </View>
-
-                        <Pressable
-                          accessibilityRole="button"
-                          style={styles.googleButton}
-                          onPress={handleGoogleLogin}
-                        >
-                          <View style={styles.googleIcon}>
-                            <Text style={styles.googleLetter}>G</Text>
-                          </View>
-
-                          <Text style={styles.googleText}>
-                            Continuar com Google
-                          </Text>
-                        </Pressable>
-                      </>
-                    )}
-
-                    <View style={styles.registerRow}>
-                      <Text style={styles.registerText}>
-                        {mode === 'login'
-                          ? 'Ainda não tem uma conta?'
-                          : 'Já tem uma conta?'}
-                      </Text>
-
-                      <Pressable
-                        accessibilityRole="button"
-                        onPress={() => switchMode(mode === 'login' ? 'register' : 'login')}
-                      >
-                        <Text style={styles.registerLink}>
-                          {mode === 'login' ? ' Abra sua conta' : ' Entrar'}
-                        </Text>
-                      </Pressable>
-                    </View>
-                  </View>
-                </View>
-              </View>
+              {mode === 'register' ? renderRegister() : renderLogin()}
             </KeyboardAvoidingView>
           </SafeAreaView>
         </LinearGradient>

@@ -13,6 +13,7 @@ import { CommunityScreen } from './screens/CommunityScreen';
 import { SupportScreen } from './screens/SupportScreen';
 import { ProfileScreen } from './screens/ProfileScreen';
 import { StatementScreen } from './screens/StatementScreen';
+import { InvoiceScreen } from './screens/InvoiceScreen';
 
 export default function App() {
   return (
@@ -26,6 +27,7 @@ function AppContent() {
   const [showSplash, setShowSplash] = useState(true);
   const [logged, setLogged] = useState(false);
   const [activeScreen, setActiveScreen] = useState<AppScreen>('home');
+  const [invoicePaid, setInvoicePaid] = useState(false);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => setShowSplash(false), 3000);
@@ -46,7 +48,12 @@ function AppContent() {
       case 'home':
         return <HomeScreen setActiveScreen={setActiveScreen} />;
       case 'cards':
-        return <CardsScreen />;
+        return (
+          <CardsScreen
+            invoicePaid={invoicePaid}
+            setActiveScreen={setActiveScreen}
+          />
+        );
       case 'pix':
         return <PixScreen />;
       case 'shopping':
@@ -66,6 +73,14 @@ function AppContent() {
         );
       case 'statement':
         return <StatementScreen />;
+      case 'invoice':
+        return (
+          <InvoiceScreen
+            invoicePaid={invoicePaid}
+            onPayInvoice={() => setInvoicePaid(true)}
+            setActiveScreen={setActiveScreen}
+          />
+        );
       default:
         return <HomeScreen setActiveScreen={setActiveScreen} />;
     }

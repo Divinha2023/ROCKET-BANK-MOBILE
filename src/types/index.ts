@@ -10,13 +10,15 @@ export type AppScreen =
   | 'community'
   | 'support'
   | 'profile'
-  | 'statement';
+  | 'statement'
+  | 'invoice';
 
 export type IconName = React.ComponentProps<typeof Ionicons>['name'];
 
 export type ShoppingCategory = {
   label: string;
   icon: IconName;
+  available?: boolean;
 };
 
 export type ShoppingProduct = {
@@ -28,4 +30,19 @@ export type ShoppingProduct = {
   oldPrice?: string;
   cashback: string;
   image: string;
+};
+
+export type CardVariant = 'standard' | 'gold' | 'black';
+
+export type UserCard = {
+  id: string;
+  badge: string;
+  cvv: string;
+  description: string;
+  dueDate: string;
+  holder: string;
+  kind: 'main' | 'virtual';
+  number: string;
+  title: string;
+  variant: CardVariant;
 };

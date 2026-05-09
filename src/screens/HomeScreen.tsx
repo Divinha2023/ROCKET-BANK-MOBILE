@@ -1,4 +1,4 @@
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, commonStyles } from '../theme';
@@ -68,6 +68,17 @@ export function HomeScreen({
 }: {
   setActiveScreen: (screen: AppScreen) => void;
 }) {
+  async function openRocketConnect() {
+    try {
+      await Linking.openURL('https://www.instagram.com/rocketbank/');
+    } catch {
+      Alert.alert(
+        'Rocket Connect',
+        'Não foi possível abrir o Instagram agora.'
+      );
+    }
+  }
+
   return (
     <>
       <View style={styles.headerRow}>
@@ -113,20 +124,14 @@ export function HomeScreen({
 
       <View style={styles.quickGrid}>
         <QuickAction
-          icon="qr-code-outline"
-          label="Pix"
-          onPress={() => setActiveScreen('pix')}
-        />
-
-        <QuickAction
           icon="swap-horizontal-outline"
           label="Transferir"
           onPress={() => setActiveScreen('pix')}
         />
 
         <QuickAction
-          icon="receipt-outline"
-          label="Pagar"
+          icon="document-text-outline"
+          label="Extrato"
           onPress={() => setActiveScreen('statement')}
         />
 
@@ -155,7 +160,7 @@ export function HomeScreen({
           icon="people-outline"
           title="Rocket Connect"
           text="Conteúdos e comunidade financeira."
-          onPress={() => setActiveScreen('community')}
+          onPress={openRocketConnect}
         />
       </View>
 

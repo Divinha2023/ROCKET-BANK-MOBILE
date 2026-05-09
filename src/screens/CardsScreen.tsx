@@ -1,119 +1,340 @@
-import { useState } from 'react';
-import { Alert, View } from 'react-native';
-import { commonStyles } from '../theme';
+import { useRef, useState } from 'react';
+import {
+  Alert,
+  Dimensions,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { colors, commonStyles } from '../theme';
 import { ScreenTitle } from '../components/ScreenTitle';
 import { RocketCard } from '../components/RocketCard';
 import { MetricCard } from '../components/MetricCard';
 import { MenuRow } from '../components/MenuRow';
+import { availableVirtualCards, cardInvoice, userCards } from '../data/mockData';
+import type { AppScreen, UserCard } from '../types';
 
-export function CardsScreen() {
-  const [hiddenCards, setHiddenCards] = useState({
-    gold: true,
-    black: true,
+const maxCardsPerUser = 3;
+const screenWidth = Dimensions.get('window').width;
+const cardGap = 14;
+const cardWidth = screenWidth - 40;
+const snapInterval = cardWidth + cardGap;
+
+const styles = StyleSheet.create({
+  carouselHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  carouselHeaderInfo: {
+    flex: 1,
+    marginRight: 12,
+  },
+  selectedTitle: {
+    color: colors.white,
+    fontSize: 16,
+    fontWeight: '900',
+  },
+  selectedSubtitle: {
+    color: colors.mutedDark,
+    fontSize: 12,
+    marginTop: 4,
+  },
+  counterPill: {
+    borderRadius: 999,
+    backgroundColor: 'rgba(139,92,246,0.18)',
+    borderWidth: 1,
+    borderColor: 'rgba(168,85,247,0.30)',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+  },
+  counterPillText: {
+    color: colors.white,
+    fontSize: 11,
+    fontWeight: '900',
+  },
+  swipeHint: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+  },
+  swipeHintText: {
+    color: colors.mutedDark,
+    fontSize: 12,
+    fontWeight: '800',
+    marginHorizontal: 8,
+  },
+  carousel: {
+    marginHorizontal: -20,
+    marginBottom: 8,
+  },
+  carouselContent: {
+    paddingHorizontal: 20,
+  },
+  cardSlide: {
+    width: cardWidth,
+    marginRight: cardGap,
+  },
+  indicators: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
+  indicator: {
+    width: 7,
+    height: 7,
+    borderRadius: 4,
+    backgroundColor: 'rgba(255,255,255,0.22)',
+    marginHorizontal: 4,
+  },
+  indicatorActive: {
+    width: 22,
+    backgroundColor: colors.purpleSoft,
+  },
+});
+
+export function CardsScreen({
+  invoicePaid,
+  setActiveScreen,
+}: {
+  invoicePaid: boolean;
+  setActiveScreen: (screen: AppScreen) => void;
+}) {
+  const carouselRef = useRef<ScrollView>(null);
+  const [cards, setCards] = useState<UserCard[]>(userCards);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [hiddenCardIds, setHiddenCardIds] = useState<Record<string, boolean>>({
+    [userCards[0].id]: true,
   });
-  const [blocked, setBlocked] = useState(false);
-  const [virtualCardCreated, setVirtualCardCreated] = useState(false);
+  const [blockedCardIds, setBlockedCardIds] = useState<Record<string, boolean>>(
+    {}
+  );
+  const selectedCard = cards[Math.min(selectedIndex, cards.length - 1)];
+  const selectedCardBlocked = Boolean(blockedCardIds[selectedCard.id]);
+  const selectedCardHidden = hiddenCardIds[selectedCard.id] ?? true;
+  const statementValue = invoicePaid ? 'R$ 0' : cardInvoice.total;
 
-  function toggleCardVisibility(variant: 'gold' | 'black') {
-    setHiddenCards((current) => ({
+  function scrollToCard(index: number) {
+    carouselRef.current?.scrollTo({
+      animated: true,
+      x: index * snapInterval,
+    });
+  }
+
+  function handleCarouselEnd(event: NativeSyntheticEvent<NativeScrollEvent>) {
+    const offsetX = event.nativeEvent.contentOffset.x;
+    const nextIndex = Math.round(offsetX / snapInterval);
+    setSelectedIndex(Math.min(Math.max(nextIndex, 0), cards.length - 1));
+  }
+
+  function toggleCardVisibility(cardId: string) {
+    setHiddenCardIds((current) => ({
       ...current,
-      [variant]: !current[variant],
+      [cardId]: !(current[cardId] ?? true),
     }));
   }
 
   function toggleBlockCard() {
-    setBlocked((current) => {
-      const nextBlocked = !current;
+    setBlockedCardIds((current) => {
+      const nextBlocked = !current[selectedCard.id];
       Alert.alert(
-        nextBlocked ? 'Cartão bloqueado' : 'Cartão desbloqueado',
+        nextBlocked ? 'Cartao bloqueado' : 'Cartao desbloqueado',
         nextBlocked
-          ? 'Compras físicas e online foram pausadas.'
-          : 'Seu cartão voltou a ficar disponível para uso.'
+          ? `${selectedCard.title} ficou inativo para compras.`
+          : `${selectedCard.title} voltou a ficar disponivel.`
       );
-      return nextBlocked;
+
+      return {
+        ...current,
+        [selectedCard.id]: nextBlocked,
+      };
     });
   }
 
-  function createVirtualCard() {
-    setVirtualCardCreated(true);
+  function showWalletDetails() {
     Alert.alert(
-      'Cartão virtual pronto',
-      'Número final 8842 criado para compras online.'
+      'Carteira Rocket',
+      `${cards.length}/${maxCardsPerUser} cartoes ativos.\nArraste os cartoes para alternar entre eles.`
     );
+  }
+
+  function addVirtualCard() {
+    if (cards.length >= maxCardsPerUser) {
+      Alert.alert(
+        'Limite atingido',
+        'Cada usuario pode ter no maximo 3 cartoes ativos.'
+      );
+      return;
+    }
+
+    const nextCard = availableVirtualCards.find(
+      (card) => !cards.some((currentCard) => currentCard.id === card.id)
+    );
+
+    if (!nextCard) {
+      Alert.alert('Cartoes', 'Nao ha outro cartao virtual disponivel agora.');
+      return;
+    }
+
+    setCards((current) => [...current, nextCard]);
+    setHiddenCardIds((current) => ({
+      ...current,
+      [nextCard.id]: true,
+    }));
+
+    const nextIndex = cards.length;
+    setSelectedIndex(nextIndex);
+    requestAnimationFrame(() => scrollToCard(nextIndex));
+    Alert.alert('Cartao adicionado', `${nextCard.title} foi adicionado.`);
+  }
+
+  function removeSelectedCard() {
+    if (selectedCard.kind === 'main') {
+      Alert.alert(
+        'Cartao principal',
+        'O cartao principal nao pode ser removido por aqui.'
+      );
+      return;
+    }
+
+    const nextCards = cards.filter((card) => card.id !== selectedCard.id);
+    const nextIndex = Math.max(0, selectedIndex - 1);
+
+    setCards(nextCards);
+    setSelectedIndex(nextIndex);
+    requestAnimationFrame(() => scrollToCard(nextIndex));
+    Alert.alert('Cartao removido', `${selectedCard.title} saiu da carteira.`);
   }
 
   return (
     <>
       <ScreenTitle
-        title="Meus cartões"
-        subtitle="Gerencie seus cartões Rocket Gold e Rocket Black."
+        title="Meus cartoes"
+        subtitle="Arraste para alternar entre os cartoes criados."
       />
 
-      <RocketCard
-        variant="gold"
-        hidden={hiddenCards.gold}
-        onToggleVisibility={() => toggleCardVisibility('gold')}
-      />
+      <View style={styles.carouselHeader}>
+        <View style={styles.carouselHeaderInfo}>
+          <Text style={styles.selectedTitle}>{selectedCard.title}</Text>
+          <Text style={styles.selectedSubtitle}>
+            {selectedCard.description}
+          </Text>
+        </View>
+        <View style={styles.counterPill}>
+          <Text style={styles.counterPillText}>
+            {selectedIndex + 1}/{cards.length}
+          </Text>
+        </View>
+      </View>
 
-      <RocketCard
-        variant="black"
-        hidden={hiddenCards.black}
-        onToggleVisibility={() => toggleCardVisibility('black')}
-      />
+      <View style={styles.swipeHint}>
+        <Ionicons name="chevron-back" size={16} color={colors.mutedDark} />
+        <Text style={styles.swipeHintText}>arraste para trocar</Text>
+        <Ionicons name="chevron-forward" size={16} color={colors.mutedDark} />
+      </View>
+
+      <ScrollView
+        ref={carouselRef}
+        horizontal
+        decelerationRate="fast"
+        showsHorizontalScrollIndicator={false}
+        snapToAlignment="start"
+        snapToInterval={snapInterval}
+        style={styles.carousel}
+        contentContainerStyle={styles.carouselContent}
+        onMomentumScrollEnd={handleCarouselEnd}
+      >
+        {cards.map((card) => (
+          <View key={card.id} style={styles.cardSlide}>
+            <RocketCard
+              blocked={Boolean(blockedCardIds[card.id])}
+              cvv={card.cvv}
+              dueDate={card.dueDate}
+              hidden={hiddenCardIds[card.id] ?? true}
+              holder={card.holder}
+              number={card.number}
+              onToggleVisibility={() => toggleCardVisibility(card.id)}
+              selected={card.id === selectedCard.id}
+              variant={card.variant}
+            />
+          </View>
+        ))}
+      </ScrollView>
+
+      <View style={styles.indicators}>
+        {cards.map((card, index) => (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityState={{ selected: index === selectedIndex }}
+            key={card.id}
+            onPress={() => {
+              setSelectedIndex(index);
+              scrollToCard(index);
+            }}
+            style={[
+              styles.indicator,
+              index === selectedIndex && styles.indicatorActive,
+            ]}
+          />
+        ))}
+      </View>
 
       <View style={commonStyles.twoColumns}>
-        <MetricCard label="Limite disponível" value="R$ 5.200" />
-        <MetricCard label="Fatura atual" value="R$ 1.340" />
+        <MetricCard label="Limite disponivel" value={cardInvoice.limit} />
+        <MetricCard label="Fatura atual" value={statementValue} />
+      </View>
+
+      <View style={commonStyles.twoColumns}>
+        <MetricCard label="Data de vencimento" value={cardInvoice.dueDate} />
+        <MetricCard label="Status da fatura" value={invoicePaid ? 'Paga' : 'Aberta'} />
       </View>
 
       <View style={commonStyles.listCard}>
         <MenuRow
-          icon={blocked ? 'lock-open-outline' : 'lock-closed-outline'}
-          title={blocked ? 'Desbloquear cartão' : 'Bloquear cartão'}
+          icon="wallet-outline"
+          title="Carteira Rocket"
+          subtitle={`${cards.length}/${maxCardsPerUser} cartoes ativos. Arraste para alternar.`}
+          onPress={showWalletDetails}
+        />
+
+        <MenuRow
+          icon={selectedCardBlocked ? 'lock-open-outline' : 'lock-closed-outline'}
+          title={selectedCardBlocked ? 'Desbloquear cartao' : 'Bloquear cartao'}
           subtitle={
-            blocked
-              ? 'Seu cartão está pausado no momento.'
-              : 'Controle seu cartão em tempo real.'
+            selectedCardBlocked
+              ? 'O cartao selecionado esta transparente e inativo.'
+              : 'Bloqueie o cartao selecionado em tempo real.'
           }
           onPress={toggleBlockCard}
         />
 
         <MenuRow
-          icon="eye-outline"
-          title="Ocultar ou revelar números"
-          subtitle="Use o ícone de olho na lateral do cartão."
-          onPress={() =>
-            Alert.alert('Dica rápida', 'Toque no olho em cada cartão para alternar a visibilidade.')
-          }
-        />
-
-        <MenuRow
-          icon="phone-portrait-outline"
-          title={virtualCardCreated ? 'Cartão virtual ativo' : 'Cartão virtual'}
-          subtitle={
-            virtualCardCreated
-              ? 'Final 8842 pronto para compras online.'
-              : 'Gere cartões virtuais para compras online.'
-          }
-          onPress={createVirtualCard}
-        />
-
-        <MenuRow
           icon="receipt-outline"
-          title="Fatura e limite"
-          subtitle="Acompanhe gastos, vencimento e limite disponível."
-          onPress={() =>
-            Alert.alert('Fatura atual', 'R$ 1.340,00 usados de R$ 6.540,00.')
-          }
+          title="Gerar fatura"
+          subtitle="Abre a fatura em uma tela propria com itens e pagamento."
+          onPress={() => setActiveScreen('invoice')}
         />
 
         <MenuRow
-          icon="color-palette-outline"
-          title="Personalizar cartão"
-          subtitle="Escolha uma versão premium."
-          onPress={() =>
-            Alert.alert('Personalização', 'Tema premium aplicado ao próximo cartão demo.')
-          }
+          icon="add-circle-outline"
+          title="Adicionar cartao virtual"
+          subtitle="Cria outro cartao ate o limite de 3 por usuario."
+          onPress={addVirtualCard}
+        />
+
+        <MenuRow
+          icon="trash-outline"
+          title="Remover cartao selecionado"
+          subtitle="Remove cartoes virtuais da carteira."
+          onPress={removeSelectedCard}
         />
       </View>
     </>

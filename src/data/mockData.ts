@@ -1,18 +1,18 @@
-import type { ShoppingCategory, ShoppingProduct } from '../types';
+import type { ShoppingCategory, ShoppingProduct, UserCard } from '../types';
 
 export const shoppingCategories: ShoppingCategory[] = [
-  { label: 'Tecnologia', icon: 'phone-portrait-outline' },
-  { label: 'Moda', icon: 'shirt-outline' },
-  { label: 'Casa', icon: 'home-outline' },
-  { label: 'Viagens', icon: 'airplane-outline' },
-  { label: 'Beleza', icon: 'sparkles-outline' },
-  { label: 'Mercado', icon: 'basket-outline' },
+  { label: 'Informática', icon: 'desktop-outline', available: true },
+  { label: 'Moda', icon: 'shirt-outline', available: false },
+  { label: 'Casa', icon: 'home-outline', available: false },
+  { label: 'Viagens', icon: 'airplane-outline', available: false },
+  { label: 'Beleza', icon: 'sparkles-outline', available: false },
+  { label: 'Mercado', icon: 'basket-outline', available: false },
 ];
 
 export const shoppingProducts: ShoppingProduct[] = [
   {
     id: 'iphone-15',
-    category: 'Tecnologia',
+    category: 'Informática',
     name: 'Smartphone premium 128GB',
     store: 'Rocket Tech',
     price: 'R$ 4.799,00',
@@ -23,7 +23,7 @@ export const shoppingProducts: ShoppingProduct[] = [
   },
   {
     id: 'headphone',
-    category: 'Tecnologia',
+    category: 'Informática',
     name: 'Fone Bluetooth Pro com cancelamento',
     store: 'Audio Prime',
     price: 'R$ 899,90',
@@ -34,7 +34,7 @@ export const shoppingProducts: ShoppingProduct[] = [
   },
   {
     id: 'smartwatch',
-    category: 'Tecnologia',
+    category: 'Informática',
     name: 'Smartwatch fitness AMOLED',
     store: 'Rocket Wear',
     price: 'R$ 649,90',
@@ -45,7 +45,7 @@ export const shoppingProducts: ShoppingProduct[] = [
   },
   {
     id: 'notebook',
-    category: 'Tecnologia',
+    category: 'Informática',
     name: 'Notebook ultrafino 16GB RAM',
     store: 'Tech Store',
     price: 'R$ 3.999,00',
@@ -176,3 +176,57 @@ export const shoppingProducts: ShoppingProduct[] = [
       'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=900&q=80',
   },
 ];
+
+export const userCards: UserCard[] = [
+  {
+    id: 'main-card',
+    badge: 'Principal',
+    cvv: '742',
+    description: 'Cartao principal da conta',
+    dueDate: '15/06',
+    holder: 'JOAO SILVA',
+    kind: 'main',
+    number: '5412751234123456',
+    title: 'Cartao Rocket',
+    variant: 'gold',
+  },
+];
+
+export const availableVirtualCards: UserCard[] = [
+  {
+    id: 'virtual-online',
+    badge: 'Online',
+    cvv: '319',
+    description: 'Para compras online',
+    dueDate: '15/06',
+    holder: 'JOAO SILVA',
+    kind: 'virtual',
+    number: '4829128736548842',
+    title: 'Cartao virtual',
+    variant: 'gold',
+  },
+  {
+    id: 'virtual-subscriptions',
+    badge: 'Assinaturas',
+    cvv: '604',
+    description: 'Separado para servicos recorrentes',
+    dueDate: '15/06',
+    holder: 'JOAO SILVA',
+    kind: 'virtual',
+    number: '4829128736542291',
+    title: 'Cartao virtual 2',
+    variant: 'gold',
+  },
+];
+
+export const cardInvoice = {
+  dueDate: '15/06',
+  limit: 'R$ 5.200',
+  total: 'R$ 1.340',
+  items: [
+    { title: 'Rocket Shopping', date: '02/06', value: 'R$ 689,90' },
+    { title: 'Audio Prime', date: '04/06', value: 'R$ 249,90' },
+    { title: 'Tech Store', date: '07/06', value: 'R$ 180,10' },
+    { title: 'Assinaturas digitais', date: '09/06', value: 'R$ 220,10' },
+  ],
+};

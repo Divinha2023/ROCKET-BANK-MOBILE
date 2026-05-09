@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -6,7 +7,7 @@ import type { IconName } from '../types';
 
 const styles = StyleSheet.create({
   quickAction: {
-    width: '23%',
+    width: '31.5%',
     alignItems: 'center',
   },
   quickIcon: {
@@ -27,11 +28,13 @@ const styles = StyleSheet.create({
   },
 });
 export function QuickAction({
+  customIcon,
   icon,
   label,
   onPress,
 }: {
-  icon: IconName;
+  customIcon?: ReactNode;
+  icon?: IconName;
   label: string;
   onPress: () => void;
 }) {
@@ -41,7 +44,9 @@ export function QuickAction({
         colors={['rgba(139,92,246,0.24)', 'rgba(255,123,84,0.12)']}
         style={styles.quickIcon}
       >
-        <Ionicons name={icon} size={24} color={colors.white} />
+        {customIcon ?? (
+          <Ionicons name={icon ?? 'ellipse-outline'} size={24} color={colors.white} />
+        )}
       </LinearGradient>
 
       <Text style={styles.quickLabel}>{label}</Text>
