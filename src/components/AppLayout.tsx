@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import { ScrollView, StatusBar, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -32,6 +32,12 @@ export function AppLayout({
   scrollEnabled?: boolean;
   setActiveScreen: (screen: AppScreen) => void;
 }) {
+  const scrollRef = useRef<ScrollView>(null);
+
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ animated: false, y: 0 });
+  }, [activeScreen]);
+
   return (
     <LinearGradient
       colors={['#05010F', '#090318', '#130626']}
@@ -42,6 +48,7 @@ export function AppLayout({
       <SafeAreaView edges={['top', 'left', 'right']} style={styles.safeArea}>
         {scrollEnabled ? (
           <ScrollView
+            ref={scrollRef}
             contentContainerStyle={styles.appScroll}
             showsVerticalScrollIndicator={false}
           >

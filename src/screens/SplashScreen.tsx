@@ -165,9 +165,9 @@ export function SplashScreen() {
 
       <View style={styles.bottomPanel}>
         <Text style={styles.eyebrow}>Rocket Bank</Text>
-        <Text style={styles.title}>Preparando sua experiencia.</Text>
+        <Text style={styles.title}>Preparando sua experiência.</Text>
         <Text style={styles.subtitle}>
-          Carregando conta, cartoes, shopping e beneficios em seguranca.
+          Carregando conta, cartões, shopping e benefícios em segurança.
         </Text>
 
         <View style={styles.progressShell}>

@@ -1,4 +1,4 @@
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import { Alert, Image, StyleSheet, Text, View } from 'react-native';
 import { colors, commonStyles } from '../theme';
 import type { AppScreen } from '../types';
 import { ScreenTitle } from '../components/ScreenTitle';
@@ -19,15 +19,15 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 22,
-    backgroundColor: colors.purpleStrong,
-    alignItems: 'center',
-    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.18)',
+    backgroundColor: 'rgba(255,255,255,0.08)',
     marginRight: 14,
+    overflow: 'hidden',
   },
-  profileAvatarText: {
-    color: colors.white,
-    fontSize: 22,
-    fontWeight: '900',
+  profilePhoto: {
+    width: '100%',
+    height: '100%',
   },
   profileName: {
     color: colors.white,
@@ -57,7 +57,11 @@ export function ProfileScreen({
 
       <View style={styles.profileCard}>
         <View style={styles.profileAvatar}>
-          <Text style={styles.profileAvatarText}>JS</Text>
+          <Image
+            source={require('../../assets/images/customer-photo.png')}
+            style={styles.profilePhoto}
+            resizeMode="cover"
+          />
         </View>
 
         <View>

@@ -13,7 +13,6 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: 'rgba(255,255,255,0.12)',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -31,14 +30,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   tabLabelActive: {
-    color: colors.white,
-  },
-  tabDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: '#C2A8FF',
-    marginTop: 4,
+    color: colors.purpleSoft,
   },
 });
 export function TabButton({
@@ -65,8 +57,6 @@ export function TabButton({
       <Text style={[styles.tabLabel, active && styles.tabLabelActive]}>
         {label}
       </Text>
-
-      {active && <View style={styles.tabDot} />}
     </Pressable>
   );
 }

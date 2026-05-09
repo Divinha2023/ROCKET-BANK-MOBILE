@@ -17,7 +17,7 @@ import { ProfileScreen } from './screens/ProfileScreen';
 import { StatementScreen } from './screens/StatementScreen';
 import { InvoiceScreen } from './screens/InvoiceScreen';
 import { userCards } from './data/mockData';
-import type { UserCard } from './types';
+import type { InvestmentAsset, PortfolioItem, UserCard } from './types';
 import { parseCurrency } from './utils/currency';
 
 export default function App() {
@@ -37,6 +37,9 @@ function AppContent() {
   const [activeScreen, setActiveScreen] = useState<AppScreen>('home');
   const [accountBalance, setAccountBalance] = useState(accountLimit);
   const [cards, setCards] = useState<UserCard[]>(userCards);
+  const [investmentPortfolio, setInvestmentPortfolio] = useState<
+    Record<string, PortfolioItem>
+  >({});
   const [paidInvoiceCardIds, setPaidInvoiceCardIds] = useState<
     Record<string, boolean>
   >({});
@@ -91,6 +94,25 @@ function AppContent() {
       return true;
     }
 
+    function investInAsset(asset: InvestmentAsset, amount: number) {
+      if (!debitAccount(amount)) {
+        return false;
+      }
+
+      setInvestmentPortfolio((current) => {
+        const previousAmount = current[asset.id]?.amount ?? 0;
+
+        return {
+          ...current,
+          [asset.id]: {
+            ...asset,
+            amount: previousAmount + amount,
+          },
+        };
+      });
+      return true;
+    }
+
     switch (activeScreen) {
       case 'home':
         return (
@@ -117,7 +139,12 @@ function AppContent() {
           />
         );
       case 'investments':
-        return <InvestmentsScreen />;
+        return (
+          <InvestmentsScreen
+            onInvest={investInAsset}
+            portfolio={investmentPortfolio}
+          />
+        );
       case 'shopping':
         return (
           <ShoppingScreen

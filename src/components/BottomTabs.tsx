@@ -19,9 +19,9 @@ const styles = StyleSheet.create({
   bottomTabs: {
     flex: 1,
     borderRadius: 30,
-    backgroundColor: 'rgba(20,20,30,0.72)',
+    backgroundColor: '#14141E',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.14)',
+    borderColor: '#252535',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-around',

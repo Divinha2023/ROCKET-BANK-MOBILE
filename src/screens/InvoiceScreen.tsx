@@ -1,9 +1,7 @@
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme';
 import { ScreenTitle } from '../components/ScreenTitle';
-import { MetricCard } from '../components/MetricCard';
 import { cardInvoice } from '../data/mockData';
 import type { AppScreen, UserCard } from '../types';
 import { formatCurrency } from '../utils/currency';
@@ -56,9 +54,45 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '800',
   },
-  metricRow: {
+  summaryRow: {
     flexDirection: 'row',
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: 'rgba(255,255,255,0.055)',
+    padding: 12,
     marginBottom: 18,
+  },
+  topPayButton: {
+    height: 52,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.purpleStrong,
+    marginBottom: 18,
+  },
+  topPayButtonDisabled: {
+    opacity: 0.48,
+  },
+  summaryItem: {
+    flex: 1,
+    minWidth: 0,
+    paddingHorizontal: 6,
+  },
+  summaryDivider: {
+    borderLeftWidth: 1,
+    borderLeftColor: 'rgba(255,255,255,0.08)',
+  },
+  summaryLabel: {
+    color: colors.mutedDark,
+    fontSize: 11,
+    fontWeight: '800',
+    marginBottom: 6,
+  },
+  summaryValue: {
+    color: colors.white,
+    fontSize: 15,
+    fontWeight: '900',
   },
   invoiceCard: {
     borderRadius: 24,
@@ -91,6 +125,10 @@ const styles = StyleSheet.create({
     paddingVertical: 11,
     borderTopWidth: 1,
     borderTopColor: 'rgba(255,255,255,0.06)',
+  },
+  itemInfo: {
+    flex: 1,
+    marginRight: 10,
   },
   itemTitle: {
     color: colors.white,
@@ -171,14 +209,14 @@ export function InvoiceScreen({
 }) {
   function handlePayInvoice() {
     if (invoicePaid) {
-      Alert.alert('Fatura', 'Esta fatura ja esta paga.');
+      Alert.alert('Fatura', 'Esta fatura já está paga.');
       return;
     }
 
     if (!onPayInvoice()) {
       Alert.alert(
         'Saldo insuficiente',
-        'Nao ha saldo suficiente para pagar esta fatura agora.'
+        'Não há saldo suficiente para pagar esta fatura agora.'
       );
       return;
     }
@@ -225,36 +263,72 @@ export function InvoiceScreen({
           <Text style={styles.heroDetail}>
             Vencimento {invoiceCard.invoiceDueDate}
           </Text>
-          <Ionicons name="receipt-outline" size={26} color={colors.white} />
         </View>
       </LinearGradient>
 
-      <View style={styles.metricRow}>
-        <MetricCard label="Saldo da conta" value={formatCurrency(accountBalance)} />
-        <MetricCard label="Limite da conta" value={formatCurrency(accountLimit)} />
-      </View>
+      <Pressable
+        accessibilityRole="button"
+        disabled={invoicePaid}
+        onPress={handlePayInvoice}
+        style={[
+          styles.topPayButton,
+          invoicePaid && styles.topPayButtonDisabled,
+        ]}
+      >
+        <Text style={styles.buttonText}>
+          {invoicePaid ? 'Fatura paga' : 'Pagar fatura'}
+        </Text>
+      </Pressable>
 
-      <View style={styles.metricRow}>
-        <MetricCard label="Limite do cartao" value={invoiceCard.limit} />
-        <MetricCard label="Status" value={invoicePaid ? 'Paga' : 'Aberta'} />
+      <View style={styles.summaryRow}>
+        <View style={styles.summaryItem}>
+          <Text style={styles.summaryLabel}>Saldo</Text>
+          <Text
+            adjustsFontSizeToFit
+            minimumFontScale={0.72}
+            numberOfLines={1}
+            style={styles.summaryValue}
+          >
+            {formatCurrency(accountBalance)}
+          </Text>
+        </View>
+
+        <View style={[styles.summaryItem, styles.summaryDivider]}>
+          <Text style={styles.summaryLabel}>Limite conta</Text>
+          <Text
+            adjustsFontSizeToFit
+            minimumFontScale={0.72}
+            numberOfLines={1}
+            style={styles.summaryValue}
+          >
+            {formatCurrency(accountLimit)}
+          </Text>
+        </View>
+
+        <View style={[styles.summaryItem, styles.summaryDivider]}>
+          <Text style={styles.summaryLabel}>Limite cartão</Text>
+          <Text
+            adjustsFontSizeToFit
+            minimumFontScale={0.72}
+            numberOfLines={1}
+            style={styles.summaryValue}
+          >
+            {invoiceCard.limit}
+          </Text>
+        </View>
       </View>
 
       <View style={styles.invoiceCard}>
         <View style={styles.invoiceHeader}>
-          <Text style={styles.invoiceTitle}>Lancamentos</Text>
-          <Ionicons
-            name="document-text-outline"
-            size={22}
-            color={colors.purpleSoft}
-          />
+          <Text style={styles.invoiceTitle}>Lançamentos</Text>
         </View>
         <Text style={styles.invoiceSubtitle}>
-          Compras consolidadas no periodo atual.
+          Compras consolidadas no período atual.
         </Text>
 
         {cardInvoice.items.map((item) => (
           <View key={`${item.title}-${item.date}`} style={styles.invoiceRow}>
-            <View>
+            <View style={styles.itemInfo}>
               <Text style={styles.itemTitle}>{item.title}</Text>
               <Text style={styles.itemDate}>{item.date}</Text>
             </View>
@@ -266,8 +340,8 @@ export function InvoiceScreen({
       <View style={styles.paymentCard}>
         <Text style={styles.paymentTitle}>Pagamento da fatura</Text>
         <Text style={styles.paymentText}>
-          Ao pagar, a fatura atual sera baixada, o saldo da conta sera
-          descontado e o valor em aberto volta para zero na area de cartoes.
+          Ao pagar, a fatura atual será baixada, o saldo da conta será
+          descontado e o valor em aberto volta para zero na área de cartões.
         </Text>
 
         <Pressable
@@ -297,7 +371,7 @@ export function InvoiceScreen({
           onPress={() => setActiveScreen('cards')}
           style={styles.secondaryButton}
         >
-          <Text style={styles.buttonText}>Voltar para cartoes</Text>
+          <Text style={styles.buttonText}>Voltar para cartões</Text>
         </Pressable>
       </View>
     </>

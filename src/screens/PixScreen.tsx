@@ -294,7 +294,7 @@ export function PixScreen({
     }
 
     if (!onDebitAccount(amount)) {
-      Alert.alert('Saldo insuficiente', 'Nao ha saldo suficiente para este Pix.');
+      Alert.alert('Saldo insuficiente', 'Não há saldo suficiente para este Pix.');
       return;
     }
 
@@ -440,13 +440,13 @@ export function PixScreen({
     <>
       <ScreenTitle
         title="Pix Rocket"
-        subtitle="Envie, receba e acompanhe seus Pix com seguranca."
+        subtitle="Envie, receba e acompanhe seus Pix com segurança."
       />
 
       <View style={styles.statusCard}>
         <Ionicons name="shield-checkmark-outline" size={24} color={colors.green} />
         <Text style={styles.statusText}>
-          Limite Pix diario disponivel: R$ 6.500,00. Saldo da conta:{' '}
+          Limite Pix diário disponível: R$ 6.500,00. Saldo da conta:{' '}
           {formatCurrency(accountBalance)}.
         </Text>
       </View>

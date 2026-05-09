@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import {
   Alert,
+  Modal,
   Pressable,
   StyleSheet,
   Text,
@@ -12,7 +13,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors, commonStyles } from '../theme';
 import { MetricCard } from '../components/MetricCard';
 import { ScreenTitle } from '../components/ScreenTitle';
-import { SectionHeader } from '../components/SectionHeader';
 import type { IconName } from '../types';
 import { formatCurrency, parseCurrency } from '../utils/currency';
 
@@ -72,7 +72,7 @@ const fixedInvestments: InvestmentOption[] = [
     rate: 'Rendimento mensal',
     subtitle: 'Aplicacao simples e tradicional.',
     suggestedAmount: 350,
-    title: 'Poupança',
+    title: 'Poupanca',
   },
 ];
 
@@ -166,11 +166,41 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  accordionCard: {
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: 'rgba(255,255,255,0.055)',
+    marginBottom: 16,
+    overflow: 'hidden',
+  },
+  accordionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+  },
+  accordionHeaderInfo: {
+    flex: 1,
+  },
+  accordionTitle: {
+    color: colors.white,
+    fontSize: 18,
+    fontWeight: '900',
+  },
+  accordionSubtitle: {
+    color: colors.mutedDark,
+    fontSize: 12,
+    lineHeight: 18,
+    marginTop: 4,
+  },
+  accordionBody: {
+    paddingHorizontal: 16,
+    paddingBottom: 4,
+  },
   productGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    marginBottom: 22,
   },
   productCard: {
     width: '48%',
@@ -222,6 +252,21 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '900',
   },
+  showMoreButton: {
+    height: 46,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: 'rgba(255,255,255,0.07)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 14,
+  },
+  showMoreText: {
+    color: colors.white,
+    fontSize: 13,
+    fontWeight: '900',
+  },
   chartCard: {
     borderRadius: 28,
     borderWidth: 1,
@@ -231,9 +276,9 @@ const styles = StyleSheet.create({
     marginBottom: 22,
   },
   chartRing: {
-    width: 220,
-    height: 220,
-    borderRadius: 110,
+    width: 168,
+    height: 168,
+    borderRadius: 84,
     alignItems: 'center',
     justifyContent: 'center',
     alignSelf: 'center',
@@ -241,21 +286,21 @@ const styles = StyleSheet.create({
   },
   chartSegmentArm: {
     position: 'absolute',
-    left: 11,
-    top: 11,
-    width: 198,
-    height: 198,
+    left: 8,
+    top: 8,
+    width: 152,
+    height: 152,
     alignItems: 'center',
   },
   chartSegment: {
-    width: 8,
-    height: 22,
+    width: 5,
+    height: 16,
     borderRadius: 99,
   },
   chartCenter: {
-    width: 132,
-    height: 132,
-    borderRadius: 66,
+    width: 104,
+    height: 104,
+    borderRadius: 52,
     backgroundColor: 'rgba(5,1,15,0.92)',
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.10)',
@@ -271,15 +316,9 @@ const styles = StyleSheet.create({
   },
   chartCenterValue: {
     color: colors.white,
-    fontSize: 22,
+    fontSize: 18,
     fontWeight: '900',
     marginTop: 6,
-    textAlign: 'center',
-  },
-  emptyChartText: {
-    color: colors.mutedDark,
-    fontSize: 13,
-    lineHeight: 19,
     textAlign: 'center',
   },
   legendRow: {
@@ -314,14 +353,6 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     marginLeft: 10,
   },
-  stockAmountCard: {
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: 'rgba(255,255,255,0.055)',
-    padding: 16,
-    marginBottom: 16,
-  },
   inputLabel: {
     color: colors.mutedDark,
     fontSize: 12,
@@ -345,7 +376,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    marginBottom: 22,
   },
   stockCard: {
     width: '48%',
@@ -357,8 +387,9 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   featuredStockCard: {
+    width: '100%',
     borderColor: 'rgba(255,123,84,0.72)',
-    backgroundColor: 'rgba(255,123,84,0.12)',
+    backgroundColor: 'rgba(255,123,84,0.14)',
   },
   stockHeader: {
     flexDirection: 'row',
@@ -425,6 +456,76 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '900',
   },
+  modalBackdrop: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: 'rgba(2,0,8,0.72)',
+    padding: 24,
+  },
+  modalCard: {
+    borderRadius: 28,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: '#0B0716',
+    overflow: 'hidden',
+  },
+  modalAccent: {
+    height: 5,
+    width: '100%',
+  },
+  modalBody: {
+    padding: 20,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  modalIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  modalTitle: {
+    flex: 1,
+    color: colors.white,
+    fontSize: 20,
+    fontWeight: '900',
+  },
+  modalSubtitle: {
+    color: colors.mutedDark,
+    fontSize: 13,
+    lineHeight: 20,
+    marginBottom: 16,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    marginTop: 16,
+  },
+  modalButton: {
+    flex: 1,
+    height: 50,
+    borderRadius: 17,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalCancelButton: {
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: 'rgba(255,255,255,0.07)',
+    marginRight: 10,
+  },
+  modalApplyButton: {
+    backgroundColor: colors.purpleStrong,
+  },
+  modalButtonText: {
+    color: colors.white,
+    fontSize: 14,
+    fontWeight: '900',
+  },
 });
 
 function formatPercent(value: number) {
@@ -436,7 +537,12 @@ function formatPercent(value: number) {
 
 export function InvestmentsScreen() {
   const [portfolio, setPortfolio] = useState<Record<string, PortfolioItem>>({});
-  const [stockAmountValue, setStockAmountValue] = useState('500');
+  const [showAllStocks, setShowAllStocks] = useState(false);
+  const [showAllFixed, setShowAllFixed] = useState(false);
+  const [selectedStock, setSelectedStock] = useState<InvestmentAsset | null>(
+    null
+  );
+  const [stockAmountValue, setStockAmountValue] = useState('');
   const [lastApplied, setLastApplied] = useState<string | null>(null);
 
   const portfolioEntries = Object.values(portfolio);
@@ -444,6 +550,10 @@ export function InvestmentsScreen() {
     (total, item) => total + item.amount,
     0
   );
+  const visibleStocks = showAllStocks ? stockAssets : stockAssets.slice(0, 2);
+  const visibleFixed = showAllFixed
+    ? fixedInvestments
+    : fixedInvestments.slice(0, 2);
 
   function applyInvestment(asset: InvestmentAsset, amount: number) {
     if (amount <= 0) {
@@ -466,10 +576,6 @@ export function InvestmentsScreen() {
   }
 
   function getSegmentColor(index: number) {
-    if (totalInvested <= 0) {
-      return 'rgba(255,255,255,0.12)';
-    }
-
     const segmentValue = ((index + 0.5) / ringSegmentCount) * totalInvested;
     let accumulatedValue = 0;
     const segmentEntry = portfolioEntries.find((entry) => {
@@ -480,8 +586,29 @@ export function InvestmentsScreen() {
     return segmentEntry?.color ?? portfolioEntries[0]?.color ?? colors.border;
   }
 
-  function applyStockInvestment(asset: InvestmentAsset) {
-    applyInvestment(asset, parseCurrency(stockAmountValue));
+  function openStockInvestment(asset: InvestmentAsset) {
+    setSelectedStock(asset);
+    setStockAmountValue('');
+  }
+
+  function closeStockInvestment() {
+    setSelectedStock(null);
+    setStockAmountValue('');
+  }
+
+  function confirmStockInvestment() {
+    if (!selectedStock) {
+      return;
+    }
+
+    const amount = parseCurrency(stockAmountValue);
+    if (amount <= 0) {
+      Alert.alert('Valor invalido', 'Informe um valor maior que zero.');
+      return;
+    }
+
+    applyInvestment(selectedStock, amount);
+    closeStockInvestment();
   }
 
   function resetPortfolio() {
@@ -496,203 +623,342 @@ export function InvestmentsScreen() {
         subtitle="Escolha produtos, aplique valores simulados e veja sua carteira por porcentagem."
       />
 
-      <View style={styles.heroCard}>
-        <LinearGradient
-          colors={['rgba(34,197,94,0.88)', 'rgba(56,189,248,0.58)', 'rgba(111,44,255,0.72)']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.heroGradient}
-        >
-          <View style={styles.heroTop}>
-            <View>
-              <Text style={styles.heroEyebrow}>Carteira Rocket</Text>
-              <Text style={styles.heroTitle}>{formatCurrency(totalInvested)}</Text>
-            </View>
+      {totalInvested > 0 && (
+        <>
+          <View style={styles.heroCard}>
+            <LinearGradient
+              colors={['rgba(34,197,94,0.88)', 'rgba(56,189,248,0.58)', 'rgba(111,44,255,0.72)']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.heroGradient}
+            >
+              <View style={styles.heroTop}>
+                <View>
+                  <Text style={styles.heroEyebrow}>Carteira Rocket</Text>
+                  <Text style={styles.heroTitle}>
+                    {formatCurrency(totalInvested)}
+                  </Text>
+                </View>
 
-            <View style={styles.heroIcon}>
-              <Ionicons name="pie-chart-outline" size={30} color={colors.white} />
-            </View>
+                <View style={styles.heroIcon}>
+                  <Ionicons name="pie-chart-outline" size={30} color={colors.white} />
+                </View>
+              </View>
+
+              <Text style={styles.heroSubtitle}>
+                O grafico redondo mostra a porcentagem de cada investimento.
+              </Text>
+            </LinearGradient>
           </View>
 
-          <Text style={styles.heroSubtitle}>
-            O grafico redondo atualiza quando voce escolhe CDI, CDB,
-            Tesouro Selic, poupanca ou acoes.
-          </Text>
-        </LinearGradient>
-      </View>
+          {lastApplied && (
+            <View style={styles.statusCard}>
+              <Ionicons name="checkmark-circle" size={24} color={colors.green} />
+              <Text style={styles.statusText}>{lastApplied}</Text>
+            </View>
+          )}
 
-      {lastApplied && (
-        <View style={styles.statusCard}>
-          <Ionicons name="checkmark-circle" size={24} color={colors.green} />
-          <Text style={styles.statusText}>{lastApplied}</Text>
-        </View>
-      )}
-
-      <View style={commonStyles.twoColumns}>
-        <MetricCard label="Ativos escolhidos" value={String(portfolioEntries.length)} />
-        <MetricCard
-          label="Maior posicao"
-          value={
-            portfolioEntries.length
-              ? portfolioEntries.reduce((leader, entry) =>
+          <View style={commonStyles.twoColumns}>
+            <MetricCard
+              label="Ativos escolhidos"
+              value={String(portfolioEntries.length)}
+            />
+            <MetricCard
+              label="Maior posicao"
+              value={
+                portfolioEntries.reduce((leader, entry) =>
                   entry.amount > leader.amount ? entry : leader
                 ).title
-              : 'Nenhuma'
-          }
-        />
-      </View>
-
-      <SectionHeader title="Distribuicao" />
-
-      <View style={styles.chartCard}>
-        <View style={styles.chartRing}>
-          {Array.from({ length: ringSegmentCount }, (_, index) => (
-            <View
-              key={index}
-              style={[
-                styles.chartSegmentArm,
-                { transform: [{ rotate: `${index * (360 / ringSegmentCount)}deg` }] },
-              ]}
-            >
-              <View
-                style={[
-                  styles.chartSegment,
-                  { backgroundColor: getSegmentColor(index) },
-                ]}
-              />
-            </View>
-          ))}
-
-          <View style={styles.chartCenter}>
-            <Text style={styles.chartCenterLabel}>
-              {totalInvested > 0 ? 'Total investido' : 'Carteira vazia'}
-            </Text>
-            {totalInvested > 0 ? (
-              <Text style={styles.chartCenterValue}>
-                {formatCurrency(totalInvested)}
-              </Text>
-            ) : (
-              <Text style={styles.emptyChartText}>
-                Escolha um investimento para gerar o grafico.
-              </Text>
-            )}
+              }
+            />
           </View>
-        </View>
 
-        {portfolioEntries.map((entry) => {
-          const percent = (entry.amount / totalInvested) * 100;
+          <View style={styles.chartCard}>
+            <View style={styles.chartRing}>
+              {Array.from({ length: ringSegmentCount }, (_, index) => (
+                <View
+                  key={index}
+                  style={[
+                    styles.chartSegmentArm,
+                    { transform: [{ rotate: `${index * (360 / ringSegmentCount)}deg` }] },
+                  ]}
+                >
+                  <View
+                    style={[
+                      styles.chartSegment,
+                      { backgroundColor: getSegmentColor(index) },
+                    ]}
+                  />
+                </View>
+              ))}
 
-          return (
-            <View key={entry.id} style={styles.legendRow}>
-              <View
-                style={[styles.legendDot, { backgroundColor: entry.color }]}
-              />
-              <View style={styles.legendInfo}>
-                <Text style={styles.legendTitle}>{entry.title}</Text>
-                <Text style={styles.legendValue}>
-                  {entry.ticker ? `${entry.ticker} - ` : ''}
-                  {formatCurrency(entry.amount)}
+              <View style={styles.chartCenter}>
+                <Text style={styles.chartCenterLabel}>Total investido</Text>
+                <Text style={styles.chartCenterValue}>
+                  {formatCurrency(totalInvested)}
                 </Text>
               </View>
-              <Text style={styles.legendPercent}>{formatPercent(percent)}</Text>
-            </View>
-          );
-        })}
-      </View>
-
-      <SectionHeader title="Renda fixa" />
-
-      <View style={styles.productGrid}>
-        {fixedInvestments.map((investment) => (
-          <Pressable
-            accessibilityRole="button"
-            key={investment.id}
-            onPress={() => applyInvestment(investment, investment.suggestedAmount)}
-            style={styles.productCard}
-          >
-            <View
-              style={[
-                styles.productIcon,
-                { backgroundColor: `${investment.color}22` },
-              ]}
-            >
-              <Ionicons name={investment.icon} size={24} color={investment.color} />
             </View>
 
-            <Text style={styles.productTitle}>{investment.title}</Text>
-            <Text style={styles.productRate}>{investment.rate}</Text>
-            <Text style={styles.productText}>{investment.subtitle}</Text>
+            {portfolioEntries.map((entry) => {
+              const percent = (entry.amount / totalInvested) * 100;
 
-            <View style={styles.applyPill}>
-              <Text style={styles.applyText}>
-                Aplicar {formatCurrency(investment.suggestedAmount)}
-              </Text>
+              return (
+                <View key={entry.id} style={styles.legendRow}>
+                  <View
+                    style={[styles.legendDot, { backgroundColor: entry.color }]}
+                  />
+                  <View style={styles.legendInfo}>
+                    <Text style={styles.legendTitle}>{entry.title}</Text>
+                    <Text style={styles.legendValue}>
+                      {entry.ticker ? `${entry.ticker} - ` : ''}
+                      {formatCurrency(entry.amount)}
+                    </Text>
+                  </View>
+                  <Text style={styles.legendPercent}>
+                    {formatPercent(percent)}
+                  </Text>
+                </View>
+              );
+            })}
+          </View>
+        </>
+      )}
+
+      <View style={styles.accordionCard}>
+        <Pressable
+          accessibilityRole="button"
+          onPress={() =>
+            setExpandedSection((current) =>
+              current === 'variable' ? null : 'variable'
+            )
+          }
+          style={styles.accordionHeader}
+        >
+          <View style={styles.accordionHeaderInfo}>
+            <Text style={styles.accordionTitle}>Renda variavel</Text>
+            <Text style={styles.accordionSubtitle}>
+              Acoes disponiveis, com ROCKET BANK em destaque.
+            </Text>
+          </View>
+          <View style={styles.accordionIcon}>
+            <Ionicons
+              name={
+                expandedSection === 'variable' ? 'chevron-up' : 'chevron-down'
+              }
+              size={20}
+              color={colors.white}
+            />
+          </View>
+        </Pressable>
+
+        {expandedSection === 'variable' && (
+          <View style={styles.accordionBody}>
+            <View style={styles.stockGrid}>
+              {visibleStocks.map((stock) => (
+                <Pressable
+                  accessibilityRole="button"
+                  key={stock.id}
+                  onPress={() => openStockInvestment(stock)}
+                  style={[
+                    styles.stockCard,
+                    stock.featured && styles.featuredStockCard,
+                  ]}
+                >
+                  <View style={styles.stockHeader}>
+                    <View
+                      style={[
+                        styles.stockIcon,
+                        { backgroundColor: `${stock.color}24` },
+                      ]}
+                    >
+                      <Ionicons name={stock.icon} size={23} color={stock.color} />
+                    </View>
+
+                    {stock.featured && (
+                      <View style={styles.featuredBadge}>
+                        <Text style={styles.featuredBadgeText}>Destaque</Text>
+                      </View>
+                    )}
+                  </View>
+
+                  <Text style={styles.productTitle}>{stock.title}</Text>
+                  <Text style={styles.tickerText}>{stock.ticker}</Text>
+                  <Text style={styles.productRate}>{stock.rate}</Text>
+                  <Text style={styles.productText}>{stock.subtitle}</Text>
+                </Pressable>
+              ))}
             </View>
-          </Pressable>
-        ))}
-      </View>
 
-      <SectionHeader title="Acoes disponiveis" />
-
-      <View style={styles.stockAmountCard}>
-        <Text style={styles.inputLabel}>Valor para investir em acoes</Text>
-        <TextInput
-          keyboardType="decimal-pad"
-          onChangeText={setStockAmountValue}
-          placeholder="R$ 0,00"
-          placeholderTextColor={colors.mutedDark}
-          style={styles.amountInput}
-          value={stockAmountValue}
-        />
-      </View>
-
-      <View style={styles.stockGrid}>
-        {stockAssets.map((stock) => (
-          <Pressable
-            accessibilityRole="button"
-            key={stock.id}
-            onPress={() => applyStockInvestment(stock)}
-            style={[
-              styles.stockCard,
-              stock.featured && styles.featuredStockCard,
-            ]}
-          >
-            <View style={styles.stockHeader}>
-              <View
-                style={[
-                  styles.stockIcon,
-                  { backgroundColor: `${stock.color}24` },
-                ]}
+            {stockAssets.length > 2 && (
+              <Pressable
+                accessibilityRole="button"
+                onPress={() => setShowAllStocks((current) => !current)}
+                style={styles.showMoreButton}
               >
-                <Ionicons name={stock.icon} size={23} color={stock.color} />
+                <Text style={styles.showMoreText}>
+                  {showAllStocks ? 'Mostrar menos' : 'Exibir mais'}
+                </Text>
+              </Pressable>
+            )}
+          </View>
+        )}
+      </View>
+
+      <View style={styles.accordionCard}>
+        <Pressable
+          accessibilityRole="button"
+          onPress={() =>
+            setExpandedSection((current) =>
+              current === 'fixed' ? null : 'fixed'
+            )
+          }
+          style={styles.accordionHeader}
+        >
+          <View style={styles.accordionHeaderInfo}>
+            <Text style={styles.accordionTitle}>Renda fixa</Text>
+            <Text style={styles.accordionSubtitle}>
+              CDI, CDB, Tesouro Selic e poupanca.
+            </Text>
+          </View>
+          <View style={styles.accordionIcon}>
+            <Ionicons
+              name={expandedSection === 'fixed' ? 'chevron-up' : 'chevron-down'}
+              size={20}
+              color={colors.white}
+            />
+          </View>
+        </Pressable>
+
+        {expandedSection === 'fixed' && (
+          <View style={styles.accordionBody}>
+            <View style={styles.productGrid}>
+              {visibleFixed.map((investment) => (
+                <Pressable
+                  accessibilityRole="button"
+                  key={investment.id}
+                  onPress={() =>
+                    applyInvestment(investment, investment.suggestedAmount)
+                  }
+                  style={styles.productCard}
+                >
+                  <View
+                    style={[
+                      styles.productIcon,
+                      { backgroundColor: `${investment.color}22` },
+                    ]}
+                  >
+                    <Ionicons
+                      name={investment.icon}
+                      size={24}
+                      color={investment.color}
+                    />
+                  </View>
+
+                  <Text style={styles.productTitle}>{investment.title}</Text>
+                  <Text style={styles.productRate}>{investment.rate}</Text>
+                  <Text style={styles.productText}>{investment.subtitle}</Text>
+
+                  <View style={styles.applyPill}>
+                    <Text style={styles.applyText}>
+                      Aplicar {formatCurrency(investment.suggestedAmount)}
+                    </Text>
+                  </View>
+                </Pressable>
+              ))}
+            </View>
+
+            {fixedInvestments.length > 2 && (
+              <Pressable
+                accessibilityRole="button"
+                onPress={() => setShowAllFixed((current) => !current)}
+                style={styles.showMoreButton}
+              >
+                <Text style={styles.showMoreText}>
+                  {showAllFixed ? 'Mostrar menos' : 'Exibir mais'}
+                </Text>
+              </Pressable>
+            )}
+          </View>
+        )}
+      </View>
+
+      {totalInvested > 0 && (
+        <Pressable
+          accessibilityRole="button"
+          onPress={resetPortfolio}
+          style={styles.resetButton}
+        >
+          <Text style={styles.resetButtonText}>Limpar carteira</Text>
+        </Pressable>
+      )}
+
+      <Modal
+        animationType="fade"
+        onRequestClose={closeStockInvestment}
+        transparent
+        visible={Boolean(selectedStock)}
+      >
+        <View style={styles.modalBackdrop}>
+          <View style={styles.modalCard}>
+            <LinearGradient
+              colors={[selectedStock?.color ?? colors.purpleStrong, colors.purpleSoft]}
+              style={styles.modalAccent}
+            />
+            <View style={styles.modalBody}>
+              <View style={styles.modalHeader}>
+                <View
+                  style={[
+                    styles.modalIcon,
+                    { backgroundColor: `${selectedStock?.color ?? colors.purple}24` },
+                  ]}
+                >
+                  <Ionicons
+                    name={selectedStock?.icon ?? 'trending-up-outline'}
+                    size={24}
+                    color={selectedStock?.color ?? colors.purpleSoft}
+                  />
+                </View>
+                <Text style={styles.modalTitle}>
+                  Investir em {selectedStock?.title}
+                </Text>
               </View>
 
-              {stock.featured && (
-                <View style={styles.featuredBadge}>
-                  <Text style={styles.featuredBadgeText}>Destaque</Text>
-                </View>
-              )}
+              <Text style={styles.modalSubtitle}>
+                Informe o valor que deseja aplicar em {selectedStock?.ticker}.
+              </Text>
+
+              <Text style={styles.inputLabel}>Valor</Text>
+              <TextInput
+                autoFocus
+                keyboardType="decimal-pad"
+                onChangeText={setStockAmountValue}
+                placeholder="R$ 0,00"
+                placeholderTextColor={colors.mutedDark}
+                style={styles.amountInput}
+                value={stockAmountValue}
+              />
+
+              <View style={styles.modalButtons}>
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={closeStockInvestment}
+                  style={[styles.modalButton, styles.modalCancelButton]}
+                >
+                  <Text style={styles.modalButtonText}>Cancelar</Text>
+                </Pressable>
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={confirmStockInvestment}
+                  style={[styles.modalButton, styles.modalApplyButton]}
+                >
+                  <Text style={styles.modalButtonText}>Investir</Text>
+                </Pressable>
+              </View>
             </View>
-
-            <Text style={styles.productTitle}>{stock.title}</Text>
-            <Text style={styles.tickerText}>{stock.ticker}</Text>
-            <Text style={styles.productRate}>{stock.rate}</Text>
-            <Text style={styles.productText}>{stock.subtitle}</Text>
-          </Pressable>
-        ))}
-      </View>
-
-      <Pressable
-        accessibilityRole="button"
-        disabled={totalInvested <= 0}
-        onPress={resetPortfolio}
-        style={[
-          styles.resetButton,
-          totalInvested <= 0 && { opacity: 0.45 },
-        ]}
-      >
-        <Text style={styles.resetButtonText}>Limpar carteira</Text>
-      </Pressable>
+          </View>
+        </View>
+      </Modal>
     </>
   );
 }

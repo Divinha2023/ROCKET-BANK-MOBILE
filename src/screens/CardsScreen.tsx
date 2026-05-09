@@ -169,6 +169,77 @@ const styles = StyleSheet.create({
     width: 22,
     backgroundColor: colors.purpleSoft,
   },
+  invoiceHighlight: {
+    borderRadius: 28,
+    overflow: 'hidden',
+    marginBottom: 20,
+  },
+  invoiceHighlightGradient: {
+    padding: 20,
+  },
+  invoiceHighlightTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 18,
+  },
+  invoiceHighlightLabel: {
+    color: 'rgba(255,255,255,0.72)',
+    fontSize: 12,
+    fontWeight: '900',
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+  },
+  invoiceHighlightStatus: {
+    borderRadius: 999,
+    backgroundColor: 'rgba(255,255,255,0.14)',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+  },
+  invoiceHighlightStatusText: {
+    color: colors.white,
+    fontSize: 11,
+    fontWeight: '900',
+  },
+  invoiceHighlightValue: {
+    color: colors.white,
+    fontSize: 34,
+    fontWeight: '900',
+  },
+  invoiceHighlightFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 18,
+  },
+  invoiceHighlightDue: {
+    color: 'rgba(255,255,255,0.82)',
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  invoiceHighlightAction: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  invoiceHighlightActionText: {
+    color: colors.white,
+    fontSize: 13,
+    fontWeight: '900',
+    marginRight: 6,
+  },
+  invoicePayButton: {
+    height: 48,
+    borderRadius: 17,
+    backgroundColor: 'rgba(255,255,255,0.92)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 18,
+  },
+  invoicePayButtonText: {
+    color: '#32105F',
+    fontSize: 14,
+    fontWeight: '900',
+  },
 });
 
 export function CardsScreen({
@@ -237,10 +308,10 @@ export function CardsScreen({
     setBlockedCardIds((current) => {
       const nextBlocked = !current[selectedCard.id];
       Alert.alert(
-        nextBlocked ? 'Cartao bloqueado' : 'Cartao desbloqueado',
+        nextBlocked ? 'Cartão bloqueado' : 'Cartão desbloqueado',
         nextBlocked
           ? `${selectedCard.title} ficou inativo para compras.`
-          : `${selectedCard.title} voltou a ficar disponivel.`
+          : `${selectedCard.title} voltou a ficar disponível.`
       );
 
       return {
@@ -253,7 +324,7 @@ export function CardsScreen({
   function showWalletDetails() {
     Alert.alert(
       'Carteira Rocket',
-      `${cards.length}/${maxCardsPerUser} cartoes ativos.\nArraste os cartoes para alternar entre eles.`
+      `${cards.length}/${maxCardsPerUser} cartões ativos.\nArraste os cartões para alternar entre eles.`
     );
   }
 
@@ -272,7 +343,7 @@ export function CardsScreen({
     if (cards.length >= maxCardsPerUser) {
       Alert.alert(
         'Limite atingido',
-        'Cada usuario pode ter no maximo 3 cartoes ativos.'
+        'Cada usuário pode ter no máximo 3 cartões ativos.'
       );
       return;
     }
@@ -282,7 +353,7 @@ export function CardsScreen({
     );
 
     if (!nextCard) {
-      Alert.alert('Cartoes', 'Nao ha outro cartao virtual disponivel agora.');
+      Alert.alert('Cartões', 'Não há outro cartão virtual disponível agora.');
       return;
     }
 
@@ -295,14 +366,14 @@ export function CardsScreen({
     const nextIndex = cards.length;
     setSelectedIndex(nextIndex);
     requestAnimationFrame(() => scrollToCard(nextIndex));
-    Alert.alert('Cartao adicionado', `${nextCard.title} foi adicionado.`);
+    Alert.alert('Cartão adicionado', `${nextCard.title} foi adicionado.`);
   }
 
   function removeSelectedCard() {
     if (selectedCard.kind === 'main') {
       Alert.alert(
-        'Cartao principal',
-        'O cartao principal nao pode ser removido por aqui.'
+        'Cartão principal',
+        'O cartão principal não pode ser removido por aqui.'
       );
       return;
     }
@@ -313,7 +384,7 @@ export function CardsScreen({
     setCards(nextCards);
     setSelectedIndex(nextIndex);
     requestAnimationFrame(() => scrollToCard(nextIndex));
-    Alert.alert('Cartao removido', `${selectedCard.title} saiu da carteira.`);
+    Alert.alert('Cartão removido', `${selectedCard.title} saiu da carteira.`);
   }
 
   return (
@@ -413,7 +484,7 @@ export function CardsScreen({
       </View>
 
       <View style={commonStyles.twoColumns}>
-        <MetricCard label="Limite disponivel" value={displayedLimitValue} />
+        <MetricCard label="Limite disponível" value={displayedLimitValue} />
         <MetricCard label="Fatura atual" value={displayedStatementValue} />
       </View>
 
@@ -422,21 +493,54 @@ export function CardsScreen({
         <MetricCard label="Status da fatura" value={displayedInvoiceStatus} />
       </View>
 
+      <Pressable
+        accessibilityRole="button"
+        onPress={() => {
+          setSelectedInvoiceCardId(selectedCard.id);
+          setActiveScreen('invoice');
+        }}
+        style={styles.invoiceHighlight}
+      >
+        <LinearGradient
+          colors={['rgba(111,44,255,0.92)', 'rgba(168,85,247,0.70)', 'rgba(255,123,84,0.56)']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.invoiceHighlightGradient}
+        >
+          <View style={styles.invoiceHighlightTop}>
+            <Text style={styles.invoiceHighlightLabel}>Fatura do cartão</Text>
+            <View style={styles.invoiceHighlightStatus}>
+              <Text style={styles.invoiceHighlightStatusText}>
+                {displayedInvoiceStatus}
+              </Text>
+            </View>
+          </View>
+
+          <Text style={styles.invoiceHighlightValue}>
+            {displayedStatementValue}
+          </Text>
+
+          <View style={styles.invoicePayButton}>
+            <Text style={styles.invoicePayButtonText}>Abrir fatura</Text>
+          </View>
+        </LinearGradient>
+      </Pressable>
+
       <View style={commonStyles.listCard}>
         <MenuRow
           icon="wallet-outline"
           title="Carteira Rocket"
-          subtitle={`${cards.length}/${maxCardsPerUser} cartoes ativos. Arraste para alternar.`}
+          subtitle={`${cards.length}/${maxCardsPerUser} cartões ativos. Arraste para alternar.`}
           onPress={showWalletDetails}
         />
 
         <MenuRow
           icon={selectedCardBlocked ? 'lock-open-outline' : 'lock-closed-outline'}
-          title={selectedCardBlocked ? 'Desbloquear cartao' : 'Bloquear cartao'}
+          title={selectedCardBlocked ? 'Desbloquear cartão' : 'Bloquear cartão'}
           subtitle={
             selectedCardBlocked
-              ? 'O cartao selecionado esta transparente e inativo.'
-              : 'Bloqueie o cartao selecionado em tempo real.'
+              ? 'O cartão selecionado está transparente e inativo.'
+              : 'Bloqueie o cartão selecionado em tempo real.'
           }
           onPress={toggleBlockCard}
         />
@@ -444,7 +548,7 @@ export function CardsScreen({
         <MenuRow
           icon="receipt-outline"
           title="Gerar fatura"
-          subtitle="Abre a fatura em uma tela propria com itens e pagamento."
+          subtitle="Abre a fatura em uma tela própria com itens e pagamento."
           onPress={() => {
             setSelectedInvoiceCardId(selectedCard.id);
             setActiveScreen('invoice');
@@ -453,15 +557,15 @@ export function CardsScreen({
 
         <MenuRow
           icon="add-circle-outline"
-          title="Adicionar cartao virtual"
-          subtitle="Cria outro cartao ate o limite de 3 por usuario."
+          title="Adicionar cartão virtual"
+          subtitle="Cria outro cartão até o limite de 3 por usuário."
           onPress={addVirtualCard}
         />
 
         <MenuRow
           icon="trash-outline"
-          title="Remover cartao selecionado"
-          subtitle="Remove cartoes virtuais da carteira."
+          title="Remover cartão selecionado"
+          subtitle="Remove cartões virtuais da carteira."
           onPress={removeSelectedCard}
         />
       </View>

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
   Image,
@@ -559,6 +559,7 @@ export function ShoppingScreen({
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
   const [cartVisible, setCartVisible] = useState(false);
   const [trackingOrder, setTrackingOrder] = useState<TrackingOrder | null>(null);
+  const trackingScrollRef = useRef<ScrollView>(null);
   const availableCategories = useMemo(
     () => shoppingCategories.filter((category) => category.available !== false),
     []
@@ -644,6 +645,14 @@ export function ShoppingScreen({
     }
   }, [cartItems.length]);
 
+  useEffect(() => {
+    if (trackingOrder) {
+      requestAnimationFrame(() => {
+        trackingScrollRef.current?.scrollTo({ animated: false, y: 0 });
+      });
+    }
+  }, [trackingOrder]);
+
   function handleProductPress(product: ShoppingProduct) {
     setCartItems((current) => {
       const existingItem = current.find((item) => item.product.id === product.id);
@@ -658,6 +667,21 @@ export function ShoppingScreen({
 
       return [...current, { product, quantity: 1 }];
     });
+
+    Alert.alert(
+      'Adicionado ao carrinho',
+      `${product.name} foi adicionado ao carrinho.`,
+      [
+        {
+          text: 'Continuar comprando',
+          style: 'cancel',
+        },
+        {
+          text: 'Finalizar pedido',
+          onPress: () => setCartVisible(true),
+        },
+      ]
+    );
   }
 
   function updateCartQuantity(productId: string, amount: number) {
@@ -709,7 +733,7 @@ export function ShoppingScreen({
     if (!onDebitAccount(cartTotal)) {
       Alert.alert(
         'Saldo insuficiente',
-        `Nao ha saldo suficiente para pagar ${formatCurrency(cartTotal)}.`
+        `Não há saldo suficiente para pagar ${formatCurrency(cartTotal)}.`
       );
       return;
     }
@@ -766,9 +790,9 @@ export function ShoppingScreen({
 
         {cartItems.length === 0 ? (
           <View style={styles.cartEmpty}>
-            <Text style={styles.cartEmptyTitle}>Seu carrinho esta vazio</Text>
+            <Text style={styles.cartEmptyTitle}>Seu carrinho está vazio</Text>
             <Text style={styles.cartEmptyText}>
-              Produtos selecionados aparecem aqui antes da finalizacao.
+              Produtos selecionados aparecem aqui antes da finalização.
             </Text>
           </View>
         ) : (
@@ -887,6 +911,7 @@ export function ShoppingScreen({
     return (
       <View style={styles.shoppingScreen}>
         <ScrollView
+          ref={trackingScrollRef}
           contentContainerStyle={styles.shoppingContent}
           showsVerticalScrollIndicator={false}
         >
@@ -959,9 +984,9 @@ export function ShoppingScreen({
                 <View style={styles.trackingStepLine} />
               </View>
               <View style={styles.trackingStepContent}>
-                <Text style={styles.trackingStepTitle}>Preparacao do pedido</Text>
+                <Text style={styles.trackingStepTitle}>Preparação do pedido</Text>
                 <Text style={styles.trackingStepText}>
-                  seu pacote está sendo embalado, em breve será enviado.
+                  Seu pacote está sendo embalado, em breve será enviado.
                 </Text>
               </View>
             </View>
