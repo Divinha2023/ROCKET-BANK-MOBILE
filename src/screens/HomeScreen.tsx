@@ -81,6 +81,12 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     marginTop: 8,
   },
+  balanceYieldText: {
+    color: '#86EFAC',
+    fontSize: 14,
+    fontWeight: '900',
+    marginTop: 8,
+  },
   cashbackHighlight: {
     alignSelf: 'flex-start',
     flexDirection: 'row',
@@ -188,6 +194,7 @@ export function HomeScreen({
         <Text style={styles.balanceValue}>
           {isBalanceVisible ? formatCurrency(accountBalance) : 'R$ ••••••'}
         </Text>
+        <Text style={styles.balanceYieldText}>Rendendo 115% do CDI 📈</Text>
         <View style={styles.cashbackHighlight}>
           <Ionicons name="cash-outline" size={18} color="#86EFAC" />
           <Text style={styles.cashbackText}>

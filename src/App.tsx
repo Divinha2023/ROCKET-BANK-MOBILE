@@ -8,6 +8,7 @@ import { SplashScreen } from './screens/SplashScreen';
 import { HomeScreen } from './screens/HomeScreen';
 import { CardsScreen } from './screens/CardsScreen';
 import { PixScreen } from './screens/PixScreen';
+import { InvestmentsScreen } from './screens/InvestmentsScreen';
 import { ShoppingScreen } from './screens/ShoppingScreen';
 import { CashbackScreen } from './screens/CashbackScreen';
 import { CommunityScreen } from './screens/CommunityScreen';
@@ -115,6 +116,8 @@ function AppContent() {
             onDebitAccount={debitAccount}
           />
         );
+      case 'investments':
+        return <InvestmentsScreen />;
       case 'shopping':
         return (
           <ShoppingScreen

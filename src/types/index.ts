@@ -5,6 +5,7 @@ export type AppScreen =
   | 'home'
   | 'cards'
   | 'pix'
+  | 'investments'
   | 'shopping'
   | 'cashback'
   | 'community'
