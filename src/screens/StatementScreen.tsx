@@ -5,51 +5,12 @@ import { colors, commonStyles } from '../theme';
 import { ScreenTitle } from '../components/ScreenTitle';
 import { Transaction } from '../components/Transaction';
 import { FilterChip } from '../components/FilterChip';
-import type { IconName } from '../types';
+import type {
+  BankStatementTransaction,
+  BankStatementTransactionType,
+} from '../types';
 
-type TransactionFilter = 'Todos' | 'Entradas' | 'Saídas' | 'Cashback';
-
-type TransactionItem = {
-  icon: IconName;
-  title: string;
-  subtitle: string;
-  value: string;
-  type: TransactionFilter;
-  positive?: boolean;
-};
-
-const transactions: TransactionItem[] = [
-  {
-    icon: 'briefcase-outline',
-    title: 'Salário recebido',
-    subtitle: 'Empresa',
-    value: '+ R$ 4.500,00',
-    type: 'Entradas',
-    positive: true,
-  },
-  {
-    icon: 'sparkles-outline',
-    title: 'Cashback Gold',
-    subtitle: 'Benefícios',
-    value: '+ R$ 35,00',
-    type: 'Cashback',
-    positive: true,
-  },
-  {
-    icon: 'film-outline',
-    title: 'Pagamento Netflix',
-    subtitle: 'Assinatura',
-    value: '- R$ 55,90',
-    type: 'Saídas',
-  },
-  {
-    icon: 'basket-outline',
-    title: 'Supermercado',
-    subtitle: 'Alimentação',
-    value: '- R$ 248,32',
-    type: 'Saídas',
-  },
-];
+type TransactionFilter = 'all' | BankStatementTransactionType;
 
 const styles = StyleSheet.create({
   searchBox: {
@@ -82,10 +43,19 @@ const styles = StyleSheet.create({
   },
 });
 
-const filters: TransactionFilter[] = ['Todos', 'Entradas', 'Saídas', 'Cashback'];
+const filters: { label: string; value: TransactionFilter }[] = [
+  { label: 'Todos', value: 'all' },
+  { label: 'Entradas', value: 'entry' },
+  { label: 'Saídas', value: 'expense' },
+  { label: 'Cashback', value: 'cashback' },
+];
 
-export function StatementScreen() {
-  const [activeFilter, setActiveFilter] = useState<TransactionFilter>('Todos');
+export function StatementScreen({
+  transactions,
+}: {
+  transactions: BankStatementTransaction[];
+}) {
+  const [activeFilter, setActiveFilter] = useState<TransactionFilter>('all');
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredTransactions = useMemo(() => {
@@ -93,9 +63,9 @@ export function StatementScreen() {
 
     return transactions.filter((transaction) => {
       const matchesFilter =
-        activeFilter === 'Todos' ||
+        activeFilter === 'all' ||
         transaction.type === activeFilter ||
-        (activeFilter === 'Entradas' && transaction.positive);
+        (activeFilter === 'entry' && transaction.positive);
       const matchesSearch =
         !normalizedSearch ||
         [transaction.title, transaction.subtitle, transaction.value]
@@ -105,7 +75,7 @@ export function StatementScreen() {
 
       return matchesFilter && matchesSearch;
     });
-  }, [activeFilter, searchTerm]);
+  }, [activeFilter, searchTerm, transactions]);
 
   return (
     <>
@@ -128,10 +98,10 @@ export function StatementScreen() {
       <View style={styles.filterRow}>
         {filters.map((filter) => (
           <FilterChip
-            key={filter}
-            label={filter}
-            active={activeFilter === filter}
-            onPress={() => setActiveFilter(filter)}
+            key={filter.value}
+            label={filter.label}
+            active={activeFilter === filter.value}
+            onPress={() => setActiveFilter(filter.value)}
           />
         ))}
       </View>
@@ -142,7 +112,7 @@ export function StatementScreen() {
         ) : (
           filteredTransactions.map((transaction) => (
             <Transaction
-              key={`${transaction.title}-${transaction.value}`}
+              key={transaction.id}
               icon={transaction.icon}
               title={transaction.title}
               subtitle={transaction.subtitle}

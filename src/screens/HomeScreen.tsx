@@ -3,7 +3,7 @@ import { Alert, Image, Linking, Pressable, StyleSheet, Text, View } from 'react-
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, commonStyles } from '../theme';
-import type { AppScreen } from '../types';
+import type { AppScreen, BankStatementTransaction } from '../types';
 import { SectionHeader } from '../components/SectionHeader';
 import { QuickAction } from '../components/QuickAction';
 import { FeatureCard } from '../components/FeatureCard';
@@ -114,13 +114,16 @@ const styles = StyleSheet.create({
 export function HomeScreen({
   accountBalance,
   cashbackBalance,
+  statementTransactions,
   setActiveScreen,
 }: {
   accountBalance: number;
   cashbackBalance: number;
+  statementTransactions?: BankStatementTransaction[];
   setActiveScreen: (screen: AppScreen) => void;
 }) {
   const [isBalanceVisible, setIsBalanceVisible] = useState(true);
+  const latestTransactions = (statementTransactions ?? []).slice(0, 3);
 
   async function openRocketConnect() {
     try {
@@ -256,27 +259,16 @@ export function HomeScreen({
       />
 
       <View style={commonStyles.listCard}>
-        <Transaction
-          icon="cash-outline"
-          title="Cashback recebido"
-          subtitle="Rocket Shopping"
-          value="+ R$ 28,90"
-          positive
-        />
-
-        <Transaction
-          icon="send-outline"
-          title="Pix enviado"
-          subtitle="Pedro Santos"
-          value="- R$ 120,00"
-        />
-
-        <Transaction
-          icon="cart-outline"
-          title="Compra aprovada"
-          subtitle="Mercado Livre"
-          value="- R$ 89,90"
-        />
+        {latestTransactions.map((transaction) => (
+          <Transaction
+            key={transaction.id}
+            icon={transaction.icon}
+            title={transaction.title}
+            subtitle={transaction.subtitle}
+            value={transaction.value}
+            positive={transaction.positive}
+          />
+        ))}
       </View>
     </>
   );

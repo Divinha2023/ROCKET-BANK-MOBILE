@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
+  ActivityIndicator,
   Alert,
   Image,
   Modal,
@@ -546,17 +547,54 @@ const styles = StyleSheet.create({
   trackingStepMuted: {
     color: colors.mutedDark,
   },
+  loadingOrderScreen: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 28,
+  },
+  loadingOrderBadge: {
+    width: 78,
+    height: 78,
+    borderRadius: 26,
+    backgroundColor: 'rgba(111,44,255,0.18)',
+    borderWidth: 1,
+    borderColor: 'rgba(168,85,247,0.34)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 18,
+  },
+  loadingOrderTitle: {
+    color: colors.white,
+    fontSize: 20,
+    fontWeight: '900',
+    textAlign: 'center',
+  },
+  loadingOrderText: {
+    color: colors.muted,
+    fontSize: 13,
+    lineHeight: 19,
+    marginTop: 8,
+    textAlign: 'center',
+  },
 });
 
 export function ShoppingScreen({
   accountBalance,
   onEarnCashback,
   onDebitAccount,
+  onRegisterPurchase,
   setActiveScreen,
 }: {
   accountBalance: number;
   onEarnCashback: (amount: number) => void;
   onDebitAccount: (amount: number) => boolean;
+  onRegisterPurchase: (purchase: {
+    amount: number;
+    cashback: number;
+    itemCount: number;
+    orderCode: string;
+  }) => void;
   setActiveScreen: (screen: AppScreen) => void;
 }) {
   const [activeCategory, setActiveCategory] = useState(allCategoriesLabel);
@@ -565,7 +603,9 @@ export function ShoppingScreen({
   const [couponInput, setCouponInput] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
   const [cartVisible, setCartVisible] = useState(false);
+  const [isCheckoutLoading, setCheckoutLoading] = useState(false);
   const [trackingOrder, setTrackingOrder] = useState<TrackingOrder | null>(null);
+  const checkoutTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const trackingScrollRef = useRef<ScrollView>(null);
   const availableCategories = useMemo(
     () => shoppingCategories.filter((category) => category.available !== false),
@@ -664,6 +704,15 @@ export function ShoppingScreen({
     }
   }, [cartItems.length]);
 
+  useEffect(
+    () => () => {
+      if (checkoutTimeoutRef.current) {
+        clearTimeout(checkoutTimeoutRef.current);
+      }
+    },
+    []
+  );
+
   useEffect(() => {
     if (trackingOrder) {
       requestAnimationFrame(() => {
@@ -744,6 +793,10 @@ export function ShoppingScreen({
   }
 
   function handleCheckout() {
+    if (isCheckoutLoading) {
+      return;
+    }
+
     if (cartItems.length === 0) {
       Alert.alert('Carrinho vazio', 'Adicione um produto para finalizar a compra.');
       return;
@@ -757,16 +810,31 @@ export function ShoppingScreen({
       return;
     }
 
-    setTrackingOrder({
+    const orderCode = `RB${Date.now().toString().slice(-6)}`;
+    const nextTrackingOrder = {
       cashback: cartCashback,
-      code: `RB${Date.now().toString().slice(-6)}`,
+      code: orderCode,
       discount: couponDiscount,
       itemCount: cartItemCount,
       total: cartTotal,
+    };
+
+    onRegisterPurchase({
+      amount: cartTotal,
+      cashback: cartCashback,
+      itemCount: cartItemCount,
+      orderCode,
     });
     onEarnCashback(cartCashback);
     setCartItems([]);
     setCartVisible(false);
+    setCheckoutLoading(true);
+
+    checkoutTimeoutRef.current = setTimeout(() => {
+      setTrackingOrder(nextTrackingOrder);
+      setCheckoutLoading(false);
+      checkoutTimeoutRef.current = null;
+    }, 650);
   }
 
   function handleSeeAll(title: string) {
@@ -905,8 +973,9 @@ export function ShoppingScreen({
 
             <Pressable
               accessibilityRole="button"
+              disabled={isCheckoutLoading}
               onPress={handleCheckout}
-              style={styles.checkoutButton}
+              style={[styles.checkoutButton, isCheckoutLoading && { opacity: 0.72 }]}
             >
               <LinearGradient
                 colors={[colors.purpleStrong, colors.purpleSoft, colors.orange]}
@@ -924,6 +993,20 @@ export function ShoppingScreen({
             </Pressable>
           </>
         )}
+      </View>
+    );
+  }
+
+  if (isCheckoutLoading) {
+    return (
+      <View style={styles.loadingOrderScreen}>
+        <View style={styles.loadingOrderBadge}>
+          <ActivityIndicator color={colors.white} size="large" />
+        </View>
+        <Text style={styles.loadingOrderTitle}>Confirmando pedido</Text>
+        <Text style={styles.loadingOrderText}>
+          Estamos preparando a tela de rastreio do seu pedido.
+        </Text>
       </View>
     );
   }

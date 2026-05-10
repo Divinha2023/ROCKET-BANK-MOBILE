@@ -33,9 +33,9 @@ type Receipt = {
 const favoriteContacts: FavoriteContact[] = [
   {
     bank: 'Rocket Bank',
-    initials: 'PS',
-    key: 'pedro.santos@email.com',
-    name: 'Pedro Santos',
+    initials: 'JC',
+    key: 'julio.cesar@accenture.com',
+    name: 'Júlio César',
   },
   {
     bank: 'Nubank',
@@ -255,7 +255,10 @@ export function PixScreen({
   pixDailyRemaining,
 }: {
   accountBalance: number;
-  onSendPix: (amount: number) => 'balance' | 'daily-limit' | 'invalid' | 'success';
+  onSendPix: (
+    amount: number,
+    recipientName: string
+  ) => 'balance' | 'daily-limit' | 'invalid' | 'success';
   pixDailyRemaining: number;
 }) {
   const [selectedContact, setSelectedContact] = useState<FavoriteContact | null>(
@@ -295,7 +298,7 @@ export function PixScreen({
       return;
     }
 
-    const result = onSendPix(amount);
+    const result = onSendPix(amount, selectedContact.name);
 
     if (result === 'daily-limit') {
       Alert.alert(

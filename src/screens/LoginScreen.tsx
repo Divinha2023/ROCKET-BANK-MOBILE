@@ -267,6 +267,20 @@ const styles = StyleSheet.create({
     paddingTop: 42,
     paddingBottom: 36,
   },
+  registerTopBar: {
+    alignItems: 'flex-start',
+    marginBottom: 18,
+  },
+  registerBackButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 15,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.16)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   registerHeader: {
     marginBottom: 22,
   },
@@ -567,6 +581,17 @@ export function LoginScreen({ onLogin }: { onLogin: () => void }) {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
+        <View style={styles.registerTopBar}>
+          <Pressable
+            accessibilityLabel="Voltar para login"
+            accessibilityRole="button"
+            onPress={() => switchMode('login')}
+            style={styles.registerBackButton}
+          >
+            <Ionicons name="arrow-back" size={22} color={colors.white} />
+          </Pressable>
+        </View>
+
         <View style={styles.registerHeader}>
           <Text style={styles.registerTitle}>
             Crie sua conta{'\n'}

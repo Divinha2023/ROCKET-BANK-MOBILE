@@ -4,6 +4,7 @@ import { colors } from '../theme';
 const styles = StyleSheet.create({
   metricCard: {
     flex: 1,
+    minHeight: 92,
     backgroundColor: 'rgba(255,255,255,0.055)',
     borderRadius: 22,
     padding: 18,
@@ -14,6 +15,8 @@ const styles = StyleSheet.create({
   metricLabel: {
     color: colors.mutedDark,
     fontSize: 13,
+    lineHeight: 17,
+    minHeight: 17,
   },
   metricValue: {
     color: colors.white,
@@ -25,8 +28,17 @@ const styles = StyleSheet.create({
 export function MetricCard({ label, value }: { label: string; value: string }) {
   return (
     <View style={styles.metricCard}>
-      <Text style={styles.metricLabel}>{label}</Text>
-      <Text style={styles.metricValue}>{value}</Text>
+      <Text numberOfLines={1} style={styles.metricLabel}>
+        {label}
+      </Text>
+      <Text
+        adjustsFontSizeToFit
+        minimumFontScale={0.72}
+        numberOfLines={1}
+        style={styles.metricValue}
+      >
+        {value}
+      </Text>
     </View>
   );
 }

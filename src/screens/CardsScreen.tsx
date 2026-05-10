@@ -169,6 +169,32 @@ const styles = StyleSheet.create({
     width: 22,
     backgroundColor: colors.purpleSoft,
   },
+  limitAvailableCard: {
+    minHeight: 72,
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: 'rgba(255,255,255,0.055)',
+    paddingHorizontal: 18,
+    paddingVertical: 14,
+    marginBottom: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  limitAvailableLabel: {
+    color: colors.mutedDark,
+    fontSize: 13,
+    flexShrink: 0,
+    marginRight: 12,
+  },
+  limitAvailableValue: {
+    color: colors.white,
+    fontSize: 22,
+    fontWeight: '900',
+    flex: 1,
+    textAlign: 'right',
+  },
   invoiceHighlight: {
     borderRadius: 28,
     overflow: 'hidden',
@@ -206,26 +232,37 @@ const styles = StyleSheet.create({
     fontSize: 34,
     fontWeight: '900',
   },
-  invoiceHighlightFooter: {
+  invoiceDetailGrid: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: 18,
+    flexWrap: 'wrap',
+    marginTop: 16,
+    marginHorizontal: -5,
   },
-  invoiceHighlightDue: {
-    color: 'rgba(255,255,255,0.82)',
-    fontSize: 13,
-    fontWeight: '800',
+  invoiceDetailItem: {
+    width: '50%',
+    paddingHorizontal: 5,
+    marginBottom: 10,
   },
-  invoiceHighlightAction: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  invoiceDetailBox: {
+    minHeight: 62,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.13)',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
   },
-  invoiceHighlightActionText: {
+  invoiceDetailLabel: {
+    color: 'rgba(255,255,255,0.66)',
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+    marginBottom: 6,
+  },
+  invoiceDetailValue: {
     color: colors.white,
     fontSize: 13,
     fontWeight: '900',
-    marginRight: 6,
   },
   invoicePayButton: {
     height: 48,
@@ -283,6 +320,11 @@ export function CardsScreen({
     : selectedCardInvoicePaid
       ? 'Paga'
       : 'Aberta';
+  const displayedInvoicePaymentHint = selectedCardHidden
+    ? hiddenInvoiceValue
+    : selectedCardInvoicePaid
+      ? 'Sem valor pendente'
+      : 'Pagamento disponível';
 
   function scrollToCard(index: number) {
     carouselRef.current?.scrollTo({
@@ -483,14 +525,21 @@ export function CardsScreen({
         ))}
       </View>
 
-      <View style={commonStyles.twoColumns}>
-        <MetricCard label="Limite disponível" value={displayedLimitValue} />
-        <MetricCard label="Fatura atual" value={displayedStatementValue} />
+      <View style={styles.limitAvailableCard}>
+        <Text style={styles.limitAvailableLabel}>Limite disponível</Text>
+        <Text
+          adjustsFontSizeToFit
+          minimumFontScale={0.72}
+          numberOfLines={1}
+          style={styles.limitAvailableValue}
+        >
+          {displayedLimitValue}
+        </Text>
       </View>
 
       <View style={commonStyles.twoColumns}>
-        <MetricCard label="Data de vencimento" value={displayedDueDate} />
-        <MetricCard label="Status da fatura" value={displayedInvoiceStatus} />
+        <MetricCard label="Fatura atual" value={displayedStatementValue} />
+        <MetricCard label="Vencimento" value={displayedDueDate} />
       </View>
 
       <Pressable
@@ -519,6 +568,64 @@ export function CardsScreen({
           <Text style={styles.invoiceHighlightValue}>
             {displayedStatementValue}
           </Text>
+
+          <View style={styles.invoiceDetailGrid}>
+            <View style={styles.invoiceDetailItem}>
+              <View style={styles.invoiceDetailBox}>
+                <Text style={styles.invoiceDetailLabel}>Vencimento</Text>
+                <Text
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.78}
+                  numberOfLines={1}
+                  style={styles.invoiceDetailValue}
+                >
+                  {displayedDueDate}
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.invoiceDetailItem}>
+              <View style={styles.invoiceDetailBox}>
+                <Text style={styles.invoiceDetailLabel}>Situação</Text>
+                <Text
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.78}
+                  numberOfLines={1}
+                  style={styles.invoiceDetailValue}
+                >
+                  {displayedInvoicePaymentHint}
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.invoiceDetailItem}>
+              <View style={styles.invoiceDetailBox}>
+                <Text style={styles.invoiceDetailLabel}>Limite do cartão</Text>
+                <Text
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.78}
+                  numberOfLines={1}
+                  style={styles.invoiceDetailValue}
+                >
+                  {displayedLimitValue}
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.invoiceDetailItem}>
+              <View style={styles.invoiceDetailBox}>
+                <Text style={styles.invoiceDetailLabel}>Cartão</Text>
+                <Text
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.78}
+                  numberOfLines={1}
+                  style={styles.invoiceDetailValue}
+                >
+                  {selectedCardHidden ? hiddenInvoiceValue : selectedCard.title}
+                </Text>
+              </View>
+            </View>
+          </View>
 
           <View style={styles.invoicePayButton}>
             <Text style={styles.invoicePayButtonText}>Abrir fatura</Text>

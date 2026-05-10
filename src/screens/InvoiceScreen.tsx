@@ -1,6 +1,14 @@
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import {
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors } from '../theme';
+import { SCREEN_HEIGHT, colors } from '../theme';
 import { ScreenTitle } from '../components/ScreenTitle';
 import { cardInvoice } from '../data/mockData';
 import type { AppScreen, UserCard } from '../types';
@@ -190,6 +198,37 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '900',
   },
+  loadingPaymentScreen: {
+    minHeight: Math.max(SCREEN_HEIGHT - 220, 430),
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 28,
+    paddingBottom: 64,
+  },
+  loadingPaymentBadge: {
+    width: 78,
+    height: 78,
+    borderRadius: 26,
+    backgroundColor: 'rgba(111,44,255,0.18)',
+    borderWidth: 1,
+    borderColor: 'rgba(168,85,247,0.34)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 18,
+  },
+  loadingPaymentTitle: {
+    color: colors.white,
+    fontSize: 20,
+    fontWeight: '900',
+    textAlign: 'center',
+  },
+  loadingPaymentText: {
+    color: colors.muted,
+    fontSize: 13,
+    lineHeight: 19,
+    marginTop: 8,
+    textAlign: 'center',
+  },
 });
 
 export function InvoiceScreen({
@@ -207,7 +246,23 @@ export function InvoiceScreen({
   onPayInvoice: () => boolean;
   setActiveScreen: (screen: AppScreen) => void;
 }) {
+  const [isPaymentLoading, setPaymentLoading] = useState(false);
+  const paymentTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(
+    () => () => {
+      if (paymentTimeoutRef.current) {
+        clearTimeout(paymentTimeoutRef.current);
+      }
+    },
+    []
+  );
+
   function handlePayInvoice() {
+    if (isPaymentLoading) {
+      return;
+    }
+
     if (invoicePaid) {
       Alert.alert('Fatura', 'Esta fatura já está paga.');
       return;
@@ -221,9 +276,29 @@ export function InvoiceScreen({
       return;
     }
 
-    Alert.alert(
-      'Fatura paga',
-      'Pagamento confirmado. O saldo da conta foi atualizado.'
+    setPaymentLoading(true);
+
+    paymentTimeoutRef.current = setTimeout(() => {
+      setPaymentLoading(false);
+      paymentTimeoutRef.current = null;
+      Alert.alert(
+        'Fatura paga',
+        'Pagamento confirmado. O saldo da conta foi atualizado.'
+      );
+    }, 650);
+  }
+
+  if (isPaymentLoading) {
+    return (
+      <View style={styles.loadingPaymentScreen}>
+        <View style={styles.loadingPaymentBadge}>
+          <ActivityIndicator color={colors.white} size="large" />
+        </View>
+        <Text style={styles.loadingPaymentTitle}>Processando pagamento</Text>
+        <Text style={styles.loadingPaymentText}>
+          Estamos baixando a fatura e atualizando o saldo da sua conta.
+        </Text>
+      </View>
     );
   }
 
@@ -268,11 +343,11 @@ export function InvoiceScreen({
 
       <Pressable
         accessibilityRole="button"
-        disabled={invoicePaid}
+        disabled={invoicePaid || isPaymentLoading}
         onPress={handlePayInvoice}
         style={[
           styles.topPayButton,
-          invoicePaid && styles.topPayButtonDisabled,
+          (invoicePaid || isPaymentLoading) && styles.topPayButtonDisabled,
         ]}
       >
         <Text style={styles.buttonText}>
@@ -346,11 +421,11 @@ export function InvoiceScreen({
 
         <Pressable
           accessibilityRole="button"
-          disabled={invoicePaid}
+          disabled={invoicePaid || isPaymentLoading}
           onPress={handlePayInvoice}
           style={[
             styles.primaryButton,
-            invoicePaid && styles.primaryButtonDisabled,
+            (invoicePaid || isPaymentLoading) && styles.primaryButtonDisabled,
           ]}
         >
           <Text style={styles.buttonText}>

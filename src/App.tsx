@@ -10,6 +10,7 @@ import { CardsScreen } from './screens/CardsScreen';
 import { PixScreen } from './screens/PixScreen';
 import {
   InvestmentsScreen,
+  type InvestmentAsset,
   type InvestmentPortfolio,
 } from './screens/InvestmentsScreen';
 import { ShoppingScreen } from './screens/ShoppingScreen';
@@ -20,8 +21,54 @@ import { ProfileScreen } from './screens/ProfileScreen';
 import { StatementScreen } from './screens/StatementScreen';
 import { InvoiceScreen } from './screens/InvoiceScreen';
 import { userCards } from './data/mockData';
-import type { UserCard } from './types';
-import { parseCurrency } from './utils/currency';
+import type { BankStatementTransaction, UserCard } from './types';
+import { formatCurrency, parseCurrency } from './utils/currency';
+
+const initialStatementTransactions: BankStatementTransaction[] = [
+  {
+    icon: 'briefcase-outline',
+    id: 'initial-salary',
+    positive: true,
+    subtitle: 'Empresa',
+    title: 'Salário recebido',
+    type: 'entry',
+    value: '+ R$ 4.500,00',
+  },
+  {
+    icon: 'sparkles-outline',
+    id: 'initial-cashback-gold',
+    positive: true,
+    subtitle: 'Benefícios',
+    title: 'Cashback Gold',
+    type: 'cashback',
+    value: '+ R$ 35,00',
+  },
+  {
+    icon: 'film-outline',
+    id: 'initial-netflix',
+    subtitle: 'Assinatura',
+    title: 'Pagamento Netflix',
+    type: 'expense',
+    value: '- R$ 55,90',
+  },
+  {
+    icon: 'basket-outline',
+    id: 'initial-market',
+    subtitle: 'Alimentação',
+    title: 'Supermercado',
+    type: 'expense',
+    value: '- R$ 248,32',
+  },
+];
+
+function formatStatementMoment() {
+  return new Date().toLocaleString('pt-BR', {
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    month: '2-digit',
+  });
+}
 
 export default function App() {
   return (
@@ -45,6 +92,9 @@ function AppContent() {
   const [cards, setCards] = useState<UserCard[]>(userCards);
   const [investmentPortfolio, setInvestmentPortfolio] =
     useState<InvestmentPortfolio>({});
+  const [statementTransactions, setStatementTransactions] = useState<
+    BankStatementTransaction[]
+  >(initialStatementTransactions);
   const [pixDailyUsage, setPixDailyUsage] = useState({
     amount: 0,
     date: todayKey,
@@ -68,6 +118,20 @@ function AppContent() {
 
   if (!logged) {
     return <LoginScreen onLogin={() => setLogged(true)} />;
+  }
+
+  function addStatementTransaction(
+    transaction: Omit<BankStatementTransaction, 'id'>
+  ) {
+    setStatementTransactions((current) => [
+      {
+        ...transaction,
+        id: `transaction-${Date.now()}-${Math.random()
+          .toString(36)
+          .slice(2, 8)}`,
+      },
+      ...current,
+    ]);
   }
 
   function renderActiveScreen() {
@@ -107,7 +171,7 @@ function AppContent() {
       pixDailyUsage.date === todayKey ? pixDailyUsage.amount : 0;
     const pixDailyRemaining = Math.max(pixDailyLimit - pixUsedToday, 0);
 
-    function sendPix(amount: number) {
+    function sendPix(amount: number, recipientName: string) {
       const currentPixUsed =
         pixDailyUsage.date === todayKey ? pixDailyUsage.amount : 0;
 
@@ -127,6 +191,13 @@ function AppContent() {
         amount: currentPixUsed + amount,
         date: todayKey,
       });
+      addStatementTransaction({
+        icon: 'send-outline',
+        subtitle: `Para ${recipientName} - ${formatStatementMoment()}`,
+        title: 'Pix enviado',
+        type: 'expense',
+        value: `- ${formatCurrency(amount)}`,
+      });
       return 'success';
     }
 
@@ -138,12 +209,63 @@ function AppContent() {
       setCashbackBalance((current) => current + amount);
     }
 
+    function finishShoppingPurchase({
+      amount,
+      cashback,
+      itemCount,
+      orderCode,
+    }: {
+      amount: number;
+      cashback: number;
+      itemCount: number;
+      orderCode: string;
+    }) {
+      const statementMoment = formatStatementMoment();
+
+      if (cashback > 0) {
+        addStatementTransaction({
+          icon: 'sparkles-outline',
+          positive: true,
+          subtitle: `Rocket Shopping - ${statementMoment}`,
+          title: 'Cashback recebido',
+          type: 'cashback',
+          value: `+ ${formatCurrency(cashback)}`,
+        });
+      }
+
+      addStatementTransaction({
+        icon: 'bag-check-outline',
+        subtitle: `${itemCount} ${
+          itemCount === 1 ? 'item' : 'itens'
+        } - Pedido ${orderCode} - ${statementMoment}`,
+        title: 'Compra Rocket Shopping',
+        type: 'expense',
+        value: `- ${formatCurrency(amount)}`,
+      });
+    }
+
+    function finishInvestment(amount: number, asset: InvestmentAsset) {
+      if (!debitAccount(amount)) {
+        return false;
+      }
+
+      addStatementTransaction({
+        icon: 'trending-up-outline',
+        subtitle: `${asset.name} - ${formatStatementMoment()}`,
+        title: 'Investimento realizado',
+        type: 'expense',
+        value: `- ${formatCurrency(amount)}`,
+      });
+      return true;
+    }
+
     switch (activeScreen) {
       case 'home':
         return (
           <HomeScreen
             accountBalance={accountBalance}
             cashbackBalance={cashbackBalance}
+            statementTransactions={statementTransactions}
             setActiveScreen={setActiveScreen}
           />
         );
@@ -169,7 +291,7 @@ function AppContent() {
         return (
           <InvestmentsScreen
             accountBalance={accountBalance}
-            onDebitAccount={debitAccount}
+            onFinishInvestment={finishInvestment}
             portfolio={investmentPortfolio}
             setPortfolio={setInvestmentPortfolio}
           />
@@ -180,6 +302,7 @@ function AppContent() {
             accountBalance={accountBalance}
             onEarnCashback={addShoppingCashback}
             onDebitAccount={debitAccount}
+            onRegisterPurchase={finishShoppingPurchase}
             setActiveScreen={setActiveScreen}
           />
         );
@@ -197,7 +320,7 @@ function AppContent() {
           />
         );
       case 'statement':
-        return <StatementScreen />;
+        return <StatementScreen transactions={statementTransactions} />;
       case 'invoice':
         return (
           <InvoiceScreen
@@ -214,6 +337,7 @@ function AppContent() {
           <HomeScreen
             accountBalance={accountBalance}
             cashbackBalance={cashbackBalance}
+            statementTransactions={statementTransactions}
             setActiveScreen={setActiveScreen}
           />
         );

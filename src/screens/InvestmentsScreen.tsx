@@ -49,7 +49,7 @@ export type InvestmentPortfolio = Record<string, PortfolioEntry>;
 
 type InvestmentsScreenProps = {
   accountBalance: number;
-  onDebitAccount: (amount: number) => boolean;
+  onFinishInvestment: (amount: number, asset: InvestmentAsset) => boolean;
   portfolio: InvestmentPortfolio;
   setPortfolio: Dispatch<SetStateAction<InvestmentPortfolio>>;
 };
@@ -59,7 +59,7 @@ const donutSegmentCount = 84;
 const primaryStock: InvestmentAsset = {
   annualRate: 18.7,
   chartGroup: 'rocket',
-  color: '#D946EF',
+  color: '#E879F9',
   code: 'RCKT3',
   description: 'Ação principal do ecossistema Rocket, com crescimento digital e risco moderado.',
   icon: 'rocket-outline',
@@ -89,7 +89,7 @@ const extraStocks: InvestmentAsset[] = [
   {
     annualRate: 9.8,
     chartGroup: 'stocks',
-    color: '#06B6D4',
+    color: '#FACC15',
     code: 'SOLR3',
     description: 'Companhia fictícia de energia solar com receita previsível e expansão gradual.',
     icon: 'sunny-outline',
@@ -117,7 +117,7 @@ const extraStocks: InvestmentAsset[] = [
   {
     annualRate: 8.9,
     chartGroup: 'stocks',
-    color: '#F97316',
+    color: '#FB7185',
     code: 'HLTH5',
     description: 'Rede fictícia de saúde e tecnologia com perfil defensivo dentro da bolsa.',
     icon: 'medkit-outline',
@@ -147,7 +147,7 @@ const fixedIncomeAssets: InvestmentAsset[] = [
   {
     annualRate: 12.2,
     chartGroup: 'fixed',
-    color: '#22C55E',
+    color: '#F97316',
     description: 'Título público fictício indexado à inflação para objetivos de médio prazo.',
     icon: 'lock-closed-outline',
     id: 'tesouro-digital-2029',
@@ -160,7 +160,7 @@ const fixedIncomeAssets: InvestmentAsset[] = [
   {
     annualRate: 12.8,
     chartGroup: 'fixed',
-    color: '#84CC16',
+    color: '#A3E635',
     description: 'Produto fictício isento com foco em estabilidade e previsibilidade.',
     icon: 'business-outline',
     id: 'lci-green-2030',
@@ -173,7 +173,7 @@ const fixedIncomeAssets: InvestmentAsset[] = [
   {
     annualRate: 14.1,
     chartGroup: 'fixed',
-    color: '#14B8A6',
+    color: '#EF4444',
     description: 'Debênture fictícia de infraestrutura com retorno estimado maior e prazo alongado.',
     icon: 'bar-chart-outline',
     id: 'debenture-infra',
@@ -761,7 +761,7 @@ function getApproxQuantity(entry: PortfolioEntry) {
 
 export function InvestmentsScreen({
   accountBalance,
-  onDebitAccount,
+  onFinishInvestment,
   portfolio,
   setPortfolio,
 }: InvestmentsScreenProps) {
@@ -819,7 +819,7 @@ export function InvestmentsScreen({
       return;
     }
 
-    if (!onDebitAccount(modalAmount)) {
+    if (!onFinishInvestment(modalAmount, selectedAsset)) {
       Alert.alert('Saldo insuficiente', 'Não foi possível concluir o investimento.');
       return;
     }

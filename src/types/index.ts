@@ -33,6 +33,18 @@ export type ShoppingProduct = {
   image: string;
 };
 
+export type BankStatementTransactionType = 'entry' | 'expense' | 'cashback';
+
+export type BankStatementTransaction = {
+  icon: IconName;
+  id: string;
+  positive?: boolean;
+  subtitle: string;
+  title: string;
+  type: BankStatementTransactionType;
+  value: string;
+};
+
 export type CardVariant = 'standard' | 'gold' | 'platinum' | 'black';
 
 export type UserCard = {
