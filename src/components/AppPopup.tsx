@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { colors } from '../theme';
 
-type PopupTone = 'info' | 'success' | 'warning';
+type PopupTone = 'error' | 'info' | 'success' | 'warning';
 type IconName = ComponentProps<typeof Ionicons>['name'];
 
 type PopupState = {
@@ -31,6 +31,11 @@ const toneStyles: Record<
     glow: 'rgba(111,44,255,0.24)',
     icon: 'sparkles-outline',
     stops: [colors.purpleStrong, colors.purpleSoft],
+  },
+  error: {
+    glow: 'rgba(239,68,68,0.24)',
+    icon: 'close-circle-outline',
+    stops: ['#EF4444', '#B91C1C'],
   },
   success: {
     glow: 'rgba(34,197,94,0.2)',
@@ -56,6 +61,10 @@ function resolveTone(title: string, message?: string, buttons: AlertButton[] = [
   const hasDestructiveButton = buttons.some(
     (button) => button.style === 'destructive'
   );
+
+  if (['indisponivel'].some((word) => content.includes(word))) {
+    return 'error';
+  }
 
   if (
     hasDestructiveButton ||

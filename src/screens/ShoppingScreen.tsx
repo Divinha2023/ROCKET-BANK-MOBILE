@@ -731,7 +731,7 @@ export function ShoppingScreen({
 
     if (normalizedCoupon !== discountCoupon) {
       setAppliedCoupon(null);
-      Alert.alert('Cupom invalido', 'Digite ACCENTURE20 para aplicar o desconto.');
+      Alert.alert('Cupom indisponível', 'Este cupom não está disponível.');
       return;
     }
 
