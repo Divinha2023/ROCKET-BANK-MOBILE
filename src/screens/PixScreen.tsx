@@ -14,7 +14,7 @@ import { ScreenTitle } from '../components/ScreenTitle';
 import { SectionHeader } from '../components/SectionHeader';
 import { MenuRow } from '../components/MenuRow';
 import { PixCard } from '../components/PixCard';
-import { formatCurrency, parseCurrency } from '../utils/currency';
+import { formatCurrency, formatCurrencyInput, parseCurrency } from '../utils/currency';
 
 type FavoriteContact = {
   bank: string;
@@ -251,10 +251,12 @@ const styles = StyleSheet.create({
 
 export function PixScreen({
   accountBalance,
-  onDebitAccount,
+  onSendPix,
+  pixDailyRemaining,
 }: {
   accountBalance: number;
-  onDebitAccount: (amount: number) => boolean;
+  onSendPix: (amount: number) => 'balance' | 'daily-limit' | 'invalid' | 'success';
+  pixDailyRemaining: number;
 }) {
   const [selectedContact, setSelectedContact] = useState<FavoriteContact | null>(
     null
@@ -293,7 +295,17 @@ export function PixScreen({
       return;
     }
 
-    if (!onDebitAccount(amount)) {
+    const result = onSendPix(amount);
+
+    if (result === 'daily-limit') {
+      Alert.alert(
+        'Limite diário atingido',
+        `Você pode transferir até ${formatCurrency(6500)} por dia. Disponível hoje: ${formatCurrency(pixDailyRemaining)}.`
+      );
+      return;
+    }
+
+    if (result === 'balance') {
       Alert.alert('Saldo insuficiente', 'Não há saldo suficiente para este Pix.');
       return;
     }
@@ -395,7 +407,7 @@ export function PixScreen({
           <Text style={styles.inputLabel}>Valor</Text>
           <TextInput
             keyboardType="decimal-pad"
-            onChangeText={setAmountValue}
+            onChangeText={(value) => setAmountValue(formatCurrencyInput(value))}
             placeholder="R$ 0,00"
             placeholderTextColor={colors.mutedDark}
             style={styles.amountInput}
@@ -446,7 +458,7 @@ export function PixScreen({
       <View style={styles.statusCard}>
         <Ionicons name="shield-checkmark-outline" size={24} color={colors.green} />
         <Text style={styles.statusText}>
-          Limite Pix diário disponível: R$ 6.500,00. Saldo da conta:{' '}
+          Limite Pix diário disponível: {formatCurrency(pixDailyRemaining)}. Saldo da conta:{' '}
           {formatCurrency(accountBalance)}.
         </Text>
       </View>

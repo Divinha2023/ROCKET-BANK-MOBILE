@@ -1092,27 +1092,31 @@ export function ShoppingScreen({
         />
       </Pressable>
 
-      <SectionHeader title="Categorias" />
+      {!normalizedSearch ? (
+        <>
+          <SectionHeader title="Categorias" />
 
-      <View style={styles.shoppingCategoriesGrid}>
-        <CategoryCard
-          active={activeCategory === allCategoriesLabel}
-          icon="apps-outline"
-          label={allCategoriesLabel}
-          onPress={() => setActiveCategory(allCategoriesLabel)}
-        />
+          <View style={styles.shoppingCategoriesGrid}>
+            <CategoryCard
+              active={activeCategory === allCategoriesLabel}
+              icon="apps-outline"
+              label={allCategoriesLabel}
+              onPress={() => setActiveCategory(allCategoriesLabel)}
+            />
 
-        {shoppingCategories.map((category) => (
-          <CategoryCard
-            active={activeCategory === category.label}
-            disabled={category.available === false}
-            key={category.label}
-            icon={category.icon}
-            label={category.label}
-            onPress={() => setActiveCategory(category.label)}
-          />
-        ))}
-      </View>
+            {shoppingCategories.map((category) => (
+              <CategoryCard
+                active={activeCategory === category.label}
+                disabled={category.available === false}
+                key={category.label}
+                icon={category.icon}
+                label={category.label}
+                onPress={() => setActiveCategory(category.label)}
+              />
+            ))}
+          </View>
+        </>
+      ) : null}
 
       {visibleProducts.length === 0 ? (
         <View style={styles.emptyState}>

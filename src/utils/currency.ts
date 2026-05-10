@@ -13,3 +13,10 @@ export function parseCurrency(value: string) {
 
   return Number(normalized) || 0;
 }
+
+export function formatCurrencyInput(value: string) {
+  const digits = value.replace(/\D/g, '');
+  const amount = Number(digits || '0') / 100;
+
+  return formatCurrency(amount);
+}

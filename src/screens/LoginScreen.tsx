@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     paddingTop: 20,
     paddingBottom: 20,
-    backgroundColor: colors.card,
+    backgroundColor: 'rgba(18,18,30,0.86)',
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.16)',
     overflow: 'hidden',
@@ -310,8 +310,8 @@ const styles = StyleSheet.create({
     minHeight: 54,
     borderRadius: 15,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.09)',
-    backgroundColor: 'rgba(255,255,255,0.07)',
+    borderColor: 'rgba(255,255,255,0.18)',
+    backgroundColor: 'rgba(10,6,24,0.86)',
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
@@ -379,7 +379,7 @@ function getCopy(mode: LoginMode) {
 
   return {
     title: 'Bem-vindo de volta!',
-    subtitle: 'Faça login na sua conta',
+    subtitle: '',
     button: 'Entrar',
   };
 }
@@ -692,7 +692,9 @@ export function LoginScreen({ onLogin }: { onLogin: () => void }) {
             <View style={styles.loginCardGlow} />
 
             <Text style={styles.title}>{copy.title}</Text>
-            <Text style={styles.subtitle}>{copy.subtitle}</Text>
+            {copy.subtitle ? (
+              <Text style={styles.subtitle}>{copy.subtitle}</Text>
+            ) : null}
 
             {mode === 'recover' ? (
               <Text style={styles.helperText}>
@@ -718,12 +720,6 @@ export function LoginScreen({ onLogin }: { onLogin: () => void }) {
                 value={emailOrCpf}
               />
             </View>
-
-            <Text style={styles.fieldHint}>
-              {accessType === 'email'
-                ? 'Use um e-mail válido, como test@mail.com.'
-                : 'O CPF será formatado automaticamente.'}
-            </Text>
 
             {mode !== 'recover' ? (
               <View style={styles.inputBox}>
@@ -845,9 +841,9 @@ export function LoginScreen({ onLogin }: { onLogin: () => void }) {
         <LinearGradient
           colors={[
             'rgba(4,1,13,0.04)',
-            'rgba(4,1,13,0.12)',
-            'rgba(4,1,13,0.35)',
-            'rgba(4,1,13,0.96)',
+            'rgba(4,1,13,0.28)',
+            'rgba(4,1,13,0.62)',
+            'rgba(4,1,13,0.98)',
           ]}
           style={styles.overlay}
         >

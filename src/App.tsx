@@ -35,6 +35,8 @@ export default function App() {
 
 function AppContent() {
   const accountLimit = 50000;
+  const pixDailyLimit = 6500;
+  const todayKey = new Date().toISOString().slice(0, 10);
   const [showSplash, setShowSplash] = useState(true);
   const [logged, setLogged] = useState(false);
   const [activeScreen, setActiveScreen] = useState<AppScreen>('home');
@@ -43,6 +45,10 @@ function AppContent() {
   const [cards, setCards] = useState<UserCard[]>(userCards);
   const [investmentPortfolio, setInvestmentPortfolio] =
     useState<InvestmentPortfolio>({});
+  const [pixDailyUsage, setPixDailyUsage] = useState({
+    amount: 0,
+    date: todayKey,
+  });
   const [paidInvoiceCardIds, setPaidInvoiceCardIds] = useState<
     Record<string, boolean>
   >({});
@@ -97,6 +103,33 @@ function AppContent() {
       return true;
     }
 
+    const pixUsedToday =
+      pixDailyUsage.date === todayKey ? pixDailyUsage.amount : 0;
+    const pixDailyRemaining = Math.max(pixDailyLimit - pixUsedToday, 0);
+
+    function sendPix(amount: number) {
+      const currentPixUsed =
+        pixDailyUsage.date === todayKey ? pixDailyUsage.amount : 0;
+
+      if (amount <= 0) {
+        return 'invalid';
+      }
+
+      if (currentPixUsed + amount > pixDailyLimit) {
+        return 'daily-limit';
+      }
+
+      if (!debitAccount(amount)) {
+        return 'balance';
+      }
+
+      setPixDailyUsage({
+        amount: currentPixUsed + amount,
+        date: todayKey,
+      });
+      return 'success';
+    }
+
     function addShoppingCashback(amount: number) {
       if (amount <= 0) {
         return;
@@ -128,12 +161,15 @@ function AppContent() {
         return (
           <PixScreen
             accountBalance={accountBalance}
-            onDebitAccount={debitAccount}
+            onSendPix={sendPix}
+            pixDailyRemaining={pixDailyRemaining}
           />
         );
       case 'investments':
         return (
           <InvestmentsScreen
+            accountBalance={accountBalance}
+            onDebitAccount={debitAccount}
             portfolio={investmentPortfolio}
             setPortfolio={setInvestmentPortfolio}
           />

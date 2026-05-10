@@ -19,7 +19,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { ScreenTitle } from '../components/ScreenTitle';
 import { colors } from '../theme';
 import type { IconName } from '../types';
-import { formatCurrency, parseCurrency } from '../utils/currency';
+import { formatCurrency, formatCurrencyInput, parseCurrency } from '../utils/currency';
 
 type InvestmentKind = 'fixed' | 'variable';
 type ChartGroup = 'fixed' | 'rocket' | 'stocks';
@@ -48,6 +48,8 @@ export type PortfolioEntry = {
 export type InvestmentPortfolio = Record<string, PortfolioEntry>;
 
 type InvestmentsScreenProps = {
+  accountBalance: number;
+  onDebitAccount: (amount: number) => boolean;
   portfolio: InvestmentPortfolio;
   setPortfolio: Dispatch<SetStateAction<InvestmentPortfolio>>;
 };
@@ -758,6 +760,8 @@ function getApproxQuantity(entry: PortfolioEntry) {
 }
 
 export function InvestmentsScreen({
+  accountBalance,
+  onDebitAccount,
   portfolio,
   setPortfolio,
 }: InvestmentsScreenProps) {
@@ -782,7 +786,7 @@ export function InvestmentsScreen({
     ? fixedIncomeAssets
     : fixedIncomeAssets.slice(0, 2);
   const modalAmount = parseCurrency(investmentValue);
-  const canFinishInvestment = modalAmount > 0;
+  const canFinishInvestment = modalAmount > 0 && modalAmount <= accountBalance;
 
   const portfolioBreakdown = portfolioEntries.map((entry) => ({
     ...entry,
@@ -802,8 +806,21 @@ export function InvestmentsScreen({
   }
 
   function finishInvestment() {
-    if (!selectedAsset || !canFinishInvestment) {
+    if (!selectedAsset || modalAmount <= 0) {
       Alert.alert('Valor inválido', 'Informe um valor maior que zero.');
+      return;
+    }
+
+    if (modalAmount > accountBalance) {
+      Alert.alert(
+        'Saldo insuficiente',
+        `O investimento máximo disponível é ${formatCurrency(accountBalance)}.`
+      );
+      return;
+    }
+
+    if (!onDebitAccount(modalAmount)) {
+      Alert.alert('Saldo insuficiente', 'Não foi possível concluir o investimento.');
       return;
     }
 
@@ -1246,12 +1263,15 @@ export function InvestmentsScreen({
               <TextInput
                 autoFocus
                 keyboardType="decimal-pad"
-                onChangeText={setInvestmentValue}
+                onChangeText={(value) => setInvestmentValue(formatCurrencyInput(value))}
                 placeholder="R$ 0,00"
                 placeholderTextColor={colors.mutedDark}
                 style={styles.amountInput}
                 value={investmentValue}
               />
+              <Text style={styles.modalSubtitle}>
+                Limite máximo: {formatCurrency(accountBalance)}
+              </Text>
 
               <View style={styles.modalButtons}>
                 <Pressable
