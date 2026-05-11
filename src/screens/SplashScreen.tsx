@@ -5,6 +5,74 @@ import { colors } from '../theme';
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 
+export function SplashScreen() {
+  return (
+    <View style={styles.screen}>
+      <StatusBar barStyle="light-content" backgroundColor="#020008" />
+
+      <View style={styles.animationStage}>
+        <LottieView
+          autoPlay
+          loop
+          source={require('../../assets/animations/rocket-launch.json')}
+          style={styles.fullScene}
+        />
+      </View>
+
+      <LinearGradient
+        colors={[
+          'rgba(2,0,8,0.04)',
+          'rgba(36,9,82,0.10)',
+          'rgba(2,0,8,0.42)',
+          'rgba(2,0,8,0.92)',
+        ]}
+        locations={[0, 0.34, 0.66, 1]}
+        style={styles.colorWash}
+      />
+
+      <LinearGradient
+        colors={[
+          'rgba(111,44,255,0)',
+          'rgba(111,44,255,0.25)',
+          'rgba(255,123,84,0.20)',
+        ]}
+        style={styles.launchBeam}
+      />
+
+      <View pointerEvents="none" style={styles.starField}>
+        <View style={[styles.star, styles.starOne]} />
+        <View style={[styles.star, styles.starTwo]} />
+        <View style={[styles.star, styles.starThree]} />
+        <View style={[styles.star, styles.starFour]} />
+      </View>
+
+      <View style={styles.bottomPanel}>
+        <Text style={styles.eyebrow}>Rocket Bank</Text>
+        <Text style={styles.title}>Preparando sua experiência.</Text>
+        <Text style={styles.subtitle}>
+          Carregando conta, cartões, shopping e benefícios em segurança.
+        </Text>
+
+        <View style={styles.progressShell}>
+          <View style={styles.progressTop}>
+            <Text style={styles.progressLabel}>Inicializando app</Text>
+            <Text style={styles.progressValue}>84%</Text>
+          </View>
+
+          <View style={styles.loaderTrack}>
+            <LinearGradient
+              colors={[colors.purpleStrong, colors.purpleSoft, colors.orange]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.loaderFill}
+            />
+          </View>
+        </View>
+      </View>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
@@ -121,71 +189,3 @@ const styles = StyleSheet.create({
     borderRadius: 99,
   },
 });
-
-export function SplashScreen() {
-  return (
-    <View style={styles.screen}>
-      <StatusBar barStyle="light-content" backgroundColor="#020008" />
-
-      <View style={styles.animationStage}>
-        <LottieView
-          autoPlay
-          loop
-          source={require('../../assets/animations/rocket-launch.json')}
-          style={styles.fullScene}
-        />
-      </View>
-
-      <LinearGradient
-        colors={[
-          'rgba(2,0,8,0.04)',
-          'rgba(36,9,82,0.10)',
-          'rgba(2,0,8,0.42)',
-          'rgba(2,0,8,0.92)',
-        ]}
-        locations={[0, 0.34, 0.66, 1]}
-        style={styles.colorWash}
-      />
-
-      <LinearGradient
-        colors={[
-          'rgba(111,44,255,0)',
-          'rgba(111,44,255,0.25)',
-          'rgba(255,123,84,0.20)',
-        ]}
-        style={styles.launchBeam}
-      />
-
-      <View pointerEvents="none" style={styles.starField}>
-        <View style={[styles.star, styles.starOne]} />
-        <View style={[styles.star, styles.starTwo]} />
-        <View style={[styles.star, styles.starThree]} />
-        <View style={[styles.star, styles.starFour]} />
-      </View>
-
-      <View style={styles.bottomPanel}>
-        <Text style={styles.eyebrow}>Rocket Bank</Text>
-        <Text style={styles.title}>Preparando sua experiência.</Text>
-        <Text style={styles.subtitle}>
-          Carregando conta, cartões, shopping e benefícios em segurança.
-        </Text>
-
-        <View style={styles.progressShell}>
-          <View style={styles.progressTop}>
-            <Text style={styles.progressLabel}>Inicializando app</Text>
-            <Text style={styles.progressValue}>84%</Text>
-          </View>
-
-          <View style={styles.loaderTrack}>
-            <LinearGradient
-              colors={[colors.purpleStrong, colors.purpleSoft, colors.orange]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={styles.loaderFill}
-            />
-          </View>
-        </View>
-      </View>
-    </View>
-  );
-}

@@ -5,22 +5,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import type { AppScreen } from '../types';
 import { BottomTabs } from './BottomTabs';
 
-const styles = StyleSheet.create({
-  appScreen: {
-    flex: 1,
-  },
-  safeArea: {
-    flex: 1,
-  },
-  appScroll: {
-    paddingHorizontal: 20,
-    paddingTop: 24,
-    paddingBottom: 116,
-  },
-  appContent: {
-    flex: 1,
-  },
-});
 export function AppLayout({
   children,
   activeScreen,
@@ -66,3 +50,20 @@ export function AppLayout({
     </LinearGradient>
   );
 }
+
+const styles = StyleSheet.create({
+  appScreen: {
+    flex: 1,
+  },
+  safeArea: {
+    flex: 1,
+  },
+  appScroll: {
+    paddingHorizontal: 20,
+    paddingTop: 24,
+    paddingBottom: 116,
+  },
+  appContent: {
+    flex: 1,
+  },
+});

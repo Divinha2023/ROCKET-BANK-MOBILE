@@ -51,299 +51,6 @@ const initialRegisterData: RegisterData = {
   uf: '',
 };
 
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  background: {
-    flex: 1,
-  },
-  overlay: {
-    flex: 1,
-  },
-  safeArea: {
-    flex: 1,
-  },
-  flex: {
-    flex: 1,
-  },
-  loginContent: {
-    flexGrow: 1,
-    justifyContent: 'flex-end',
-    paddingBottom: 18,
-  },
-  loginCardWrapper: {
-    marginHorizontal: 22,
-    borderRadius: 30,
-    overflow: 'hidden',
-    shadowColor: '#A855F7',
-    shadowOpacity: 0.28,
-    shadowRadius: 26,
-    elevation: 14,
-  },
-  loginCard: {
-    borderRadius: 30,
-    paddingHorizontal: 18,
-    paddingTop: 20,
-    paddingBottom: 20,
-    backgroundColor: 'rgba(18,18,30,0.86)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.16)',
-    overflow: 'hidden',
-  },
-  loginCardGlow: {
-    position: 'absolute',
-    top: -40,
-    right: -30,
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-    backgroundColor: 'rgba(168,85,247,0.16)',
-  },
-  title: {
-    color: colors.white,
-    fontSize: 25,
-    fontWeight: '900',
-    marginBottom: 6,
-  },
-  titleAccent: {
-    color: '#B86CFF',
-  },
-  subtitle: {
-    color: colors.muted,
-    fontSize: 14,
-    marginBottom: 12,
-  },
-  helperText: {
-    color: colors.mutedDark,
-    fontSize: 13,
-    lineHeight: 19,
-    marginBottom: 18,
-  },
-  inputBox: {
-    height: 52,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.10)',
-    backgroundColor: colors.input,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    marginBottom: 10,
-  },
-  input: {
-    flex: 1,
-    color: colors.white,
-    fontSize: 16,
-    marginLeft: 12,
-  },
-  fieldHint: {
-    color: colors.mutedDark,
-    fontSize: 12,
-    lineHeight: 17,
-    marginTop: -2,
-    marginBottom: 10,
-    marginLeft: 4,
-  },
-  optionsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    flexWrap: 'wrap',
-    marginTop: 2,
-    marginBottom: 16,
-  },
-  rememberRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flexShrink: 1,
-    marginRight: 10,
-  },
-  checkbox: {
-    width: 24,
-    height: 24,
-    borderRadius: 8,
-    borderWidth: 1.5,
-    borderColor: 'rgba(255,255,255,0.35)',
-    backgroundColor: 'rgba(255,255,255,0.06)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 10,
-  },
-  checkboxActive: {
-    backgroundColor: colors.purple,
-    borderColor: colors.purple,
-  },
-  rememberText: {
-    color: '#C8C8D4',
-    fontSize: 13,
-    flexShrink: 1,
-  },
-  forgotButton: {
-    marginLeft: 'auto',
-    paddingVertical: 4,
-  },
-  forgotText: {
-    color: '#C2A8FF',
-    fontSize: 13,
-    fontWeight: '700',
-  },
-  primaryButton: {
-    height: 52,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#A855F7',
-    shadowOpacity: 0.35,
-    shadowRadius: 18,
-    elevation: 8,
-  },
-  primaryButtonText: {
-    color: colors.white,
-    fontSize: 18,
-    fontWeight: '900',
-  },
-  dividerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 10,
-  },
-  divider: {
-    flex: 1,
-    height: 1,
-    backgroundColor: 'rgba(255,255,255,0.10)',
-  },
-  dividerText: {
-    color: '#AAAABA',
-    fontSize: 13,
-    marginHorizontal: 12,
-  },
-  googleButton: {
-    height: 50,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.12)',
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  googleIcon: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: colors.white,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  googleLogo: {
-    width: 22,
-    height: 22,
-  },
-  googleText: {
-    color: colors.white,
-    fontSize: 15,
-    fontWeight: '700',
-  },
-  switchRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    flexWrap: 'wrap',
-    marginTop: 18,
-  },
-  switchText: {
-    color: colors.muted,
-    fontSize: 14,
-  },
-  switchLink: {
-    color: '#C2A8FF',
-    fontSize: 14,
-    fontWeight: '800',
-  },
-  registerScroll: {
-    paddingHorizontal: 28,
-    paddingTop: 42,
-    paddingBottom: 36,
-  },
-  registerTopBar: {
-    alignItems: 'flex-start',
-    marginBottom: 18,
-  },
-  registerBackButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 15,
-    backgroundColor: 'rgba(255,255,255,0.08)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.16)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  registerHeader: {
-    marginBottom: 22,
-  },
-  registerTitle: {
-    color: colors.white,
-    fontSize: 28,
-    fontWeight: '900',
-    lineHeight: 34,
-  },
-  registerSubtitle: {
-    color: 'rgba(194,194,208,0.58)',
-    fontSize: 14,
-    marginTop: 10,
-    fontWeight: '700',
-  },
-  registerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  registerField: {
-    marginBottom: 14,
-  },
-  registerHalfField: {
-    width: '48%',
-  },
-  registerCityField: {
-    width: '68%',
-  },
-  registerUfField: {
-    width: '28%',
-  },
-  registerLabel: {
-    color: 'rgba(194,194,208,0.56)',
-    fontSize: 11,
-    fontWeight: '900',
-    letterSpacing: 0.8,
-    marginBottom: 8,
-    textTransform: 'uppercase',
-  },
-  registerInputBox: {
-    minHeight: 54,
-    borderRadius: 15,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.18)',
-    backgroundColor: 'rgba(10,6,24,0.86)',
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-  },
-  registerInput: {
-    flex: 1,
-    color: colors.white,
-    fontSize: 15,
-    fontWeight: '700',
-  },
-  registerInputIcon: {
-    marginLeft: 10,
-  },
-  registerActions: {
-    marginTop: 10,
-  },
-});
-
 function onlyDigits(value: string) {
   return value.replace(/\D/g, '');
 }
@@ -371,30 +78,30 @@ function formatCep(value: string) {
   return digits.replace(/^(\d{5})(\d)/, '$1-$2');
 }
 
-function isValidBirthDate(value: string) {
-  const digits = onlyDigits(value);
+function isValidEmail(value: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value.trim());
+}
 
-  if (digits.length !== 8) {
+function isValidBirthDate(value: string) {
+  const match = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(value);
+
+  if (!match) {
     return false;
   }
 
-  const day = Number(digits.slice(0, 2));
-  const month = Number(digits.slice(2, 4));
-  const year = Number(digits.slice(4, 8));
+  const day = Number(match[1]);
+  const month = Number(match[2]);
+  const year = Number(match[3]);
   const date = new Date(year, month - 1, day);
-  const currentYear = new Date().getFullYear();
+  const today = new Date();
 
   return (
-    year >= 1900 &&
-    year <= currentYear &&
     date.getFullYear() === year &&
     date.getMonth() === month - 1 &&
-    date.getDate() === day
+    date.getDate() === day &&
+    date <= today &&
+    year >= 1900
   );
-}
-
-function isValidEmail(value: string) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value.trim());
 }
 
 function isCpfInput(value: string) {
@@ -945,3 +652,297 @@ export function LoginScreen({ onLogin }: { onLogin: () => void }) {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  background: {
+    flex: 1,
+  },
+  overlay: {
+    flex: 1,
+  },
+  safeArea: {
+    flex: 1,
+  },
+  flex: {
+    flex: 1,
+  },
+  loginContent: {
+    flexGrow: 1,
+    justifyContent: 'flex-end',
+    paddingBottom: 18,
+  },
+  loginCardWrapper: {
+    marginHorizontal: 22,
+    borderRadius: 30,
+    overflow: 'hidden',
+    shadowColor: '#A855F7',
+    shadowOpacity: 0.28,
+    shadowRadius: 26,
+    elevation: 14,
+  },
+  loginCard: {
+    borderRadius: 30,
+    paddingHorizontal: 18,
+    paddingTop: 20,
+    paddingBottom: 20,
+    backgroundColor: 'rgba(18,18,30,0.86)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.16)',
+    overflow: 'hidden',
+  },
+  loginCardGlow: {
+    position: 'absolute',
+    top: -40,
+    right: -30,
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+    backgroundColor: 'rgba(168,85,247,0.16)',
+  },
+  title: {
+    color: colors.white,
+    fontSize: 25,
+    fontWeight: '900',
+    marginBottom: 18,
+    textAlign: 'center',
+  },
+  titleAccent: {
+    color: '#B86CFF',
+  },
+  subtitle: {
+    color: colors.muted,
+    fontSize: 14,
+    marginBottom: 12,
+  },
+  helperText: {
+    color: colors.mutedDark,
+    fontSize: 13,
+    lineHeight: 19,
+    marginBottom: 18,
+  },
+  inputBox: {
+    height: 52,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.10)',
+    backgroundColor: colors.input,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    marginBottom: 10,
+  },
+  input: {
+    flex: 1,
+    color: colors.white,
+    fontSize: 16,
+    marginLeft: 12,
+  },
+  fieldHint: {
+    color: colors.mutedDark,
+    fontSize: 12,
+    lineHeight: 17,
+    marginTop: -2,
+    marginBottom: 10,
+    marginLeft: 4,
+  },
+  optionsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    marginTop: 2,
+    marginBottom: 16,
+  },
+  rememberRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexShrink: 1,
+    marginRight: 10,
+  },
+  checkbox: {
+    width: 24,
+    height: 24,
+    borderRadius: 8,
+    borderWidth: 1.5,
+    borderColor: 'rgba(255,255,255,0.35)',
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 10,
+  },
+  checkboxActive: {
+    backgroundColor: colors.purple,
+    borderColor: colors.purple,
+  },
+  rememberText: {
+    color: '#C8C8D4',
+    fontSize: 13,
+    flexShrink: 1,
+  },
+  forgotButton: {
+    marginLeft: 'auto',
+    paddingVertical: 4,
+  },
+  forgotText: {
+    color: '#C2A8FF',
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  primaryButton: {
+    height: 52,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#A855F7',
+    shadowOpacity: 0.35,
+    shadowRadius: 18,
+    elevation: 8,
+  },
+  primaryButtonText: {
+    color: colors.white,
+    fontSize: 18,
+    fontWeight: '900',
+  },
+  dividerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  divider: {
+    flex: 1,
+    height: 1,
+    backgroundColor: 'rgba(255,255,255,0.10)',
+  },
+  dividerText: {
+    color: '#AAAABA',
+    fontSize: 13,
+    marginHorizontal: 12,
+  },
+  googleButton: {
+    height: 50,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.12)',
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  googleIcon: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: colors.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  googleLogo: {
+    width: 22,
+    height: 22,
+  },
+  googleText: {
+    color: colors.white,
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  switchRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+    marginTop: 18,
+  },
+  switchText: {
+    color: colors.muted,
+    fontSize: 14,
+  },
+  switchLink: {
+    color: '#C2A8FF',
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  registerScroll: {
+    paddingHorizontal: 28,
+    paddingTop: 42,
+    paddingBottom: 36,
+  },
+  registerTopBar: {
+    alignItems: 'flex-start',
+    marginBottom: 18,
+  },
+  registerBackButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 15,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.16)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  registerHeader: {
+    marginBottom: 22,
+  },
+  registerTitle: {
+    color: colors.white,
+    fontSize: 28,
+    fontWeight: '900',
+    lineHeight: 34,
+  },
+  registerSubtitle: {
+    color: 'rgba(194,194,208,0.58)',
+    fontSize: 14,
+    marginTop: 10,
+    fontWeight: '700',
+  },
+  registerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  registerField: {
+    marginBottom: 14,
+  },
+  registerHalfField: {
+    width: '48%',
+  },
+  registerCityField: {
+    width: '68%',
+  },
+  registerUfField: {
+    width: '28%',
+  },
+  registerLabel: {
+    color: 'rgba(194,194,208,0.56)',
+    fontSize: 11,
+    fontWeight: '900',
+    letterSpacing: 0.8,
+    marginBottom: 8,
+    textTransform: 'uppercase',
+  },
+  registerInputBox: {
+    minHeight: 54,
+    borderRadius: 15,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.18)',
+    backgroundColor: 'rgba(10,6,24,0.86)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+  },
+  registerInput: {
+    flex: 1,
+    color: colors.white,
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  registerInputIcon: {
+    marginLeft: 10,
+  },
+  registerActions: {
+    marginTop: 10,
+  },
+});

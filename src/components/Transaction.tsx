@@ -3,6 +3,42 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme';
 import type { IconName } from '../types';
 
+export function Transaction({
+  icon,
+  title,
+  subtitle,
+  value,
+  positive,
+}: {
+  icon: IconName;
+  title: string;
+  subtitle: string;
+  value: string;
+  positive?: boolean;
+}) {
+  return (
+    <View style={styles.transactionRow}>
+      <View style={styles.transactionIcon}>
+        <Ionicons name={icon} size={22} color={colors.purpleSoft} />
+      </View>
+
+      <View style={styles.transactionInfo}>
+        <Text style={styles.transactionTitle}>{title}</Text>
+        <Text style={styles.transactionSubtitle}>{subtitle}</Text>
+      </View>
+
+      <Text
+        style={[
+          styles.transactionValue,
+          positive && styles.transactionValuePositive,
+        ]}
+      >
+        {value}
+      </Text>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   transactionRow: {
     flexDirection: 'row',
@@ -42,38 +78,3 @@ const styles = StyleSheet.create({
     color: colors.green,
   },
 });
-export function Transaction({
-  icon,
-  title,
-  subtitle,
-  value,
-  positive,
-}: {
-  icon: IconName;
-  title: string;
-  subtitle: string;
-  value: string;
-  positive?: boolean;
-}) {
-  return (
-    <View style={styles.transactionRow}>
-      <View style={styles.transactionIcon}>
-        <Ionicons name={icon} size={22} color={colors.purpleSoft} />
-      </View>
-
-      <View style={styles.transactionInfo}>
-        <Text style={styles.transactionTitle}>{title}</Text>
-        <Text style={styles.transactionSubtitle}>{subtitle}</Text>
-      </View>
-
-      <Text
-        style={[
-          styles.transactionValue,
-          positive && styles.transactionValuePositive,
-        ]}
-      >
-        {value}
-      </Text>
-    </View>
-  );
-}

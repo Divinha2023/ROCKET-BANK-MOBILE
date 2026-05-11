@@ -1,6 +1,24 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { colors } from '../theme';
 
+export function MetricCard({ label, value }: { label: string; value: string }) {
+  return (
+    <View style={styles.metricCard}>
+      <Text numberOfLines={1} style={styles.metricLabel}>
+        {label}
+      </Text>
+      <Text
+        adjustsFontSizeToFit
+        minimumFontScale={0.72}
+        numberOfLines={1}
+        style={styles.metricValue}
+      >
+        {value}
+      </Text>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   metricCard: {
     flex: 1,
@@ -25,20 +43,3 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
 });
-export function MetricCard({ label, value }: { label: string; value: string }) {
-  return (
-    <View style={styles.metricCard}>
-      <Text numberOfLines={1} style={styles.metricLabel}>
-        {label}
-      </Text>
-      <Text
-        adjustsFontSizeToFit
-        minimumFontScale={0.72}
-        numberOfLines={1}
-        style={styles.metricValue}
-      >
-        {value}
-      </Text>
-    </View>
-  );
-}

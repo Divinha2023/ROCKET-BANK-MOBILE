@@ -34,6 +34,7 @@ const styles = StyleSheet.create({
     color: colors.purpleSoft,
   },
 });
+
 export function TabButton({
   customIcon,
   icon,
@@ -42,7 +43,7 @@ export function TabButton({
   iconColor,
   onPress,
 }: {
-  customIcon?: React.ReactNode;
+  customIcon?: ReactNode;
   icon?: IconName;
   label: string;
   active: boolean;

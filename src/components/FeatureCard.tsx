@@ -3,6 +3,26 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme';
 import type { IconName } from '../types';
 
+export function FeatureCard({
+  icon,
+  title,
+  text,
+  onPress,
+}: {
+  icon: IconName;
+  title: string;
+  text: string;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable accessibilityRole="button" style={styles.featureCard} onPress={onPress}>
+      <Ionicons name={icon} size={30} color={colors.purpleSoft} />
+      <Text style={styles.featureTitle}>{title}</Text>
+      <Text style={styles.featureText}>{text}</Text>
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
   featureCard: {
     flex: 1,
@@ -26,22 +46,3 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
 });
-export function FeatureCard({
-  icon,
-  title,
-  text,
-  onPress,
-}: {
-  icon: IconName;
-  title: string;
-  text: string;
-  onPress: () => void;
-}) {
-  return (
-    <Pressable accessibilityRole="button" style={styles.featureCard} onPress={onPress}>
-      <Ionicons name={icon} size={30} color={colors.purpleSoft} />
-      <Text style={styles.featureTitle}>{title}</Text>
-      <Text style={styles.featureText}>{text}</Text>
-    </Pressable>
-  );
-}

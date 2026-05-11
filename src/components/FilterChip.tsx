@@ -1,6 +1,27 @@
 import { Pressable, StyleSheet, Text } from 'react-native';
 import { colors } from '../theme';
 
+type FilterChipProps = {
+  active?: boolean;
+  label: string;
+  onPress?: () => void;
+};
+
+export function FilterChip({ label, active, onPress }: FilterChipProps) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityState={{ selected: active }}
+      onPress={onPress}
+      style={[styles.filterChip, active && styles.filterChipActive]}
+    >
+      <Text style={[styles.filterText, active && styles.filterTextActive]}>
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
   filterChip: {
     paddingHorizontal: 14,
@@ -25,23 +46,3 @@ const styles = StyleSheet.create({
     color: colors.white,
   },
 });
-type FilterChipProps = {
-  active?: boolean;
-  label: string;
-  onPress?: () => void;
-};
-
-export function FilterChip({ label, active, onPress }: FilterChipProps) {
-  return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityState={{ selected: active }}
-      onPress={onPress}
-      style={[styles.filterChip, active && styles.filterChipActive]}
-    >
-      <Text style={[styles.filterText, active && styles.filterTextActive]}>
-        {label}
-      </Text>
-    </Pressable>
-  );
-}

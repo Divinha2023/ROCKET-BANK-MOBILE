@@ -5,28 +5,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme';
 import type { IconName } from '../types';
 
-const styles = StyleSheet.create({
-  quickAction: {
-    width: '31.5%',
-    alignItems: 'center',
-  },
-  quickIcon: {
-    width: 58,
-    height: 58,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  quickLabel: {
-    color: colors.white,
-    fontSize: 12,
-    textAlign: 'center',
-    marginTop: 8,
-    fontWeight: '700',
-  },
-});
 export function QuickAction({
   customIcon,
   icon,
@@ -53,3 +31,26 @@ export function QuickAction({
     </Pressable>
   );
 }
+
+const styles = StyleSheet.create({
+  quickAction: {
+    width: '31.5%',
+    alignItems: 'center',
+  },
+  quickIcon: {
+    width: 58,
+    height: 58,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  quickLabel: {
+    color: colors.white,
+    fontSize: 12,
+    textAlign: 'center',
+    marginTop: 8,
+    fontWeight: '700',
+  },
+});

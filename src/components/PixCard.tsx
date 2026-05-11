@@ -28,6 +28,7 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
 });
+
 export function PixCard({
   customIcon,
   icon,

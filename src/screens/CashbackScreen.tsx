@@ -6,29 +6,6 @@ import { MetricCard } from '../components/MetricCard';
 import { MenuRow } from '../components/MenuRow';
 import { formatCurrency } from '../utils/currency';
 
-const styles = StyleSheet.create({
-  cashbackCard: {
-    borderRadius: 28,
-    padding: 24,
-    marginBottom: 22,
-  },
-  balanceLabel: {
-    color: 'rgba(255,255,255,0.78)',
-    fontSize: 14,
-  },
-  balanceValue: {
-    color: colors.white,
-    fontSize: 38,
-    fontWeight: '900',
-    marginTop: 8,
-  },
-  balanceSub: {
-    color: 'rgba(255,255,255,0.85)',
-    fontSize: 14,
-    marginTop: 8,
-    lineHeight: 21,
-  },
-});
 export function CashbackScreen({
   cashbackBalance,
 }: {
@@ -81,3 +58,27 @@ export function CashbackScreen({
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  cashbackCard: {
+    borderRadius: 28,
+    padding: 24,
+    marginBottom: 22,
+  },
+  balanceLabel: {
+    color: 'rgba(255,255,255,0.78)',
+    fontSize: 14,
+  },
+  balanceValue: {
+    color: colors.white,
+    fontSize: 38,
+    fontWeight: '900',
+    marginTop: 8,
+  },
+  balanceSub: {
+    color: 'rgba(255,255,255,0.85)',
+    fontSize: 14,
+    marginTop: 8,
+    lineHeight: 21,
+  },
+});

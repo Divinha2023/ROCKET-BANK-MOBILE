@@ -3,7 +3,10 @@ import {
   ActivityIndicator,
   Alert,
   Image,
+  Keyboard,
+  KeyboardAvoidingView,
   Modal,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -13,6 +16,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '../theme';
 import type { AppScreen, ShoppingProduct } from '../types';
 import { shoppingCategories, shoppingProducts } from '../data/mockData';
@@ -40,544 +44,14 @@ type TrackingOrder = {
   total: number;
 };
 
+type CouponFeedback = {
+  message: string;
+  type: 'error' | 'success';
+};
+
 function parseCashbackRate(value: string) {
   return (Number(value.replace('%', '').replace(',', '.')) || 0) / 100;
 }
-
-const styles = StyleSheet.create({
-  shoppingScreen: {
-    flex: 1,
-  },
-  shoppingContent: {
-    paddingBottom: 116,
-    paddingHorizontal: 20,
-    paddingTop: 24,
-  },
-  searchBox: {
-    height: 56,
-    borderRadius: 18,
-    backgroundColor: 'rgba(255,255,255,0.055)',
-    borderWidth: 1,
-    borderColor: colors.border,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    marginBottom: 14,
-  },
-  searchText: {
-    flex: 1,
-    color: colors.mutedDark,
-    fontSize: 15,
-    marginLeft: 10,
-  },
-  shoppingBannerWrapper: {
-    aspectRatio: 1672 / 941,
-    backgroundColor: '#050617',
-    borderColor: 'rgba(168,85,247,0.28)',
-    borderRadius: 24,
-    borderWidth: 1,
-    marginBottom: 24,
-    overflow: 'hidden',
-    width: '100%',
-  },
-  shoppingBannerImage: {
-    height: '100%',
-    width: '100%',
-  },
-  shoppingCategoriesGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    marginBottom: 22,
-  },
-  emptyState: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: 'rgba(255,255,255,0.045)',
-    borderRadius: 24,
-    padding: 20,
-    marginBottom: 18,
-  },
-  emptyTitle: {
-    color: colors.white,
-    fontSize: 16,
-    fontWeight: '900',
-  },
-  emptyText: {
-    color: colors.mutedDark,
-    fontSize: 13,
-    lineHeight: 19,
-    marginTop: 6,
-  },
-  cartPanel: {
-    borderRadius: 26,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: 'rgba(255,255,255,0.055)',
-    padding: 16,
-    marginBottom: 24,
-  },
-  cartHeader: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 14,
-  },
-  cartTitleRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  cartIconBadge: {
-    alignItems: 'center',
-    backgroundColor: 'rgba(111,44,255,0.2)',
-    borderColor: 'rgba(168,85,247,0.36)',
-    borderRadius: 16,
-    borderWidth: 1,
-    height: 42,
-    justifyContent: 'center',
-    marginRight: 12,
-    width: 42,
-  },
-  cartTitle: {
-    color: colors.white,
-    fontSize: 18,
-    fontWeight: '900',
-  },
-  cartCount: {
-    color: colors.mutedDark,
-    fontSize: 12,
-    fontWeight: '800',
-    marginTop: 2,
-  },
-  clearCartButton: {
-    borderColor: colors.border,
-    borderRadius: 14,
-    borderWidth: 1,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-  },
-  clearCartText: {
-    color: colors.muted,
-    fontSize: 12,
-    fontWeight: '900',
-  },
-  cartEmpty: {
-    borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.045)',
-    padding: 16,
-  },
-  cartEmptyTitle: {
-    color: colors.white,
-    fontSize: 15,
-    fontWeight: '900',
-  },
-  cartEmptyText: {
-    color: colors.mutedDark,
-    fontSize: 13,
-    lineHeight: 19,
-    marginTop: 6,
-  },
-  cartItem: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.08)',
-    paddingBottom: 12,
-    marginBottom: 12,
-  },
-  cartItemImage: {
-    width: 54,
-    height: 54,
-    borderRadius: 16,
-    backgroundColor: 'rgba(255,255,255,0.08)',
-    marginRight: 12,
-  },
-  cartItemInfo: {
-    flex: 1,
-  },
-  cartItemStore: {
-    color: colors.purpleSoft,
-    fontSize: 11,
-    fontWeight: '900',
-    marginBottom: 3,
-  },
-  cartItemName: {
-    color: colors.white,
-    fontSize: 14,
-    fontWeight: '800',
-    lineHeight: 18,
-  },
-  cartItemPrice: {
-    color: colors.muted,
-    fontSize: 12,
-    fontWeight: '800',
-    marginTop: 5,
-  },
-  quantityControl: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    marginLeft: 8,
-  },
-  quantityButton: {
-    alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.08)',
-    borderColor: colors.border,
-    borderRadius: 12,
-    borderWidth: 1,
-    height: 34,
-    justifyContent: 'center',
-    width: 34,
-  },
-  quantityText: {
-    color: colors.white,
-    fontSize: 13,
-    fontWeight: '900',
-    minWidth: 26,
-    textAlign: 'center',
-  },
-  couponBox: {
-    borderRadius: 20,
-    backgroundColor: 'rgba(111,44,255,0.10)',
-    borderColor: 'rgba(168,85,247,0.22)',
-    borderWidth: 1,
-    padding: 14,
-    marginTop: 4,
-  },
-  couponLabel: {
-    color: colors.white,
-    fontSize: 13,
-    fontWeight: '900',
-    marginBottom: 10,
-  },
-  couponInputRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  couponInput: {
-    flex: 1,
-    height: 46,
-    borderRadius: 15,
-    backgroundColor: 'rgba(255,255,255,0.075)',
-    borderColor: colors.border,
-    borderWidth: 1,
-    color: colors.white,
-    fontSize: 14,
-    fontWeight: '800',
-    paddingHorizontal: 12,
-    marginRight: 10,
-  },
-  applyCouponButton: {
-    alignItems: 'center',
-    backgroundColor: colors.purpleStrong,
-    borderRadius: 15,
-    height: 46,
-    justifyContent: 'center',
-    paddingHorizontal: 16,
-  },
-  applyCouponText: {
-    color: colors.white,
-    fontSize: 13,
-    fontWeight: '900',
-  },
-  cartSummary: {
-    marginTop: 16,
-  },
-  summaryRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-  },
-  summaryLabel: {
-    color: colors.mutedDark,
-    fontSize: 13,
-    fontWeight: '800',
-  },
-  summaryValue: {
-    color: colors.white,
-    fontSize: 13,
-    fontWeight: '900',
-  },
-  summaryDiscount: {
-    color: colors.green,
-  },
-  totalRow: {
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.10)',
-    paddingTop: 12,
-    marginTop: 4,
-  },
-  totalLabel: {
-    color: colors.white,
-    fontSize: 15,
-  },
-  totalValue: {
-    color: colors.white,
-    fontSize: 20,
-    fontWeight: '900',
-  },
-  checkoutButton: {
-    alignItems: 'center',
-    borderRadius: 18,
-    marginTop: 14,
-    overflow: 'hidden',
-  },
-  checkoutGradient: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    minHeight: 52,
-    width: '100%',
-  },
-  checkoutText: {
-    color: colors.white,
-    fontSize: 15,
-    fontWeight: '900',
-    marginLeft: 8,
-  },
-  floatingCartButton: {
-    borderRadius: 30,
-    bottom: 116,
-    height: 60,
-    overflow: 'hidden',
-    position: 'absolute',
-    right: 18,
-    width: 60,
-    zIndex: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.26,
-    shadowRadius: 20,
-    elevation: 10,
-  },
-  floatingCartGradient: {
-    alignItems: 'center',
-    height: '100%',
-    justifyContent: 'center',
-    width: '100%',
-  },
-  floatingCartIcon: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  floatingCartBadge: {
-    alignItems: 'center',
-    backgroundColor: colors.orange,
-    borderRadius: 10,
-    minWidth: 20,
-    paddingHorizontal: 5,
-    paddingVertical: 2,
-    position: 'absolute',
-    right: -11,
-    top: -11,
-  },
-  floatingCartBadgeText: {
-    color: colors.white,
-    fontSize: 9,
-    fontWeight: '900',
-  },
-  cartModalBackdrop: {
-    backgroundColor: 'rgba(2,0,8,0.68)',
-    flex: 1,
-    justifyContent: 'flex-end',
-  },
-  cartBackdropPressable: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  cartSheet: {
-    backgroundColor: '#090318',
-    borderColor: 'rgba(255,255,255,0.12)',
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    borderWidth: 1,
-    maxHeight: '88%',
-    overflow: 'hidden',
-  },
-  cartSheetHandle: {
-    alignSelf: 'center',
-    backgroundColor: 'rgba(255,255,255,0.20)',
-    borderRadius: 99,
-    height: 4,
-    marginBottom: 8,
-    marginTop: 12,
-    width: 46,
-  },
-  cartSheetScroll: {
-    padding: 20,
-    paddingBottom: 30,
-  },
-  cartPanelInModal: {
-    marginBottom: 0,
-  },
-  trackingBackButton: {
-    alignItems: 'center',
-    alignSelf: 'flex-start',
-    borderColor: colors.border,
-    borderRadius: 16,
-    borderWidth: 1,
-    flexDirection: 'row',
-    marginBottom: 18,
-    paddingHorizontal: 12,
-    paddingVertical: 9,
-  },
-  trackingBackText: {
-    color: colors.muted,
-    fontSize: 13,
-    fontWeight: '900',
-    marginLeft: 6,
-  },
-  trackingHero: {
-    borderColor: 'rgba(255,255,255,0.10)',
-    borderRadius: 30,
-    borderWidth: 1,
-    marginBottom: 20,
-    minHeight: 190,
-    overflow: 'hidden',
-    padding: 20,
-  },
-  trackingIconBadge: {
-    alignItems: 'center',
-    backgroundColor: 'rgba(34,197,94,0.16)',
-    borderColor: 'rgba(34,197,94,0.28)',
-    borderRadius: 20,
-    borderWidth: 1,
-    height: 52,
-    justifyContent: 'center',
-    marginBottom: 16,
-    width: 52,
-  },
-  trackingEyebrow: {
-    color: colors.green,
-    fontSize: 12,
-    fontWeight: '900',
-    marginBottom: 6,
-    textTransform: 'uppercase',
-  },
-  trackingTitle: {
-    color: colors.white,
-    fontSize: 27,
-    fontWeight: '900',
-    lineHeight: 32,
-  },
-  trackingSubtitle: {
-    color: colors.muted,
-    fontSize: 14,
-    lineHeight: 21,
-    marginTop: 10,
-  },
-  trackingSummary: {
-    borderColor: colors.border,
-    borderRadius: 24,
-    borderWidth: 1,
-    backgroundColor: 'rgba(255,255,255,0.055)',
-    marginBottom: 20,
-    padding: 16,
-  },
-  trackingSummaryRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 10,
-  },
-  trackingSummaryLastRow: {
-    marginBottom: 0,
-  },
-  trackingSummaryLabel: {
-    color: colors.mutedDark,
-    fontSize: 13,
-    fontWeight: '800',
-  },
-  trackingSummaryValue: {
-    color: colors.white,
-    fontSize: 14,
-    fontWeight: '900',
-  },
-  trackingTimeline: {
-    borderColor: colors.border,
-    borderRadius: 24,
-    borderWidth: 1,
-    backgroundColor: 'rgba(255,255,255,0.045)',
-    padding: 18,
-  },
-  trackingStep: {
-    flexDirection: 'row',
-    minHeight: 82,
-  },
-  trackingStepLast: {
-    minHeight: 0,
-  },
-  trackingStepRail: {
-    alignItems: 'center',
-    marginRight: 14,
-    width: 24,
-  },
-  trackingStepDot: {
-    backgroundColor: 'rgba(255,255,255,0.12)',
-    borderColor: 'rgba(255,255,255,0.18)',
-    borderRadius: 10,
-    borderWidth: 1,
-    height: 18,
-    width: 18,
-  },
-  trackingStepDotActive: {
-    backgroundColor: colors.green,
-    borderColor: 'rgba(255,255,255,0.38)',
-  },
-  trackingStepLine: {
-    backgroundColor: 'rgba(255,255,255,0.12)',
-    flex: 1,
-    marginTop: 8,
-    width: 2,
-  },
-  trackingStepContent: {
-    flex: 1,
-    paddingBottom: 22,
-  },
-  trackingStepTitle: {
-    color: colors.white,
-    fontSize: 15,
-    fontWeight: '900',
-  },
-  trackingStepText: {
-    color: colors.muted,
-    fontSize: 13,
-    lineHeight: 20,
-    marginTop: 6,
-  },
-  trackingStepMuted: {
-    color: colors.mutedDark,
-  },
-  loadingOrderScreen: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 28,
-  },
-  loadingOrderBadge: {
-    width: 78,
-    height: 78,
-    borderRadius: 26,
-    backgroundColor: 'rgba(111,44,255,0.18)',
-    borderWidth: 1,
-    borderColor: 'rgba(168,85,247,0.34)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 18,
-  },
-  loadingOrderTitle: {
-    color: colors.white,
-    fontSize: 20,
-    fontWeight: '900',
-    textAlign: 'center',
-  },
-  loadingOrderText: {
-    color: colors.muted,
-    fontSize: 13,
-    lineHeight: 19,
-    marginTop: 8,
-    textAlign: 'center',
-  },
-});
 
 export function ShoppingScreen({
   accountBalance,
@@ -597,11 +71,14 @@ export function ShoppingScreen({
   }) => void;
   setActiveScreen: (screen: AppScreen) => void;
 }) {
+  const insets = useSafeAreaInsets();
   const [activeCategory, setActiveCategory] = useState(allCategoriesLabel);
   const [searchTerm, setSearchTerm] = useState('');
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [couponInput, setCouponInput] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
+  const [couponFeedback, setCouponFeedback] =
+    useState<CouponFeedback | null>(null);
   const [cartVisible, setCartVisible] = useState(false);
   const [isCheckoutLoading, setCheckoutLoading] = useState(false);
   const [trackingOrder, setTrackingOrder] = useState<TrackingOrder | null>(null);
@@ -701,6 +178,7 @@ export function ShoppingScreen({
     if (cartItems.length === 0) {
       setAppliedCoupon(null);
       setCouponInput('');
+      setCouponFeedback(null);
     }
   }, [cartItems.length]);
 
@@ -753,6 +231,7 @@ export function ShoppingScreen({
   }
 
   function updateCartQuantity(productId: string, amount: number) {
+    setCouponFeedback(null);
     setCartItems((current) =>
       current.flatMap((item) => {
         if (item.product.id !== productId) {
@@ -765,34 +244,49 @@ export function ShoppingScreen({
     );
   }
 
+  function handleCloseCart() {
+    Keyboard.dismiss();
+    setCartVisible(false);
+  }
+
   function handleClearCart() {
+    Keyboard.dismiss();
     setCartItems([]);
     setCartVisible(false);
   }
 
   function handleApplyCoupon() {
+    Keyboard.dismiss();
     const normalizedCoupon = couponInput.trim().toUpperCase();
 
     if (cartItems.length === 0) {
-      Alert.alert('Carrinho vazio', 'Adicione um produto antes de aplicar cupom.');
+      setCouponFeedback({
+        message: 'Adicione um produto antes de aplicar cupom.',
+        type: 'error',
+      });
       return;
     }
 
     if (normalizedCoupon !== discountCoupon) {
       setAppliedCoupon(null);
-      Alert.alert('Cupom indisponível', 'Este cupom não está disponível.');
+      setCouponFeedback({
+        message: 'Este cupom nao esta disponivel.',
+        type: 'error',
+      });
       return;
     }
 
     setAppliedCoupon(discountCoupon);
     setCouponInput(discountCoupon);
-    Alert.alert(
-      'Cupom aplicado',
-      'ACCENTURE20 aplicou 20% de desconto.'
-    );
+    setCouponFeedback({
+      message: 'ACCENTURE20 aplicou 20% de desconto.',
+      type: 'success',
+    });
   }
 
   function handleCheckout() {
+    Keyboard.dismiss();
+
     if (isCheckoutLoading) {
       return;
     }
@@ -866,15 +360,27 @@ export function ShoppingScreen({
             </View>
           </View>
 
-          {cartItems.length > 0 ? (
+          <View style={styles.cartHeaderActions}>
+            {cartItems.length > 0 ? (
+              <Pressable
+                accessibilityRole="button"
+                onPress={handleClearCart}
+                style={styles.clearCartButton}
+              >
+                <Text style={styles.clearCartText}>Limpar</Text>
+              </Pressable>
+            ) : null}
+
             <Pressable
+              accessibilityLabel="Fechar carrinho"
               accessibilityRole="button"
-              onPress={handleClearCart}
-              style={styles.clearCartButton}
+              hitSlop={10}
+              onPress={handleCloseCart}
+              style={styles.closeCartButton}
             >
-              <Text style={styles.clearCartText}>Limpar</Text>
+              <Ionicons name="close" size={20} color={colors.white} />
             </Pressable>
-          ) : null}
+          </View>
         </View>
 
         {cartItems.length === 0 ? (
@@ -931,9 +437,14 @@ export function ShoppingScreen({
                 <TextInput
                   autoCapitalize="characters"
                   autoCorrect={false}
-                  onChangeText={(value) => setCouponInput(value.toUpperCase())}
+                  onChangeText={(value) => {
+                    setCouponInput(value.toUpperCase());
+                    setCouponFeedback(null);
+                  }}
+                  onSubmitEditing={handleApplyCoupon}
                   placeholder="Digite o cupom"
                   placeholderTextColor={colors.mutedDark}
+                  returnKeyType="done"
                   style={styles.couponInput}
                   value={couponInput}
                 />
@@ -946,6 +457,19 @@ export function ShoppingScreen({
                   <Text style={styles.applyCouponText}>Aplicar</Text>
                 </Pressable>
               </View>
+
+              {couponFeedback ? (
+                <Text
+                  style={[
+                    styles.couponFeedback,
+                    couponFeedback.type === 'success'
+                      ? styles.couponFeedbackSuccess
+                      : styles.couponFeedbackError,
+                  ]}
+                >
+                  {couponFeedback.message}
+                </Text>
+              ) : null}
             </View>
 
             <View style={styles.cartSummary}>
@@ -1245,28 +769,605 @@ export function ShoppingScreen({
 
       <Modal
         animationType="slide"
-        onRequestClose={() => setCartVisible(false)}
+        onRequestClose={handleCloseCart}
         transparent
         visible={cartVisible}
       >
-        <View style={styles.cartModalBackdrop}>
-          <Pressable
-            accessibilityRole="button"
-            onPress={() => setCartVisible(false)}
-            style={styles.cartBackdropPressable}
-          />
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          style={styles.cartModalAvoidingView}
+        >
+          <View style={styles.cartModalBackdrop}>
+            <Pressable
+              accessibilityRole="button"
+              onPress={handleCloseCart}
+              style={styles.cartBackdropPressable}
+            />
 
-          <View style={styles.cartSheet}>
-            <View style={styles.cartSheetHandle} />
-            <ScrollView
-              contentContainerStyle={styles.cartSheetScroll}
-              showsVerticalScrollIndicator={false}
+            <View
+              style={[
+                styles.cartSheet,
+                { paddingBottom: Math.max(insets.bottom, 12) },
+              ]}
             >
-              {renderCartContent()}
-            </ScrollView>
+              <View style={styles.cartSheetHandle} />
+              <ScrollView
+                contentContainerStyle={styles.cartSheetScroll}
+                keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator={false}
+              >
+                {renderCartContent()}
+              </ScrollView>
+            </View>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  shoppingScreen: {
+    flex: 1,
+  },
+  shoppingContent: {
+    paddingBottom: 116,
+    paddingHorizontal: 20,
+    paddingTop: 24,
+  },
+  searchBox: {
+    height: 56,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255,255,255,0.055)',
+    borderWidth: 1,
+    borderColor: colors.border,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    marginBottom: 14,
+  },
+  searchText: {
+    flex: 1,
+    color: colors.mutedDark,
+    fontSize: 15,
+    marginLeft: 10,
+  },
+  shoppingBannerWrapper: {
+    aspectRatio: 1672 / 941,
+    backgroundColor: '#050617',
+    borderColor: 'rgba(168,85,247,0.28)',
+    borderRadius: 24,
+    borderWidth: 1,
+    marginBottom: 24,
+    overflow: 'hidden',
+    width: '100%',
+  },
+  shoppingBannerImage: {
+    height: '100%',
+    width: '100%',
+  },
+  shoppingCategoriesGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    marginBottom: 22,
+  },
+  emptyState: {
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: 'rgba(255,255,255,0.045)',
+    borderRadius: 24,
+    padding: 20,
+    marginBottom: 18,
+  },
+  emptyTitle: {
+    color: colors.white,
+    fontSize: 16,
+    fontWeight: '900',
+  },
+  emptyText: {
+    color: colors.mutedDark,
+    fontSize: 13,
+    lineHeight: 19,
+    marginTop: 6,
+  },
+  cartPanel: {
+    borderRadius: 26,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: 'rgba(255,255,255,0.055)',
+    padding: 16,
+    marginBottom: 24,
+  },
+  cartHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 14,
+  },
+  cartTitleRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  cartIconBadge: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(111,44,255,0.2)',
+    borderColor: 'rgba(168,85,247,0.36)',
+    borderRadius: 16,
+    borderWidth: 1,
+    height: 42,
+    justifyContent: 'center',
+    marginRight: 12,
+    width: 42,
+  },
+  cartTitle: {
+    color: colors.white,
+    fontSize: 18,
+    fontWeight: '900',
+  },
+  cartCount: {
+    color: colors.mutedDark,
+    fontSize: 12,
+    fontWeight: '800',
+    marginTop: 2,
+  },
+  cartHeaderActions: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginLeft: 10,
+  },
+  clearCartButton: {
+    borderColor: colors.border,
+    borderRadius: 14,
+    borderWidth: 1,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  clearCartText: {
+    color: colors.muted,
+    fontSize: 12,
+    fontWeight: '900',
+  },
+  closeCartButton: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    borderColor: colors.border,
+    borderRadius: 14,
+    borderWidth: 1,
+    height: 38,
+    justifyContent: 'center',
+    marginLeft: 8,
+    width: 38,
+  },
+  cartEmpty: {
+    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.045)',
+    padding: 16,
+  },
+  cartEmptyTitle: {
+    color: colors.white,
+    fontSize: 15,
+    fontWeight: '900',
+  },
+  cartEmptyText: {
+    color: colors.mutedDark,
+    fontSize: 13,
+    lineHeight: 19,
+    marginTop: 6,
+  },
+  cartItem: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.08)',
+    paddingBottom: 12,
+    marginBottom: 12,
+  },
+  cartItemImage: {
+    width: 54,
+    height: 54,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    marginRight: 12,
+  },
+  cartItemInfo: {
+    flex: 1,
+  },
+  cartItemStore: {
+    color: colors.purpleSoft,
+    fontSize: 11,
+    fontWeight: '900',
+    marginBottom: 3,
+  },
+  cartItemName: {
+    color: colors.white,
+    fontSize: 14,
+    fontWeight: '800',
+    lineHeight: 18,
+  },
+  cartItemPrice: {
+    color: colors.muted,
+    fontSize: 12,
+    fontWeight: '800',
+    marginTop: 5,
+  },
+  quantityControl: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginLeft: 8,
+  },
+  quantityButton: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    borderColor: colors.border,
+    borderRadius: 12,
+    borderWidth: 1,
+    height: 34,
+    justifyContent: 'center',
+    width: 34,
+  },
+  quantityText: {
+    color: colors.white,
+    fontSize: 13,
+    fontWeight: '900',
+    minWidth: 26,
+    textAlign: 'center',
+  },
+  couponBox: {
+    borderRadius: 20,
+    backgroundColor: 'rgba(111,44,255,0.10)',
+    borderColor: 'rgba(168,85,247,0.22)',
+    borderWidth: 1,
+    padding: 14,
+    marginTop: 4,
+  },
+  couponLabel: {
+    color: colors.white,
+    fontSize: 13,
+    fontWeight: '900',
+    marginBottom: 10,
+  },
+  couponInputRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  couponInput: {
+    flex: 1,
+    height: 46,
+    borderRadius: 15,
+    backgroundColor: 'rgba(255,255,255,0.075)',
+    borderColor: colors.border,
+    borderWidth: 1,
+    color: colors.white,
+    fontSize: 14,
+    fontWeight: '800',
+    paddingHorizontal: 12,
+    marginRight: 10,
+  },
+  applyCouponButton: {
+    alignItems: 'center',
+    backgroundColor: colors.purpleStrong,
+    borderRadius: 15,
+    height: 46,
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+  },
+  applyCouponText: {
+    color: colors.white,
+    fontSize: 13,
+    fontWeight: '900',
+  },
+  couponFeedback: {
+    fontSize: 12,
+    fontWeight: '800',
+    lineHeight: 17,
+    marginTop: 10,
+  },
+  couponFeedbackError: {
+    color: colors.orange,
+  },
+  couponFeedbackSuccess: {
+    color: colors.green,
+  },
+  cartSummary: {
+    marginTop: 16,
+  },
+  summaryRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  summaryLabel: {
+    color: colors.mutedDark,
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  summaryValue: {
+    color: colors.white,
+    fontSize: 13,
+    fontWeight: '900',
+  },
+  summaryDiscount: {
+    color: colors.green,
+  },
+  totalRow: {
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255,255,255,0.10)',
+    paddingTop: 12,
+    marginTop: 4,
+  },
+  totalLabel: {
+    color: colors.white,
+    fontSize: 15,
+  },
+  totalValue: {
+    color: colors.white,
+    fontSize: 20,
+    fontWeight: '900',
+  },
+  checkoutButton: {
+    alignItems: 'center',
+    borderRadius: 18,
+    marginTop: 14,
+    overflow: 'hidden',
+  },
+  checkoutGradient: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    minHeight: 52,
+    width: '100%',
+  },
+  checkoutText: {
+    color: colors.white,
+    fontSize: 15,
+    fontWeight: '900',
+    marginLeft: 8,
+  },
+  floatingCartButton: {
+    borderRadius: 30,
+    bottom: 116,
+    height: 60,
+    overflow: 'hidden',
+    position: 'absolute',
+    right: 18,
+    width: 60,
+    zIndex: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.26,
+    shadowRadius: 20,
+    elevation: 10,
+  },
+  floatingCartGradient: {
+    alignItems: 'center',
+    height: '100%',
+    justifyContent: 'center',
+    width: '100%',
+  },
+  floatingCartIcon: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  floatingCartBadge: {
+    alignItems: 'center',
+    backgroundColor: colors.orange,
+    borderRadius: 10,
+    minWidth: 20,
+    paddingHorizontal: 5,
+    paddingVertical: 2,
+    position: 'absolute',
+    right: -11,
+    top: -11,
+  },
+  floatingCartBadgeText: {
+    color: colors.white,
+    fontSize: 9,
+    fontWeight: '900',
+  },
+  cartModalBackdrop: {
+    backgroundColor: 'rgba(2,0,8,0.68)',
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  cartModalAvoidingView: {
+    flex: 1,
+  },
+  cartBackdropPressable: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  cartSheet: {
+    backgroundColor: '#090318',
+    borderColor: 'rgba(255,255,255,0.12)',
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    borderWidth: 1,
+    maxHeight: '88%',
+    overflow: 'hidden',
+  },
+  cartSheetHandle: {
+    alignSelf: 'center',
+    backgroundColor: 'rgba(255,255,255,0.20)',
+    borderRadius: 99,
+    height: 4,
+    marginBottom: 8,
+    marginTop: 12,
+    width: 46,
+  },
+  cartSheetScroll: {
+    padding: 20,
+    paddingBottom: 30,
+  },
+  cartPanelInModal: {
+    marginBottom: 0,
+  },
+  trackingBackButton: {
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    borderColor: colors.border,
+    borderRadius: 16,
+    borderWidth: 1,
+    flexDirection: 'row',
+    marginBottom: 18,
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+  },
+  trackingBackText: {
+    color: colors.muted,
+    fontSize: 13,
+    fontWeight: '900',
+    marginLeft: 6,
+  },
+  trackingHero: {
+    borderColor: 'rgba(255,255,255,0.10)',
+    borderRadius: 30,
+    borderWidth: 1,
+    marginBottom: 20,
+    minHeight: 190,
+    overflow: 'hidden',
+    padding: 20,
+  },
+  trackingIconBadge: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(34,197,94,0.16)',
+    borderColor: 'rgba(34,197,94,0.28)',
+    borderRadius: 20,
+    borderWidth: 1,
+    height: 52,
+    justifyContent: 'center',
+    marginBottom: 16,
+    width: 52,
+  },
+  trackingEyebrow: {
+    color: colors.green,
+    fontSize: 12,
+    fontWeight: '900',
+    marginBottom: 6,
+    textTransform: 'uppercase',
+  },
+  trackingTitle: {
+    color: colors.white,
+    fontSize: 27,
+    fontWeight: '900',
+    lineHeight: 32,
+  },
+  trackingSubtitle: {
+    color: colors.muted,
+    fontSize: 14,
+    lineHeight: 21,
+    marginTop: 10,
+  },
+  trackingSummary: {
+    borderColor: colors.border,
+    borderRadius: 24,
+    borderWidth: 1,
+    backgroundColor: 'rgba(255,255,255,0.055)',
+    marginBottom: 20,
+    padding: 16,
+  },
+  trackingSummaryRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  trackingSummaryLastRow: {
+    marginBottom: 0,
+  },
+  trackingSummaryLabel: {
+    color: colors.mutedDark,
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  trackingSummaryValue: {
+    color: colors.white,
+    fontSize: 14,
+    fontWeight: '900',
+  },
+  trackingTimeline: {
+    borderColor: colors.border,
+    borderRadius: 24,
+    borderWidth: 1,
+    backgroundColor: 'rgba(255,255,255,0.045)',
+    padding: 18,
+  },
+  trackingStep: {
+    flexDirection: 'row',
+    minHeight: 82,
+  },
+  trackingStepLast: {
+    minHeight: 0,
+  },
+  trackingStepRail: {
+    alignItems: 'center',
+    marginRight: 14,
+    width: 24,
+  },
+  trackingStepDot: {
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    borderColor: 'rgba(255,255,255,0.18)',
+    borderRadius: 10,
+    borderWidth: 1,
+    height: 18,
+    width: 18,
+  },
+  trackingStepDotActive: {
+    backgroundColor: colors.green,
+    borderColor: 'rgba(255,255,255,0.38)',
+  },
+  trackingStepLine: {
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    flex: 1,
+    marginTop: 8,
+    width: 2,
+  },
+  trackingStepContent: {
+    flex: 1,
+    paddingBottom: 22,
+  },
+  trackingStepTitle: {
+    color: colors.white,
+    fontSize: 15,
+    fontWeight: '900',
+  },
+  trackingStepText: {
+    color: colors.muted,
+    fontSize: 13,
+    lineHeight: 20,
+    marginTop: 6,
+  },
+  trackingStepMuted: {
+    color: colors.mutedDark,
+  },
+  loadingOrderScreen: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 28,
+  },
+  loadingOrderBadge: {
+    width: 78,
+    height: 78,
+    borderRadius: 26,
+    backgroundColor: 'rgba(111,44,255,0.18)',
+    borderWidth: 1,
+    borderColor: 'rgba(168,85,247,0.34)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 18,
+  },
+  loadingOrderTitle: {
+    color: colors.white,
+    fontSize: 20,
+    fontWeight: '900',
+    textAlign: 'center',
+  },
+  loadingOrderText: {
+    color: colors.muted,
+    fontSize: 13,
+    lineHeight: 19,
+    marginTop: 8,
+    textAlign: 'center',
+  },
+});

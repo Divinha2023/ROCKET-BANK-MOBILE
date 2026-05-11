@@ -11,107 +11,6 @@ import { FeatureCard } from '../components/FeatureCard';
 import { Transaction } from '../components/Transaction';
 import { formatCurrency } from '../utils/currency';
 
-const styles = StyleSheet.create({
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 22,
-  },
-  customerProfile: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flexShrink: 1,
-  },
-  customerPhotoFrame: {
-    width: 58,
-    height: 58,
-    borderRadius: 20,
-    overflow: 'hidden',
-    borderWidth: 2,
-    borderColor: 'rgba(255,255,255,0.18)',
-    backgroundColor: 'rgba(255,255,255,0.08)',
-  },
-  customerPhoto: {
-    width: '100%',
-    height: '100%',
-  },
-  customerName: {
-    color: colors.white,
-    fontSize: 22,
-    fontWeight: '900',
-    marginLeft: 12,
-  },
-  roundButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 16,
-    backgroundColor: 'rgba(255,255,255,0.06)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  balanceCard: {
-    borderRadius: 30,
-    padding: 24,
-    marginBottom: 22,
-  },
-  balanceHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  balanceLabel: {
-    color: 'rgba(255,255,255,0.78)',
-    fontSize: 14,
-  },
-  balanceVisibilityButton: {
-    width: 42,
-    height: 42,
-    borderRadius: 14,
-    backgroundColor: 'rgba(255,255,255,0.12)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.16)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  balanceValue: {
-    color: colors.white,
-    fontSize: 38,
-    fontWeight: '900',
-    marginTop: 8,
-  },
-  balanceYieldText: {
-    color: '#86EFAC',
-    fontSize: 14,
-    fontWeight: '900',
-    marginTop: 8,
-  },
-  cashbackHighlight: {
-    alignSelf: 'flex-start',
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: 18,
-    backgroundColor: 'rgba(34,197,94,0.18)',
-    borderWidth: 1,
-    borderColor: 'rgba(34,197,94,0.42)',
-    paddingHorizontal: 12,
-    paddingVertical: 9,
-    marginTop: 14,
-  },
-  cashbackText: {
-    color: '#B8FFD2',
-    fontSize: 15,
-    fontWeight: '900',
-    marginLeft: 8,
-  },
-  quickGrid: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 24,
-  },
-});
 export function HomeScreen({
   accountBalance,
   cashbackBalance,
@@ -276,3 +175,105 @@ export function HomeScreen({
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 22,
+  },
+  customerProfile: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexShrink: 1,
+  },
+  customerPhotoFrame: {
+    width: 58,
+    height: 58,
+    borderRadius: 20,
+    overflow: 'hidden',
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.18)',
+    backgroundColor: 'rgba(255,255,255,0.08)',
+  },
+  customerPhoto: {
+    width: '100%',
+    height: '100%',
+  },
+  customerName: {
+    color: colors.white,
+    fontSize: 22,
+    fontWeight: '900',
+    marginLeft: 12,
+  },
+  roundButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  balanceCard: {
+    borderRadius: 30,
+    padding: 24,
+    marginBottom: 22,
+  },
+  balanceHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  balanceLabel: {
+    color: 'rgba(255,255,255,0.78)',
+    fontSize: 14,
+  },
+  balanceVisibilityButton: {
+    width: 42,
+    height: 42,
+    borderRadius: 14,
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.16)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  balanceValue: {
+    color: colors.white,
+    fontSize: 38,
+    fontWeight: '900',
+    marginTop: 8,
+  },
+  balanceYieldText: {
+    color: '#86EFAC',
+    fontSize: 14,
+    fontWeight: '900',
+    marginTop: 8,
+  },
+  cashbackHighlight: {
+    alignSelf: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 18,
+    backgroundColor: 'rgba(34,197,94,0.18)',
+    borderWidth: 1,
+    borderColor: 'rgba(34,197,94,0.42)',
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+    marginTop: 14,
+  },
+  cashbackText: {
+    color: '#B8FFD2',
+    fontSize: 15,
+    fontWeight: '900',
+    marginLeft: 8,
+  },
+  quickGrid: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 24,
+  },
+});
