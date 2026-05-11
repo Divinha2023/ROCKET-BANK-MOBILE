@@ -12,37 +12,6 @@ import type {
 
 type TransactionFilter = 'all' | BankStatementTransactionType;
 
-const styles = StyleSheet.create({
-  searchBox: {
-    height: 56,
-    borderRadius: 18,
-    backgroundColor: 'rgba(255,255,255,0.055)',
-    borderWidth: 1,
-    borderColor: colors.border,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    marginBottom: 14,
-  },
-  searchText: {
-    flex: 1,
-    color: colors.mutedDark,
-    fontSize: 15,
-    marginLeft: 10,
-  },
-  filterRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginBottom: 18,
-  },
-  emptyText: {
-    color: colors.mutedDark,
-    fontSize: 14,
-    lineHeight: 20,
-    padding: 18,
-  },
-});
-
 const filters: { label: string; value: TransactionFilter }[] = [
   { label: 'Todos', value: 'all' },
   { label: 'Entradas', value: 'entry' },
@@ -125,3 +94,34 @@ export function StatementScreen({
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  searchBox: {
+    height: 56,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255,255,255,0.055)',
+    borderWidth: 1,
+    borderColor: colors.border,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    marginBottom: 14,
+  },
+  searchText: {
+    flex: 1,
+    color: colors.mutedDark,
+    fontSize: 15,
+    marginLeft: 10,
+  },
+  filterRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginBottom: 18,
+  },
+  emptyText: {
+    color: colors.mutedDark,
+    fontSize: 14,
+    lineHeight: 20,
+    padding: 18,
+  },
+});

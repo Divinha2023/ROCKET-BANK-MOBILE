@@ -3,6 +3,34 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme';
 import type { IconName } from '../types';
 
+export function TabButton({
+  icon,
+  label,
+  active,
+  onPress,
+}: {
+  icon: IconName;
+  label: string;
+  active: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable accessibilityRole="tab" accessibilityState={{ selected: active }} style={styles.tabButton} onPress={onPress}>
+      <View style={active ? styles.activeTabIconBg : styles.inactiveTabIconBg}>
+        <Ionicons
+          name={icon}
+          size={22}
+          color={active ? colors.white : 'rgba(255,255,255,0.55)'}
+        />
+      </View>
+
+      <Text style={[styles.tabLabel, active && styles.tabLabelActive]}>
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
   tabButton: {
     flex: 1,
@@ -33,30 +61,3 @@ const styles = StyleSheet.create({
     color: colors.purpleSoft,
   },
 });
-export function TabButton({
-  icon,
-  label,
-  active,
-  onPress,
-}: {
-  icon: IconName;
-  label: string;
-  active: boolean;
-  onPress: () => void;
-}) {
-  return (
-    <Pressable accessibilityRole="tab" accessibilityState={{ selected: active }} style={styles.tabButton} onPress={onPress}>
-      <View style={active ? styles.activeTabIconBg : styles.inactiveTabIconBg}>
-        <Ionicons
-          name={icon}
-          size={22}
-          color={active ? colors.white : 'rgba(255,255,255,0.55)'}
-        />
-      </View>
-
-      <Text style={[styles.tabLabel, active && styles.tabLabelActive]}>
-        {label}
-      </Text>
-    </Pressable>
-  );
-}

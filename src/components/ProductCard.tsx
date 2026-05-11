@@ -3,6 +3,47 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme';
 import type { ShoppingProduct } from '../types';
 
+type ProductCardProps = {
+  product: ShoppingProduct;
+  onPress?: (product: ShoppingProduct) => void;
+};
+
+export function ProductCard({ product, onPress }: ProductCardProps) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      style={styles.productCard}
+      onPress={() => onPress?.(product)}
+    >
+      <Image
+        source={{ uri: product.image }}
+        style={styles.productImage}
+        resizeMode="cover"
+      />
+
+      <View style={styles.productContent}>
+        <Text style={styles.productStore}>{product.store}</Text>
+        <Text style={styles.productName} numberOfLines={2}>
+          {product.name}
+        </Text>
+
+        {product.oldPrice ? (
+          <Text style={styles.productOldPrice}>{product.oldPrice}</Text>
+        ) : null}
+
+        <Text style={styles.productPrice}>{product.price}</Text>
+
+        <View style={styles.productCashbackRow}>
+          <Ionicons name="cash-outline" size={15} color={colors.green} />
+          <Text style={styles.productCashbackText}>
+            {product.cashback} de cashback
+          </Text>
+        </View>
+      </View>
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
   productCard: {
     width: '48%',
@@ -65,43 +106,3 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
 });
-type ProductCardProps = {
-  product: ShoppingProduct;
-  onPress?: (product: ShoppingProduct) => void;
-};
-
-export function ProductCard({ product, onPress }: ProductCardProps) {
-  return (
-    <Pressable
-      accessibilityRole="button"
-      style={styles.productCard}
-      onPress={() => onPress?.(product)}
-    >
-      <Image
-        source={{ uri: product.image }}
-        style={styles.productImage}
-        resizeMode="cover"
-      />
-
-      <View style={styles.productContent}>
-        <Text style={styles.productStore}>{product.store}</Text>
-        <Text style={styles.productName} numberOfLines={2}>
-          {product.name}
-        </Text>
-
-        {product.oldPrice ? (
-          <Text style={styles.productOldPrice}>{product.oldPrice}</Text>
-        ) : null}
-
-        <Text style={styles.productPrice}>{product.price}</Text>
-
-        <View style={styles.productCashbackRow}>
-          <Ionicons name="cash-outline" size={15} color={colors.green} />
-          <Text style={styles.productCashbackText}>
-            {product.cashback} de cashback
-          </Text>
-        </View>
-      </View>
-    </Pressable>
-  );
-}

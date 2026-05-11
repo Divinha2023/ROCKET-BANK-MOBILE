@@ -4,48 +4,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme';
 import type { IconName } from '../types';
 
-const styles = StyleSheet.create({
-  categoryCard: {
-    width: '31.5%',
-    minHeight: 104,
-    borderRadius: 22,
-    backgroundColor: 'rgba(255,255,255,0.055)',
-    borderWidth: 1,
-    borderColor: colors.border,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 12,
-    paddingHorizontal: 8,
-  },
-  categoryIconBox: {
-    width: 44,
-    height: 44,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 8,
-  },
-  categoryLabel: {
-    color: colors.white,
-    fontSize: 12,
-    textAlign: 'center',
-    fontWeight: '800',
-  },
-  categoryCardActive: {
-    backgroundColor: 'rgba(139,92,246,0.18)',
-    borderColor: colors.purpleSoft,
-  },
-  categoryCardDisabled: {
-    opacity: 0.42,
-  },
-  unavailableBadge: {
-    color: colors.mutedDark,
-    fontSize: 10,
-    fontWeight: '800',
-    marginTop: 4,
-  },
-});
-
 type CategoryCardProps = {
   active?: boolean;
   disabled?: boolean;
@@ -88,3 +46,45 @@ export function CategoryCard({
     </Pressable>
   );
 }
+
+const styles = StyleSheet.create({
+  categoryCard: {
+    width: '31.5%',
+    minHeight: 104,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255,255,255,0.055)',
+    borderWidth: 1,
+    borderColor: colors.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+    paddingHorizontal: 8,
+  },
+  categoryIconBox: {
+    width: 44,
+    height: 44,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+  },
+  categoryLabel: {
+    color: colors.white,
+    fontSize: 12,
+    textAlign: 'center',
+    fontWeight: '800',
+  },
+  categoryCardActive: {
+    backgroundColor: 'rgba(139,92,246,0.18)',
+    borderColor: colors.purpleSoft,
+  },
+  categoryCardDisabled: {
+    opacity: 0.42,
+  },
+  unavailableBadge: {
+    color: colors.mutedDark,
+    fontSize: 10,
+    fontWeight: '800',
+    marginTop: 4,
+  },
+});

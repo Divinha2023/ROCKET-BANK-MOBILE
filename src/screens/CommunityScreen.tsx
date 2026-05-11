@@ -4,79 +4,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme';
 import { ScreenTitle } from '../components/ScreenTitle';
 
-const styles = StyleSheet.create({
-  postCard: {
-    backgroundColor: 'rgba(255,255,255,0.055)',
-    borderRadius: 28,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: 18,
-    marginBottom: 16,
-  },
-  postHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 14,
-  },
-  avatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 18,
-    backgroundColor: colors.purpleStrong,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  avatarText: {
-    color: colors.white,
-    fontSize: 20,
-    fontWeight: '900',
-  },
-  postAuthor: {
-    color: colors.white,
-    fontSize: 15,
-    fontWeight: '900',
-  },
-  postTime: {
-    color: colors.mutedDark,
-    fontSize: 12,
-    marginTop: 3,
-  },
-  postText: {
-    color: '#D8D8E4',
-    fontSize: 15,
-    lineHeight: 23,
-  },
-  postActions: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: 120,
-    marginTop: 16,
-  },
-  challengeCard: {
-    flexDirection: 'row',
-    backgroundColor: 'rgba(255,255,255,0.055)',
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: 18,
-  },
-  challengeInfo: {
-    flex: 1,
-    marginLeft: 14,
-  },
-  challengeTitle: {
-    color: colors.white,
-    fontSize: 17,
-    fontWeight: '900',
-  },
-  challengeText: {
-    color: colors.mutedDark,
-    fontSize: 14,
-    lineHeight: 20,
-    marginTop: 4,
-  },
-});
 export function CommunityScreen() {
   const [liked, setLiked] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -156,3 +83,77 @@ export function CommunityScreen() {
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  postCard: {
+    backgroundColor: 'rgba(255,255,255,0.055)',
+    borderRadius: 28,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: 18,
+    marginBottom: 16,
+  },
+  postHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 14,
+  },
+  avatar: {
+    width: 48,
+    height: 48,
+    borderRadius: 18,
+    backgroundColor: colors.purpleStrong,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  avatarText: {
+    color: colors.white,
+    fontSize: 20,
+    fontWeight: '900',
+  },
+  postAuthor: {
+    color: colors.white,
+    fontSize: 15,
+    fontWeight: '900',
+  },
+  postTime: {
+    color: colors.mutedDark,
+    fontSize: 12,
+    marginTop: 3,
+  },
+  postText: {
+    color: '#D8D8E4',
+    fontSize: 15,
+    lineHeight: 23,
+  },
+  postActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: 120,
+    marginTop: 16,
+  },
+  challengeCard: {
+    flexDirection: 'row',
+    backgroundColor: 'rgba(255,255,255,0.055)',
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: 18,
+  },
+  challengeInfo: {
+    flex: 1,
+    marginLeft: 14,
+  },
+  challengeTitle: {
+    color: colors.white,
+    fontSize: 17,
+    fontWeight: '900',
+  },
+  challengeText: {
+    color: colors.mutedDark,
+    fontSize: 14,
+    lineHeight: 20,
+    marginTop: 4,
+  },
+});

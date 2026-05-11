@@ -3,6 +3,33 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme';
 import type { IconName } from '../types';
 
+export function MenuRow({
+  icon,
+  title,
+  subtitle,
+  onPress,
+}: {
+  icon: IconName;
+  title: string;
+  subtitle: string;
+  onPress?: () => void;
+}) {
+  return (
+    <Pressable accessibilityRole="button" style={styles.menuRow} onPress={onPress}>
+      <View style={styles.menuIcon}>
+        <Ionicons name={icon} size={22} color={colors.purpleSoft} />
+      </View>
+
+      <View style={styles.menuInfo}>
+        <Text style={styles.menuTitle}>{title}</Text>
+        <Text style={styles.menuSubtitle}>{subtitle}</Text>
+      </View>
+
+      <Ionicons name="chevron-forward" size={20} color={colors.mutedDark} />
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
   menuRow: {
     flexDirection: 'row',
@@ -35,29 +62,3 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
 });
-export function MenuRow({
-  icon,
-  title,
-  subtitle,
-  onPress,
-}: {
-  icon: IconName;
-  title: string;
-  subtitle: string;
-  onPress?: () => void;
-}) {
-  return (
-    <Pressable accessibilityRole="button" style={styles.menuRow} onPress={onPress}>
-      <View style={styles.menuIcon}>
-        <Ionicons name={icon} size={22} color={colors.purpleSoft} />
-      </View>
-
-      <View style={styles.menuInfo}>
-        <Text style={styles.menuTitle}>{title}</Text>
-        <Text style={styles.menuSubtitle}>{subtitle}</Text>
-      </View>
-
-      <Ionicons name="chevron-forward" size={20} color={colors.mutedDark} />
-    </Pressable>
-  );
-}

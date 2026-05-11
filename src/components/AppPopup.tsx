@@ -218,6 +218,8 @@ export function AppPopupProvider({ children }: { children: ReactNode }) {
   );
 }
 
+
+
 const styles = StyleSheet.create({
   backdrop: {
     alignItems: 'center',

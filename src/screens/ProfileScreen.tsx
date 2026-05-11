@@ -4,43 +4,6 @@ import type { AppScreen } from '../types';
 import { ScreenTitle } from '../components/ScreenTitle';
 import { MenuRow } from '../components/MenuRow';
 
-const styles = StyleSheet.create({
-  profileCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.055)',
-    borderRadius: 26,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: 18,
-    marginBottom: 20,
-  },
-  profileAvatar: {
-    width: 64,
-    height: 64,
-    borderRadius: 22,
-    borderWidth: 2,
-    borderColor: 'rgba(255,255,255,0.18)',
-    backgroundColor: 'rgba(255,255,255,0.08)',
-    marginRight: 14,
-    overflow: 'hidden',
-  },
-  profilePhoto: {
-    width: '100%',
-    height: '100%',
-  },
-  profileName: {
-    color: colors.white,
-    fontSize: 18,
-    fontWeight: '900',
-  },
-  profileAccount: {
-    color: colors.mutedDark,
-    fontSize: 13,
-    marginTop: 4,
-  },
-});
-
 export function ProfileScreen({
   setActiveScreen,
   onLogout,
@@ -108,3 +71,40 @@ export function ProfileScreen({
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  profileCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.055)',
+    borderRadius: 26,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: 18,
+    marginBottom: 20,
+  },
+  profileAvatar: {
+    width: 64,
+    height: 64,
+    borderRadius: 22,
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.18)',
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    marginRight: 14,
+    overflow: 'hidden',
+  },
+  profilePhoto: {
+    width: '100%',
+    height: '100%',
+  },
+  profileName: {
+    color: colors.white,
+    fontSize: 18,
+    fontWeight: '900',
+  },
+  profileAccount: {
+    color: colors.mutedDark,
+    fontSize: 13,
+    marginTop: 4,
+  },
+});

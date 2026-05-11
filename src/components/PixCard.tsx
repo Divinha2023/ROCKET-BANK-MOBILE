@@ -3,6 +3,30 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme';
 import type { IconName } from '../types';
 
+export function PixCard({
+  icon,
+  onPress,
+  title,
+  text,
+}: {
+  icon: IconName;
+  onPress?: () => void;
+  title: string;
+  text: string;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      style={styles.pixCard}
+      onPress={onPress}
+    >
+      <Ionicons name={icon} size={28} color={colors.purpleSoft} />
+      <Text style={styles.pixCardTitle}>{title}</Text>
+      <Text style={styles.pixCardText}>{text}</Text>
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
   pixCard: {
     width: '48%',
@@ -27,26 +51,3 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
 });
-export function PixCard({
-  icon,
-  onPress,
-  title,
-  text,
-}: {
-  icon: IconName;
-  onPress?: () => void;
-  title: string;
-  text: string;
-}) {
-  return (
-    <Pressable
-      accessibilityRole="button"
-      style={styles.pixCard}
-      onPress={onPress}
-    >
-      <Ionicons name={icon} size={28} color={colors.purpleSoft} />
-      <Text style={styles.pixCardTitle}>{title}</Text>
-      <Text style={styles.pixCardText}>{text}</Text>
-    </Pressable>
-  );
-}

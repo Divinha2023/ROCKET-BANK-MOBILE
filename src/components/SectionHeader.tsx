@@ -1,24 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors } from '../theme';
 
-const styles = StyleSheet.create({
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 14,
-  },
-  sectionTitle: {
-    color: colors.white,
-    fontSize: 20,
-    fontWeight: '900',
-  },
-  sectionAction: {
-    color: colors.purpleSoft,
-    fontSize: 14,
-    fontWeight: '800',
-  },
-});
 export function SectionHeader({
   title,
   action,
@@ -40,3 +22,22 @@ export function SectionHeader({
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 14,
+  },
+  sectionTitle: {
+    color: colors.white,
+    fontSize: 20,
+    fontWeight: '900',
+  },
+  sectionAction: {
+    color: colors.purpleSoft,
+    fontSize: 14,
+    fontWeight: '800',
+  },
+});

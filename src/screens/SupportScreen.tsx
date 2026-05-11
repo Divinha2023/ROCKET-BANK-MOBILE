@@ -4,32 +4,6 @@ import { colors, commonStyles } from '../theme';
 import { ScreenTitle } from '../components/ScreenTitle';
 import { MenuRow } from '../components/MenuRow';
 
-const styles = StyleSheet.create({
-  supportCard: {
-    flexDirection: 'row',
-    backgroundColor: colors.purpleStrong,
-    borderRadius: 28,
-    padding: 22,
-    alignItems: 'center',
-    marginBottom: 22,
-  },
-  supportInfo: {
-    flex: 1,
-    marginLeft: 14,
-  },
-  supportTitle: {
-    color: colors.white,
-    fontSize: 18,
-    fontWeight: '900',
-  },
-  supportText: {
-    color: 'rgba(255,255,255,0.85)',
-    fontSize: 14,
-    lineHeight: 20,
-    marginTop: 4,
-  },
-});
-
 export function SupportScreen() {
   return (
     <>
@@ -87,3 +61,29 @@ export function SupportScreen() {
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  supportCard: {
+    flexDirection: 'row',
+    backgroundColor: colors.purpleStrong,
+    borderRadius: 28,
+    padding: 22,
+    alignItems: 'center',
+    marginBottom: 22,
+  },
+  supportInfo: {
+    flex: 1,
+    marginLeft: 14,
+  },
+  supportTitle: {
+    color: colors.white,
+    fontSize: 18,
+    fontWeight: '900',
+  },
+  supportText: {
+    color: 'rgba(255,255,255,0.85)',
+    fontSize: 14,
+    lineHeight: 20,
+    marginTop: 4,
+  },
+});
