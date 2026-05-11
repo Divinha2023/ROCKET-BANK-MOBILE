@@ -46,7 +46,7 @@ const initialRegisterData: RegisterData = {
   password: '',
   cep: '',
   number: '',
-  street: 'Preenchido automaticamente',
+  street: '',
   city: '',
   uf: '',
 };
@@ -357,6 +357,42 @@ function formatCpf(value: string) {
     .replace(/^(\d{3})\.(\d{3})\.(\d{3})(\d)/, '$1.$2.$3-$4');
 }
 
+function formatBirthDate(value: string) {
+  const digits = onlyDigits(value).slice(0, 8);
+
+  return digits
+    .replace(/^(\d{2})(\d)/, '$1/$2')
+    .replace(/^(\d{2})\/(\d{2})(\d)/, '$1/$2/$3');
+}
+
+function formatCep(value: string) {
+  const digits = onlyDigits(value).slice(0, 8);
+
+  return digits.replace(/^(\d{5})(\d)/, '$1-$2');
+}
+
+function isValidBirthDate(value: string) {
+  const digits = onlyDigits(value);
+
+  if (digits.length !== 8) {
+    return false;
+  }
+
+  const day = Number(digits.slice(0, 2));
+  const month = Number(digits.slice(2, 4));
+  const year = Number(digits.slice(4, 8));
+  const date = new Date(year, month - 1, day);
+  const currentYear = new Date().getFullYear();
+
+  return (
+    year >= 1900 &&
+    year <= currentYear &&
+    date.getFullYear() === year &&
+    date.getMonth() === month - 1 &&
+    date.getDate() === day
+  );
+}
+
 function isValidEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value.trim());
 }
@@ -415,12 +451,17 @@ export function LoginScreen({ onLogin }: { onLogin: () => void }) {
   }
 
   function updateRegisterField(field: keyof RegisterData, value: string) {
-    const nextValue =
-      field === 'cpf'
-        ? formatCpf(value)
-        : field === 'email'
-          ? value.trim()
-          : value;
+    let nextValue = value;
+
+    if (field === 'cpf') {
+      nextValue = formatCpf(value);
+    } else if (field === 'birthDate') {
+      nextValue = formatBirthDate(value);
+    } else if (field === 'cep') {
+      nextValue = formatCep(value);
+    } else if (field === 'email') {
+      nextValue = value.trim();
+    }
 
     setRegisterData((current) => ({
       ...current,
@@ -503,8 +544,18 @@ export function LoginScreen({ onLogin }: { onLogin: () => void }) {
       return;
     }
 
+    if (!isValidBirthDate(registerData.birthDate)) {
+      Alert.alert('Data inválida', 'Digite a data no formato dd/mm/aaaa.');
+      return;
+    }
+
     if (!isValidEmail(registerData.email)) {
       Alert.alert('E-mail inválido', 'Digite um e-mail válido, como test@mail.com.');
+      return;
+    }
+
+    if (onlyDigits(registerData.cep).length !== 8) {
+      Alert.alert('CEP inválido', 'Digite o CEP no formato 00000-000.');
       return;
     }
 
@@ -530,6 +581,7 @@ export function LoginScreen({ onLogin }: { onLogin: () => void }) {
     icon,
     keyboardType = 'default',
     label,
+    maxLength,
     placeholder,
     secureTextEntry = false,
     style,
@@ -540,6 +592,7 @@ export function LoginScreen({ onLogin }: { onLogin: () => void }) {
     icon?: ComponentProps<typeof Ionicons>['name'];
     keyboardType?: 'default' | 'email-address' | 'numeric' | 'number-pad';
     label: string;
+    maxLength?: number;
     placeholder: string;
     secureTextEntry?: boolean;
     style?: StyleProp<ViewStyle>;
@@ -553,6 +606,7 @@ export function LoginScreen({ onLogin }: { onLogin: () => void }) {
             autoCorrect={false}
             editable={editable}
             keyboardType={keyboardType}
+            maxLength={maxLength}
             onChangeText={(value) => updateRegisterField(field, value)}
             placeholder={placeholder}
             placeholderTextColor="#A3A0B4"
@@ -623,6 +677,7 @@ export function LoginScreen({ onLogin }: { onLogin: () => void }) {
           field: 'cpf',
           keyboardType: 'number-pad',
           label: 'CPF',
+          maxLength: 14,
           placeholder: '000.000.000-00',
         })}
         {renderRegisterField({
@@ -630,6 +685,7 @@ export function LoginScreen({ onLogin }: { onLogin: () => void }) {
           icon: 'calendar-outline',
           keyboardType: 'number-pad',
           label: 'Data de nascimento',
+          maxLength: 10,
           placeholder: 'dd/mm/aaaa',
         })}
         {renderRegisterField({
@@ -648,6 +704,7 @@ export function LoginScreen({ onLogin }: { onLogin: () => void }) {
           field: 'cep',
           keyboardType: 'number-pad',
           label: 'CEP',
+          maxLength: 9,
           placeholder: '00000-000',
         })}
         {renderRegisterField({
@@ -656,10 +713,10 @@ export function LoginScreen({ onLogin }: { onLogin: () => void }) {
           placeholder: 'Ex: 123, Apto 45',
         })}
         {renderRegisterField({
-          editable: false,
+          autoCapitalize: 'words',
           field: 'street',
           label: 'Rua',
-          placeholder: 'Preenchido automaticamente',
+          placeholder: 'Ex: Alice ferreira',
         })}
 
         <View style={styles.registerRow}>

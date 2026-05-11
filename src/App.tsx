@@ -61,6 +61,8 @@ const initialStatementTransactions: BankStatementTransaction[] = [
   },
 ];
 
+const invoiceCashbackRate = 0.03;
+
 function formatStatementMoment() {
   return new Date().toLocaleString('pt-BR', {
     day: '2-digit',
@@ -156,6 +158,7 @@ function AppContent() {
       }
 
       const amount = parseCurrency(card.invoiceTotal);
+      const cashbackAmount = amount * invoiceCashbackRate;
       if (!debitAccount(amount)) {
         return false;
       }
@@ -164,6 +167,27 @@ function AppContent() {
         ...current,
         [card.id]: true,
       }));
+      const statementMoment = formatStatementMoment();
+      addStatementTransaction({
+        icon: 'receipt-outline',
+        subtitle: `${card.title} - ${statementMoment}`,
+        title: 'Pagamento de fatura',
+        type: 'expense',
+        value: `- ${formatCurrency(amount)}`,
+      });
+
+      if (cashbackAmount > 0) {
+        setCashbackBalance((current) => current + cashbackAmount);
+        addStatementTransaction({
+          icon: 'sparkles-outline',
+          positive: true,
+          subtitle: `${card.title} - 3% - ${statementMoment}`,
+          title: 'Cashback da fatura',
+          type: 'cashback',
+          value: `+ ${formatCurrency(cashbackAmount)}`,
+        });
+      }
+
       return true;
     }
 

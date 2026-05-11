@@ -6,6 +6,7 @@ import { colors, commonStyles } from '../theme';
 import type { AppScreen, BankStatementTransaction } from '../types';
 import { SectionHeader } from '../components/SectionHeader';
 import { QuickAction } from '../components/QuickAction';
+import { PixIcon } from '../components/PixIcon';
 import { FeatureCard } from '../components/FeatureCard';
 import { Transaction } from '../components/Transaction';
 import { formatCurrency } from '../utils/currency';
@@ -127,7 +128,9 @@ export function HomeScreen({
 
   async function openRocketConnect() {
     try {
-      await Linking.openURL('https://www.instagram.com/rocketbank/');
+      await Linking.openURL(
+        'https://www.instagram.com/rocketbank.oficial?igsh=MW4yOGo0b25wZXltZA=='
+      );
     } catch {
       Alert.alert(
         'Rocket Connect',
@@ -212,7 +215,7 @@ export function HomeScreen({
 
       <View style={styles.quickGrid}>
         <QuickAction
-          icon="swap-horizontal-outline"
+          customIcon={<PixIcon size={24} color={colors.white} />}
           label="Transferir"
           onPress={() => setActiveScreen('pix')}
         />

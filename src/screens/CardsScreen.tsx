@@ -14,16 +14,32 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, commonStyles } from '../theme';
 import { RocketCard } from '../components/RocketCard';
-import { MetricCard } from '../components/MetricCard';
 import { MenuRow } from '../components/MenuRow';
 import { availableVirtualCards, userCards } from '../data/mockData';
 import type { AppScreen, UserCard } from '../types';
+import { formatCurrency, parseCurrency } from '../utils/currency';
 
 const maxCardsPerUser = 3;
 const screenWidth = Dimensions.get('window').width;
 const cardGap = 14;
 const cardWidth = screenWidth - 40;
 const snapInterval = cardWidth + cardGap;
+const invoiceCashbackRate = 0.03;
+
+function shiftInvoiceDate(dateValue: string, days: number) {
+  const [day, month] = dateValue.split('/').map(Number);
+
+  if (!day || !month) {
+    return dateValue;
+  }
+
+  const date = new Date(new Date().getFullYear(), month - 1, day);
+  date.setDate(date.getDate() + days);
+
+  return `${String(date.getDate()).padStart(2, '0')}/${String(
+    date.getMonth() + 1
+  ).padStart(2, '0')}`;
+}
 
 const styles = StyleSheet.create({
   topBanner: {
@@ -213,7 +229,7 @@ const styles = StyleSheet.create({
     color: 'rgba(255,255,255,0.72)',
     fontSize: 12,
     fontWeight: '900',
-    letterSpacing: 0.8,
+    letterSpacing: 0,
     textTransform: 'uppercase',
   },
   invoiceHighlightStatus: {
@@ -221,6 +237,22 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.14)',
     paddingHorizontal: 10,
     paddingVertical: 6,
+  },
+  invoiceHighlightActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 12,
+  },
+  invoiceVisibilityButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 14,
+    backgroundColor: 'rgba(255,255,255,0.14)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.18)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 8,
   },
   invoiceHighlightStatusText: {
     color: colors.white,
@@ -231,6 +263,81 @@ const styles = StyleSheet.create({
     color: colors.white,
     fontSize: 34,
     fontWeight: '900',
+  },
+  invoiceHighlightCaption: {
+    color: 'rgba(255,255,255,0.72)',
+    fontSize: 12,
+    fontWeight: '800',
+    marginTop: 6,
+  },
+  invoiceInsight: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.13)',
+    borderColor: 'rgba(255,255,255,0.14)',
+    borderRadius: 18,
+    borderWidth: 1,
+    flexDirection: 'row',
+    marginTop: 18,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+  },
+  invoiceInsightIcon: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.14)',
+    borderRadius: 13,
+    height: 34,
+    justifyContent: 'center',
+    marginRight: 10,
+    width: 34,
+  },
+  invoiceInsightText: {
+    color: colors.white,
+    flex: 1,
+    fontSize: 13,
+    fontWeight: '800',
+    lineHeight: 18,
+  },
+  invoiceCashbackCard: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(34,197,94,0.22)',
+    borderColor: 'rgba(134,239,172,0.42)',
+    borderRadius: 18,
+    borderWidth: 1,
+    flexDirection: 'row',
+    marginTop: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+  },
+  invoiceCashbackIcon: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(34,197,94,0.34)',
+    borderRadius: 13,
+    height: 34,
+    justifyContent: 'center',
+    marginRight: 10,
+    width: 34,
+  },
+  invoiceCashbackInfo: {
+    flex: 1,
+    marginRight: 10,
+  },
+  invoiceCashbackLabel: {
+    color: 'rgba(220,252,231,0.86)',
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  invoiceCashbackText: {
+    color: 'rgba(240,253,244,0.86)',
+    fontSize: 12,
+    fontWeight: '800',
+    marginTop: 3,
+  },
+  invoiceCashbackValue: {
+    color: '#BBF7D0',
+    fontSize: 18,
+    fontWeight: '900',
+    textAlign: 'right',
   },
   invoiceDetailGrid: {
     flexDirection: 'row',
@@ -297,34 +404,66 @@ export function CardsScreen({
   const [hiddenCardIds, setHiddenCardIds] = useState<Record<string, boolean>>({
     [userCards[0].id]: true,
   });
+  const [visibleInvoiceCardIds, setVisibleInvoiceCardIds] = useState<
+    Record<string, boolean>
+  >({});
   const [blockedCardIds, setBlockedCardIds] = useState<Record<string, boolean>>(
     {}
   );
   const selectedCard = cards[Math.min(selectedIndex, cards.length - 1)];
   const selectedCardBlocked = Boolean(blockedCardIds[selectedCard.id]);
-  const selectedCardHidden = hiddenCardIds[selectedCard.id] ?? true;
+  const selectedCardHidden =
+    selectedCardBlocked || (hiddenCardIds[selectedCard.id] ?? true);
   const selectedCardInvoicePaid = Boolean(paidInvoiceCardIds[selectedCard.id]);
+  const selectedCardInvoiceVisible = Boolean(
+    visibleInvoiceCardIds[selectedCard.id]
+  );
   const hiddenInvoiceValue = '••••••';
+  const hiddenShortDate = '••/••';
   const displayedLimitValue = selectedCardHidden
     ? hiddenInvoiceValue
     : selectedCard.limit;
-  const statementValue = selectedCardInvoicePaid ? 'R$ 0' : selectedCard.invoiceTotal;
-  const displayedStatementValue = selectedCardHidden
+  const statementValue = selectedCardInvoicePaid
+    ? 'R$ 0'
+    : selectedCard.invoiceTotal;
+  const invoiceCashbackValue =
+    parseCurrency(selectedCard.invoiceTotal) * invoiceCashbackRate;
+  const minimumPaymentValue = selectedCardInvoicePaid
+    ? 'R$ 0'
+    : formatCurrency(parseCurrency(selectedCard.invoiceTotal) * 0.15);
+  const displayedStatementValue = !selectedCardInvoiceVisible
     ? hiddenInvoiceValue
     : statementValue;
-  const displayedDueDate = selectedCardHidden
-    ? '••/••'
+  const displayedDueDate = !selectedCardInvoiceVisible
+    ? hiddenShortDate
     : selectedCard.invoiceDueDate;
-  const displayedInvoiceStatus = selectedCardHidden
+  const displayedClosingDate = !selectedCardInvoiceVisible
+    ? hiddenShortDate
+    : shiftInvoiceDate(selectedCard.invoiceDueDate, -7);
+  const displayedBestPurchaseDate = !selectedCardInvoiceVisible
+    ? hiddenShortDate
+    : shiftInvoiceDate(selectedCard.invoiceDueDate, -6);
+  const displayedMinimumPayment = !selectedCardInvoiceVisible
+    ? hiddenInvoiceValue
+    : minimumPaymentValue;
+  const displayedInvoiceCashback = !selectedCardInvoiceVisible
+    ? hiddenInvoiceValue
+    : formatCurrency(invoiceCashbackValue);
+  const displayedInvoiceStatus = !selectedCardInvoiceVisible
     ? hiddenInvoiceValue
     : selectedCardInvoicePaid
       ? 'Paga'
       : 'Aberta';
-  const displayedInvoicePaymentHint = selectedCardHidden
+  const displayedInvoicePaymentHint = !selectedCardInvoiceVisible
     ? hiddenInvoiceValue
     : selectedCardInvoicePaid
       ? 'Sem valor pendente'
       : 'Pagamento disponível';
+  const invoiceInsightText = !selectedCardInvoiceVisible
+    ? hiddenInvoiceValue
+    : selectedCardInvoicePaid
+      ? 'Fatura quitada. Nenhum pagamento pendente para este cartão.'
+      : `Pagamento mínimo de ${minimumPaymentValue} disponível até ${selectedCard.invoiceDueDate}.`;
 
   function scrollToCard(index: number) {
     carouselRef.current?.scrollTo({
@@ -346,21 +485,34 @@ export function CardsScreen({
     }));
   }
 
-  function toggleBlockCard() {
-    setBlockedCardIds((current) => {
-      const nextBlocked = !current[selectedCard.id];
-      Alert.alert(
-        nextBlocked ? 'Cartão bloqueado' : 'Cartão desbloqueado',
-        nextBlocked
-          ? `${selectedCard.title} ficou inativo para compras.`
-          : `${selectedCard.title} voltou a ficar disponível.`
-      );
+  function toggleInvoiceVisibility(cardId: string) {
+    setVisibleInvoiceCardIds((current) => ({
+      ...current,
+      [cardId]: !current[cardId],
+    }));
+  }
 
-      return {
+  function toggleBlockCard() {
+    const nextBlocked = !selectedCardBlocked;
+
+    if (nextBlocked) {
+      setHiddenCardIds((current) => ({
         ...current,
-        [selectedCard.id]: nextBlocked,
-      };
-    });
+        [selectedCard.id]: true,
+      }));
+    }
+
+    setBlockedCardIds((current) => ({
+      ...current,
+      [selectedCard.id]: nextBlocked,
+    }));
+
+    Alert.alert(
+      nextBlocked ? 'Cartão bloqueado' : 'Cartão desbloqueado',
+      nextBlocked
+        ? `${selectedCard.title} ficou inativo para compras.`
+        : `${selectedCard.title} voltou a ficar disponível.`
+    );
   }
 
   function showWalletDetails() {
@@ -496,7 +648,10 @@ export function CardsScreen({
               blocked={Boolean(blockedCardIds[card.id])}
               cvv={card.cvv}
               dueDate={card.dueDate}
-              hidden={hiddenCardIds[card.id] ?? true}
+              hidden={
+                Boolean(blockedCardIds[card.id]) ||
+                (hiddenCardIds[card.id] ?? true)
+              }
               holder={card.holder}
               number={card.number}
               onToggleVisibility={() => toggleCardVisibility(card.id)}
@@ -537,37 +692,93 @@ export function CardsScreen({
         </Text>
       </View>
 
-      <View style={commonStyles.twoColumns}>
-        <MetricCard label="Fatura atual" value={displayedStatementValue} />
-        <MetricCard label="Vencimento" value={displayedDueDate} />
-      </View>
-
-      <Pressable
-        accessibilityRole="button"
-        onPress={() => {
-          setSelectedInvoiceCardId(selectedCard.id);
-          setActiveScreen('invoice');
-        }}
-        style={styles.invoiceHighlight}
-      >
+      <View style={styles.invoiceHighlight}>
         <LinearGradient
-          colors={['rgba(111,44,255,0.92)', 'rgba(168,85,247,0.70)', 'rgba(255,123,84,0.56)']}
+          colors={[
+            'rgba(111,44,255,0.92)',
+            'rgba(168,85,247,0.70)',
+            'rgba(255,123,84,0.56)',
+          ]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.invoiceHighlightGradient}
         >
           <View style={styles.invoiceHighlightTop}>
             <Text style={styles.invoiceHighlightLabel}>Fatura do cartão</Text>
-            <View style={styles.invoiceHighlightStatus}>
-              <Text style={styles.invoiceHighlightStatusText}>
-                {displayedInvoiceStatus}
-              </Text>
+            <View style={styles.invoiceHighlightActions}>
+              <View style={styles.invoiceHighlightStatus}>
+                <Text style={styles.invoiceHighlightStatusText}>
+                  {displayedInvoiceStatus}
+                </Text>
+              </View>
+
+              <Pressable
+                accessibilityLabel={
+                  selectedCardInvoiceVisible
+                    ? 'Ocultar fatura'
+                    : 'Mostrar fatura'
+                }
+                accessibilityRole="button"
+                hitSlop={8}
+                onPress={() => toggleInvoiceVisibility(selectedCard.id)}
+                style={styles.invoiceVisibilityButton}
+              >
+                <Ionicons
+                  name={
+                    selectedCardInvoiceVisible
+                      ? 'eye-off-outline'
+                      : 'eye-outline'
+                  }
+                  size={19}
+                  color={colors.white}
+                />
+              </Pressable>
             </View>
           </View>
 
           <Text style={styles.invoiceHighlightValue}>
             {displayedStatementValue}
           </Text>
+          <Text style={styles.invoiceHighlightCaption}>
+            {selectedCardInvoiceVisible
+              ? `Fecha em ${displayedClosingDate} | mínimo ${displayedMinimumPayment}`
+              : hiddenInvoiceValue}
+          </Text>
+
+          <View style={styles.invoiceInsight}>
+            <View style={styles.invoiceInsightIcon}>
+              <Ionicons
+                name={
+                  selectedCardInvoiceVisible && selectedCardInvoicePaid
+                    ? 'checkmark-circle-outline'
+                    : 'receipt-outline'
+                }
+                size={20}
+                color={colors.white}
+              />
+            </View>
+            <Text style={styles.invoiceInsightText}>{invoiceInsightText}</Text>
+          </View>
+
+          <View style={styles.invoiceCashbackCard}>
+            <View style={styles.invoiceCashbackIcon}>
+              <Ionicons name="sparkles-outline" size={20} color="#BBF7D0" />
+            </View>
+            <View style={styles.invoiceCashbackInfo}>
+              <Text style={styles.invoiceCashbackLabel}>Cashback gerado</Text>
+              <Text style={styles.invoiceCashbackText}>
+                3% sobre o valor total da fatura
+              </Text>
+            </View>
+            <Text
+              adjustsFontSizeToFit
+              minimumFontScale={0.78}
+              numberOfLines={1}
+              style={styles.invoiceCashbackValue}
+            >
+              {displayedInvoiceCashback}
+            </Text>
+          </View>
 
           <View style={styles.invoiceDetailGrid}>
             <View style={styles.invoiceDetailItem}>
@@ -600,38 +811,73 @@ export function CardsScreen({
 
             <View style={styles.invoiceDetailItem}>
               <View style={styles.invoiceDetailBox}>
-                <Text style={styles.invoiceDetailLabel}>Limite do cartão</Text>
+                <Text style={styles.invoiceDetailLabel}>Fechamento</Text>
                 <Text
                   adjustsFontSizeToFit
                   minimumFontScale={0.78}
                   numberOfLines={1}
                   style={styles.invoiceDetailValue}
                 >
-                  {displayedLimitValue}
+                  {displayedClosingDate}
                 </Text>
               </View>
             </View>
 
             <View style={styles.invoiceDetailItem}>
               <View style={styles.invoiceDetailBox}>
-                <Text style={styles.invoiceDetailLabel}>Cartão</Text>
+                <Text style={styles.invoiceDetailLabel}>Mínimo</Text>
                 <Text
                   adjustsFontSizeToFit
                   minimumFontScale={0.78}
                   numberOfLines={1}
                   style={styles.invoiceDetailValue}
                 >
-                  {selectedCardHidden ? hiddenInvoiceValue : selectedCard.title}
+                  {displayedMinimumPayment}
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.invoiceDetailItem}>
+              <View style={styles.invoiceDetailBox}>
+                <Text style={styles.invoiceDetailLabel}>Melhor dia</Text>
+                <Text
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.78}
+                  numberOfLines={1}
+                  style={styles.invoiceDetailValue}
+                >
+                  {displayedBestPurchaseDate}
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.invoiceDetailItem}>
+              <View style={styles.invoiceDetailBox}>
+                <Text style={styles.invoiceDetailLabel}>Cashback total</Text>
+                <Text
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.78}
+                  numberOfLines={1}
+                  style={styles.invoiceDetailValue}
+                >
+                  {displayedInvoiceCashback}
                 </Text>
               </View>
             </View>
           </View>
 
-          <View style={styles.invoicePayButton}>
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => {
+              setSelectedInvoiceCardId(selectedCard.id);
+              setActiveScreen('invoice');
+            }}
+            style={styles.invoicePayButton}
+          >
             <Text style={styles.invoicePayButtonText}>Abrir fatura</Text>
-          </View>
+          </Pressable>
         </LinearGradient>
-      </Pressable>
+      </View>
 
       <View style={commonStyles.listCard}>
         <MenuRow

@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme';
@@ -34,24 +35,30 @@ const styles = StyleSheet.create({
   },
 });
 export function TabButton({
+  customIcon,
   icon,
   label,
   active,
+  iconColor,
   onPress,
 }: {
-  icon: IconName;
+  customIcon?: React.ReactNode;
+  icon?: IconName;
   label: string;
   active: boolean;
+  iconColor?: string;
   onPress: () => void;
 }) {
   return (
     <Pressable accessibilityRole="tab" accessibilityState={{ selected: active }} style={styles.tabButton} onPress={onPress}>
       <View style={active ? styles.activeTabIconBg : styles.inactiveTabIconBg}>
-        <Ionicons
-          name={icon}
-          size={22}
-          color={active ? colors.white : 'rgba(255,255,255,0.55)'}
-        />
+        {customIcon ?? (
+          <Ionicons
+            name={icon ?? 'ellipse-outline'}
+            size={22}
+            color={active ? colors.white : iconColor ?? 'rgba(255,255,255,0.55)'}
+          />
+        )}
       </View>
 
       <Text style={[styles.tabLabel, active && styles.tabLabelActive]}>

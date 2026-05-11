@@ -1,6 +1,8 @@
 import { StyleSheet, View } from 'react-native';
 import type { AppScreen } from '../types';
+import { colors } from '../theme';
 import { TabButton } from './TabButton';
+import { PixIcon } from './PixIcon';
 
 const styles = StyleSheet.create({
   bottomTabsWrapper: {
@@ -36,6 +38,8 @@ export function BottomTabs({
   activeScreen: AppScreen;
   setActiveScreen: (screen: AppScreen) => void;
 }) {
+  const isPixActive = activeScreen === 'pix';
+
   return (
     <View style={styles.bottomTabsWrapper}>
       <View style={styles.bottomTabs}>
@@ -54,14 +58,19 @@ export function BottomTabs({
         />
 
         <TabButton
-          icon="swap-horizontal-outline"
+          customIcon={
+            <PixIcon
+              size={22}
+              color={isPixActive ? colors.white : 'rgba(255,255,255,0.55)'}
+            />
+          }
           label="Transferir"
-          active={activeScreen === 'pix'}
+          active={isPixActive}
           onPress={() => setActiveScreen('pix')}
         />
 
         <TabButton
-          icon="trending-up-outline"
+          icon="analytics-outline"
           label="Invest"
           active={activeScreen === 'investments'}
           onPress={() => setActiveScreen('investments')}

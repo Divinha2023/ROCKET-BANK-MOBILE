@@ -532,7 +532,7 @@ export function RocketCard({
   }
 
   function renderEyeButton() {
-    if (!onToggleVisibility) {
+    if (blocked || !onToggleVisibility) {
       return null;
     }
 

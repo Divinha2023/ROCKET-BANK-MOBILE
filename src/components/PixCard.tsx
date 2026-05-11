@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme';
@@ -28,12 +29,14 @@ const styles = StyleSheet.create({
   },
 });
 export function PixCard({
+  customIcon,
   icon,
   onPress,
   title,
   text,
 }: {
-  icon: IconName;
+  customIcon?: ReactNode;
+  icon?: IconName;
   onPress?: () => void;
   title: string;
   text: string;
@@ -44,7 +47,9 @@ export function PixCard({
       style={styles.pixCard}
       onPress={onPress}
     >
-      <Ionicons name={icon} size={28} color={colors.purpleSoft} />
+      {customIcon ?? (
+        icon ? <Ionicons name={icon} size={28} color={colors.purpleSoft} /> : null
+      )}
       <Text style={styles.pixCardTitle}>{title}</Text>
       <Text style={styles.pixCardText}>{text}</Text>
     </Pressable>

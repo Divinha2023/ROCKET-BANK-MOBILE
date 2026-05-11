@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
+  ActivityIndicator,
   Alert,
+  Dimensions,
   Image,
   Pressable,
   StyleSheet,
@@ -14,6 +16,7 @@ import { ScreenTitle } from '../components/ScreenTitle';
 import { SectionHeader } from '../components/SectionHeader';
 import { MenuRow } from '../components/MenuRow';
 import { PixCard } from '../components/PixCard';
+import { PixIcon } from '../components/PixIcon';
 import { formatCurrency, formatCurrencyInput, parseCurrency } from '../utils/currency';
 
 type FavoriteContact = {
@@ -50,6 +53,8 @@ const favoriteContacts: FavoriteContact[] = [
     name: 'Lucas Costa',
   },
 ];
+
+const pixLoadingMinHeight = Dimensions.get('window').height - 180;
 
 const styles = StyleSheet.create({
   pixGrid: {
@@ -247,6 +252,36 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '800',
   },
+  loadingScreen: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: pixLoadingMinHeight,
+    paddingHorizontal: 28,
+  },
+  loadingBadge: {
+    width: 78,
+    height: 78,
+    borderRadius: 26,
+    backgroundColor: 'rgba(111,44,255,0.18)',
+    borderWidth: 1,
+    borderColor: 'rgba(168,85,247,0.34)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 18,
+  },
+  loadingTitle: {
+    color: colors.white,
+    fontSize: 20,
+    fontWeight: '900',
+    textAlign: 'center',
+  },
+  loadingText: {
+    color: colors.muted,
+    fontSize: 13,
+    lineHeight: 19,
+    marginTop: 8,
+    textAlign: 'center',
+  },
 });
 
 export function PixScreen({
@@ -266,12 +301,27 @@ export function PixScreen({
   );
   const [amountValue, setAmountValue] = useState('');
   const [messageValue, setMessageValue] = useState('');
+  const [isPixLoading, setIsPixLoading] = useState(false);
   const [receipt, setReceipt] = useState<Receipt | null>(null);
+  const pixLoadingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (pixLoadingTimeoutRef.current) {
+        clearTimeout(pixLoadingTimeoutRef.current);
+      }
+    };
+  }, []);
 
   function resetPixFlow() {
+    if (pixLoadingTimeoutRef.current) {
+      clearTimeout(pixLoadingTimeoutRef.current);
+      pixLoadingTimeoutRef.current = null;
+    }
     setSelectedContact(null);
     setAmountValue('');
     setMessageValue('');
+    setIsPixLoading(false);
     setReceipt(null);
   }
 
@@ -283,6 +333,7 @@ export function PixScreen({
     setReceipt(null);
     setAmountValue('');
     setMessageValue('');
+    setIsPixLoading(false);
     setSelectedContact(contact);
   }
 
@@ -313,12 +364,31 @@ export function PixScreen({
       return;
     }
 
-    setReceipt({
-      amount,
-      contact: selectedContact,
-      id: `RB-${Date.now().toString().slice(-8)}`,
-      paidAt: new Date().toLocaleString('pt-BR'),
-    });
+    setIsPixLoading(true);
+    pixLoadingTimeoutRef.current = setTimeout(() => {
+      setReceipt({
+        amount,
+        contact: selectedContact,
+        id: `RB-${Date.now().toString().slice(-8)}`,
+        paidAt: new Date().toLocaleString('pt-BR'),
+      });
+      setIsPixLoading(false);
+      pixLoadingTimeoutRef.current = null;
+    }, 1400);
+  }
+
+  if (isPixLoading) {
+    return (
+      <View style={styles.loadingScreen}>
+        <View style={styles.loadingBadge}>
+          <ActivityIndicator color={colors.white} size="large" />
+        </View>
+        <Text style={styles.loadingTitle}>Confirmando Pix</Text>
+        <Text style={styles.loadingText}>
+          Estamos preparando o comprovante da sua transferência.
+        </Text>
+      </View>
+    );
   }
 
   if (receipt) {
@@ -468,7 +538,7 @@ export function PixScreen({
 
       <View style={styles.pixGrid}>
         <PixCard
-          icon="send-outline"
+          customIcon={<PixIcon size={28} color={colors.purpleSoft} />}
           title="Enviar Pix"
           text="Escolha um favorito."
           onPress={() => handleSelectContact(favoriteContacts[0])}

@@ -1,10 +1,11 @@
 {
   "expo": {
-    "name": "rocket-bank-mobile",
-    "slug": "rocket-bank-mobile",
+    "name": "Rocket Bank",
+    "slug": "rocket-bank",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/rocketbank-icon.png",
+    "icon": "./assets/images/icon.png",
+    "scheme": "rocketbank",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "splash": {
@@ -16,15 +17,29 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.rocketbank.mobile",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/rocketbank-adaptive-icon.png",
-        "backgroundColor": "#05010F"
+        "foregroundImage": "./assets/images/icon.png",
+        "backgroundColor": "#050816"
       },
-      "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "plugins": [
+        "expo-font"
+      ],
+      "extra": {
+        "eas": {
+          "projectId": ""
+        },
+        "edgeToEdgeEnabled": true,
+        "predictiveBackGestureEnabled": false
+      },
+      "web": {
+        "favicon": "./assets/rocketbank-favicon.png"
+      }
     },
-    "web": {
-      "favicon": "./assets/rocketbank-favicon.png"
+    "extra": {
+      "eas": {
+        "projectId": "f3cbb012-d5d5-4cf5-a92b-89f3731d050f"
+      }
     }
   }
 }

@@ -17,6 +17,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { ScreenTitle } from '../components/ScreenTitle';
+import { InvestIcon } from '../components/InvestIcon';
 import { colors } from '../theme';
 import type { IconName } from '../types';
 import { formatCurrency, formatCurrencyInput, parseCurrency } from '../utils/currency';
@@ -77,7 +78,7 @@ const extraStocks: InvestmentAsset[] = [
     chartGroup: 'stocks',
     color: '#38BDF8',
     code: 'TECH4',
-    description: 'Empresa fictícia de tecnologia com foco em nuvem, dados e automação.',
+    description: 'Empresa de tecnologia com foco em nuvem, dados e automação.',
     icon: 'hardware-chip-outline',
     id: 'tech-future',
     kind: 'variable',
@@ -91,7 +92,7 @@ const extraStocks: InvestmentAsset[] = [
     chartGroup: 'stocks',
     color: '#FACC15',
     code: 'SOLR3',
-    description: 'Companhia fictícia de energia solar com receita previsível e expansão gradual.',
+    description: 'Companhia de energia solar com receita previsível e expansão gradual.',
     icon: 'sunny-outline',
     id: 'solar-energy',
     kind: 'variable',
@@ -105,7 +106,7 @@ const extraStocks: InvestmentAsset[] = [
     chartGroup: 'stocks',
     color: '#818CF8',
     code: 'DATA7',
-    description: 'Infraestrutura fictícia de dados para empresas digitais em crescimento.',
+    description: 'Infraestrutura de dados para empresas digitais em crescimento.',
     icon: 'server-outline',
     id: 'data-cloud',
     kind: 'variable',
@@ -119,7 +120,7 @@ const extraStocks: InvestmentAsset[] = [
     chartGroup: 'stocks',
     color: '#FB7185',
     code: 'HLTH5',
-    description: 'Rede fictícia de saúde e tecnologia com perfil defensivo dentro da bolsa.',
+    description: 'Rede de saúde e tecnologia com perfil defensivo dentro da bolsa.',
     icon: 'medkit-outline',
     id: 'health-prime',
     kind: 'variable',
@@ -135,7 +136,7 @@ const fixedIncomeAssets: InvestmentAsset[] = [
     annualRate: 13.5,
     chartGroup: 'fixed',
     color: '#2DD4BF',
-    description: 'Produto fictício de renda fixa com liquidez planejada e remuneração atrelada ao CDI.',
+    description: 'Produto de renda fixa com liquidez planejada e remuneração atrelada ao CDI.',
     icon: 'shield-checkmark-outline',
     id: 'cdb-rocket-plus',
     kind: 'fixed',
@@ -148,7 +149,7 @@ const fixedIncomeAssets: InvestmentAsset[] = [
     annualRate: 12.2,
     chartGroup: 'fixed',
     color: '#F97316',
-    description: 'Título público fictício indexado à inflação para objetivos de médio prazo.',
+    description: 'Título público indexado à inflação para objetivos de médio prazo.',
     icon: 'lock-closed-outline',
     id: 'tesouro-digital-2029',
     kind: 'fixed',
@@ -161,7 +162,7 @@ const fixedIncomeAssets: InvestmentAsset[] = [
     annualRate: 12.8,
     chartGroup: 'fixed',
     color: '#A3E635',
-    description: 'Produto fictício isento com foco em estabilidade e previsibilidade.',
+    description: 'Produto isento com foco em estabilidade e previsibilidade.',
     icon: 'business-outline',
     id: 'lci-green-2030',
     kind: 'fixed',
@@ -174,7 +175,7 @@ const fixedIncomeAssets: InvestmentAsset[] = [
     annualRate: 14.1,
     chartGroup: 'fixed',
     color: '#EF4444',
-    description: 'Debênture fictícia de infraestrutura com retorno estimado maior e prazo alongado.',
+    description: 'Debênture de infraestrutura com retorno estimado maior e prazo alongado.',
     icon: 'bar-chart-outline',
     id: 'debenture-infra',
     kind: 'fixed',
@@ -201,27 +202,28 @@ const styles = StyleSheet.create({
   summaryTop: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     marginBottom: 14,
   },
   summaryLabel: {
     color: 'rgba(255,255,255,0.78)',
     fontSize: 14,
     fontWeight: '700',
+    textAlign: 'center',
   },
   summaryTotal: {
     color: colors.white,
     fontSize: 38,
     fontWeight: '900',
+    textAlign: 'center',
+  },
+  summaryTotalRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
     marginTop: 8,
   },
-  summaryIcon: {
-    width: 54,
-    height: 54,
-    borderRadius: 19,
-    backgroundColor: 'rgba(255,255,255,0.13)',
-    alignItems: 'center',
-    justifyContent: 'center',
+  summaryTotalIcon: {
+    marginLeft: 10,
   },
   summaryMetrics: {
     flexDirection: 'row',
@@ -490,8 +492,9 @@ const styles = StyleSheet.create({
   },
   chartCenterValue: {
     color: colors.white,
-    fontSize: 17,
+    fontSize: 15,
     fontWeight: '900',
+    lineHeight: 18,
     marginTop: 6,
     textAlign: 'center',
   },
@@ -653,6 +656,9 @@ const styles = StyleSheet.create({
   portfolioMonthlyMetric: {
     marginBottom: 12,
   },
+  portfolioPositionMetricValue: {
+    fontSize: 13,
+  },
   modalHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -781,6 +787,16 @@ export function InvestmentsScreen({
     0
   );
   const monthlyRate = totalInvested > 0 ? (annualYield / totalInvested / 12) * 100 : 0;
+  const largestPosition = portfolioEntries.reduce<PortfolioEntry | null>(
+    (largest, entry) => {
+      if (!largest || entry.amount > largest.amount) {
+        return entry;
+      }
+
+      return largest;
+    },
+    null
+  );
   const visibleStocks = showAllStocks ? extraStocks : extraStocks.slice(0, 2);
   const visibleFixed = showAllFixed
     ? fixedIncomeAssets
@@ -872,9 +888,6 @@ export function InvestmentsScreen({
               <Text style={styles.summaryLabel}>Patrimônio investido</Text>
               <Text style={styles.summaryTotal}>{formatCurrency(totalInvested)}</Text>
             </View>
-            <View style={styles.summaryIcon}>
-              <Ionicons name="analytics-outline" size={28} color={colors.white} />
-            </View>
           </View>
 
           <View style={styles.summaryMetrics}>
@@ -883,7 +896,7 @@ export function InvestmentsScreen({
               <Text style={styles.summaryMetricValue}>{formatCurrency(annualYield)}</Text>
             </View>
             <View style={[styles.summaryMetric, styles.summaryMetricGap]}>
-              <Text style={styles.summaryMetricLabel}>Rentabilidade mensal</Text>
+              <Text style={styles.summaryMetricLabel}>Rentabilidade</Text>
               <Text style={styles.summaryMetricValue}>+{formatPercent(monthlyRate)}</Text>
             </View>
           </View>
@@ -902,7 +915,7 @@ export function InvestmentsScreen({
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Renda Variável</Text>
-          <Text style={styles.sectionHint}>Ações fictícias</Text>
+          <Text style={styles.sectionHint}>Ações</Text>
         </View>
 
         <View style={styles.featuredCard}>
@@ -1081,11 +1094,35 @@ export function InvestmentsScreen({
                 </View>
               </View>
 
-              <View style={[styles.summaryMetric, styles.portfolioMonthlyMetric]}>
-                <Text style={styles.summaryMetricLabel}>Rentabilidade mensal</Text>
-                <Text style={styles.summaryMetricValue}>
-                  +{formatPercent(monthlyRate)}
-                </Text>
+              <View style={styles.portfolioStats}>
+                <View style={[styles.summaryMetric, styles.portfolioMonthlyMetric]}>
+                  <Text style={styles.summaryMetricLabel}>Rentabilidade</Text>
+                  <Text style={styles.summaryMetricValue}>
+                    +{formatPercent(monthlyRate)}
+                  </Text>
+                </View>
+                <View
+                  style={[
+                    styles.summaryMetric,
+                    styles.summaryMetricGap,
+                    styles.portfolioMonthlyMetric,
+                  ]}
+                >
+                  <Text style={styles.summaryMetricLabel}>Maior posição</Text>
+                  <Text
+                    adjustsFontSizeToFit
+                    numberOfLines={1}
+                    style={[
+                      styles.summaryMetricValue,
+                      styles.portfolioPositionMetricValue,
+                      largestPosition && {
+                        color: getAssetColor(largestPosition.asset),
+                      },
+                    ]}
+                  >
+                    {largestPosition?.asset.name ?? '-'}
+                  </Text>
+                </View>
               </View>
 
               {totalInvested > 0 ? (
@@ -1114,7 +1151,7 @@ export function InvestmentsScreen({
 
                     <View style={styles.chartCenter}>
                       <Text style={styles.chartCenterLabel}>Total investido</Text>
-                      <Text style={styles.chartCenterValue}>
+                      <Text numberOfLines={1} adjustsFontSizeToFit style={styles.chartCenterValue}>
                         {formatCurrency(totalInvested)}
                       </Text>
                     </View>
