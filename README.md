@@ -1,4 +1,4 @@
-# Rocket Bank Mobile
+# 🚀 Rocket Bank Mobile
 
 App mobile ficticio de banco digital feito com **Expo**, **React Native** e **TypeScript**. A aplicacao simula uma experiencia bancaria completa com login, home, cartoes, Pix, investimentos, shopping, cashback, comunidade, suporte, perfil, extrato e fatura.
 
