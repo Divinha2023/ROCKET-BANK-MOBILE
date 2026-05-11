@@ -64,8 +64,38 @@ function formatCpf(value: string) {
     .replace(/^(\d{3})\.(\d{3})\.(\d{3})(\d)/, '$1.$2.$3-$4');
 }
 
+function formatBirthDate(value: string) {
+  const digits = onlyDigits(value).slice(0, 8);
+
+  return digits
+    .replace(/^(\d{2})(\d)/, '$1/$2')
+    .replace(/^(\d{2})\/(\d{2})(\d)/, '$1/$2/$3');
+}
+
 function isValidEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value.trim());
+}
+
+function isValidBirthDate(value: string) {
+  const match = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(value);
+
+  if (!match) {
+    return false;
+  }
+
+  const day = Number(match[1]);
+  const month = Number(match[2]);
+  const year = Number(match[3]);
+  const date = new Date(year, month - 1, day);
+  const today = new Date();
+
+  return (
+    date.getFullYear() === year &&
+    date.getMonth() === month - 1 &&
+    date.getDate() === day &&
+    date <= today &&
+    year >= 1900
+  );
 }
 
 function isCpfInput(value: string) {
@@ -125,6 +155,8 @@ export function LoginScreen({ onLogin }: { onLogin: () => void }) {
     const nextValue =
       field === 'cpf'
         ? formatCpf(value)
+        : field === 'birthDate'
+          ? formatBirthDate(value)
         : field === 'email'
           ? value.trim()
           : value;
@@ -210,6 +242,14 @@ export function LoginScreen({ onLogin }: { onLogin: () => void }) {
       return;
     }
 
+    if (!isValidBirthDate(registerData.birthDate)) {
+      Alert.alert(
+        'Data invalida',
+        'Digite a data de nascimento no formato dd/mm/aaaa.'
+      );
+      return;
+    }
+
     if (!isValidEmail(registerData.email)) {
       Alert.alert('E-mail inválido', 'Digite um e-mail válido, como test@mail.com.');
       return;
@@ -237,6 +277,7 @@ export function LoginScreen({ onLogin }: { onLogin: () => void }) {
     icon,
     keyboardType = 'default',
     label,
+    maxLength,
     placeholder,
     secureTextEntry = false,
     style,
@@ -247,6 +288,7 @@ export function LoginScreen({ onLogin }: { onLogin: () => void }) {
     icon?: ComponentProps<typeof Ionicons>['name'];
     keyboardType?: 'default' | 'email-address' | 'numeric' | 'number-pad';
     label: string;
+    maxLength?: number;
     placeholder: string;
     secureTextEntry?: boolean;
     style?: StyleProp<ViewStyle>;
@@ -260,6 +302,7 @@ export function LoginScreen({ onLogin }: { onLogin: () => void }) {
             autoCorrect={false}
             editable={editable}
             keyboardType={keyboardType}
+            maxLength={maxLength}
             onChangeText={(value) => updateRegisterField(field, value)}
             placeholder={placeholder}
             placeholderTextColor="#A3A0B4"
@@ -337,6 +380,7 @@ export function LoginScreen({ onLogin }: { onLogin: () => void }) {
           icon: 'calendar-outline',
           keyboardType: 'number-pad',
           label: 'Data de nascimento',
+          maxLength: 10,
           placeholder: 'dd/mm/aaaa',
         })}
         {renderRegisterField({
@@ -650,7 +694,8 @@ const styles = StyleSheet.create({
     color: colors.white,
     fontSize: 25,
     fontWeight: '900',
-    marginBottom: 6,
+    marginBottom: 18,
+    textAlign: 'center',
   },
   titleAccent: {
     color: '#B86CFF',

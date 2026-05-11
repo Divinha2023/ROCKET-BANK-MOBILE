@@ -3,7 +3,10 @@ import {
   ActivityIndicator,
   Alert,
   Image,
+  Keyboard,
+  KeyboardAvoidingView,
   Modal,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -13,6 +16,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '../theme';
 import type { AppScreen, ShoppingProduct } from '../types';
 import { shoppingCategories, shoppingProducts } from '../data/mockData';
@@ -40,6 +44,11 @@ type TrackingOrder = {
   total: number;
 };
 
+type CouponFeedback = {
+  message: string;
+  type: 'error' | 'success';
+};
+
 function parseCashbackRate(value: string) {
   return (Number(value.replace('%', '').replace(',', '.')) || 0) / 100;
 }
@@ -62,11 +71,14 @@ export function ShoppingScreen({
   }) => void;
   setActiveScreen: (screen: AppScreen) => void;
 }) {
+  const insets = useSafeAreaInsets();
   const [activeCategory, setActiveCategory] = useState(allCategoriesLabel);
   const [searchTerm, setSearchTerm] = useState('');
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [couponInput, setCouponInput] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
+  const [couponFeedback, setCouponFeedback] =
+    useState<CouponFeedback | null>(null);
   const [cartVisible, setCartVisible] = useState(false);
   const [isCheckoutLoading, setCheckoutLoading] = useState(false);
   const [trackingOrder, setTrackingOrder] = useState<TrackingOrder | null>(null);
@@ -166,6 +178,7 @@ export function ShoppingScreen({
     if (cartItems.length === 0) {
       setAppliedCoupon(null);
       setCouponInput('');
+      setCouponFeedback(null);
     }
   }, [cartItems.length]);
 
@@ -218,6 +231,7 @@ export function ShoppingScreen({
   }
 
   function updateCartQuantity(productId: string, amount: number) {
+    setCouponFeedback(null);
     setCartItems((current) =>
       current.flatMap((item) => {
         if (item.product.id !== productId) {
@@ -230,34 +244,49 @@ export function ShoppingScreen({
     );
   }
 
+  function handleCloseCart() {
+    Keyboard.dismiss();
+    setCartVisible(false);
+  }
+
   function handleClearCart() {
+    Keyboard.dismiss();
     setCartItems([]);
     setCartVisible(false);
   }
 
   function handleApplyCoupon() {
+    Keyboard.dismiss();
     const normalizedCoupon = couponInput.trim().toUpperCase();
 
     if (cartItems.length === 0) {
-      Alert.alert('Carrinho vazio', 'Adicione um produto antes de aplicar cupom.');
+      setCouponFeedback({
+        message: 'Adicione um produto antes de aplicar cupom.',
+        type: 'error',
+      });
       return;
     }
 
     if (normalizedCoupon !== discountCoupon) {
       setAppliedCoupon(null);
-      Alert.alert('Cupom indisponível', 'Este cupom não está disponível.');
+      setCouponFeedback({
+        message: 'Este cupom nao esta disponivel.',
+        type: 'error',
+      });
       return;
     }
 
     setAppliedCoupon(discountCoupon);
     setCouponInput(discountCoupon);
-    Alert.alert(
-      'Cupom aplicado',
-      'ACCENTURE20 aplicou 20% de desconto.'
-    );
+    setCouponFeedback({
+      message: 'ACCENTURE20 aplicou 20% de desconto.',
+      type: 'success',
+    });
   }
 
   function handleCheckout() {
+    Keyboard.dismiss();
+
     if (isCheckoutLoading) {
       return;
     }
@@ -331,15 +360,27 @@ export function ShoppingScreen({
             </View>
           </View>
 
-          {cartItems.length > 0 ? (
+          <View style={styles.cartHeaderActions}>
+            {cartItems.length > 0 ? (
+              <Pressable
+                accessibilityRole="button"
+                onPress={handleClearCart}
+                style={styles.clearCartButton}
+              >
+                <Text style={styles.clearCartText}>Limpar</Text>
+              </Pressable>
+            ) : null}
+
             <Pressable
+              accessibilityLabel="Fechar carrinho"
               accessibilityRole="button"
-              onPress={handleClearCart}
-              style={styles.clearCartButton}
+              hitSlop={10}
+              onPress={handleCloseCart}
+              style={styles.closeCartButton}
             >
-              <Text style={styles.clearCartText}>Limpar</Text>
+              <Ionicons name="close" size={20} color={colors.white} />
             </Pressable>
-          ) : null}
+          </View>
         </View>
 
         {cartItems.length === 0 ? (
@@ -396,9 +437,14 @@ export function ShoppingScreen({
                 <TextInput
                   autoCapitalize="characters"
                   autoCorrect={false}
-                  onChangeText={(value) => setCouponInput(value.toUpperCase())}
+                  onChangeText={(value) => {
+                    setCouponInput(value.toUpperCase());
+                    setCouponFeedback(null);
+                  }}
+                  onSubmitEditing={handleApplyCoupon}
                   placeholder="Digite o cupom"
                   placeholderTextColor={colors.mutedDark}
+                  returnKeyType="done"
                   style={styles.couponInput}
                   value={couponInput}
                 />
@@ -411,6 +457,19 @@ export function ShoppingScreen({
                   <Text style={styles.applyCouponText}>Aplicar</Text>
                 </Pressable>
               </View>
+
+              {couponFeedback ? (
+                <Text
+                  style={[
+                    styles.couponFeedback,
+                    couponFeedback.type === 'success'
+                      ? styles.couponFeedbackSuccess
+                      : styles.couponFeedbackError,
+                  ]}
+                >
+                  {couponFeedback.message}
+                </Text>
+              ) : null}
             </View>
 
             <View style={styles.cartSummary}>
@@ -710,27 +769,38 @@ export function ShoppingScreen({
 
       <Modal
         animationType="slide"
-        onRequestClose={() => setCartVisible(false)}
+        onRequestClose={handleCloseCart}
         transparent
         visible={cartVisible}
       >
-        <View style={styles.cartModalBackdrop}>
-          <Pressable
-            accessibilityRole="button"
-            onPress={() => setCartVisible(false)}
-            style={styles.cartBackdropPressable}
-          />
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          style={styles.cartModalAvoidingView}
+        >
+          <View style={styles.cartModalBackdrop}>
+            <Pressable
+              accessibilityRole="button"
+              onPress={handleCloseCart}
+              style={styles.cartBackdropPressable}
+            />
 
-          <View style={styles.cartSheet}>
-            <View style={styles.cartSheetHandle} />
-            <ScrollView
-              contentContainerStyle={styles.cartSheetScroll}
-              showsVerticalScrollIndicator={false}
+            <View
+              style={[
+                styles.cartSheet,
+                { paddingBottom: Math.max(insets.bottom, 12) },
+              ]}
             >
-              {renderCartContent()}
-            </ScrollView>
+              <View style={styles.cartSheetHandle} />
+              <ScrollView
+                contentContainerStyle={styles.cartSheetScroll}
+                keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator={false}
+              >
+                {renderCartContent()}
+              </ScrollView>
+            </View>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
     </View>
   );
@@ -841,6 +911,11 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     marginTop: 2,
   },
+  cartHeaderActions: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginLeft: 10,
+  },
   clearCartButton: {
     borderColor: colors.border,
     borderRadius: 14,
@@ -852,6 +927,17 @@ const styles = StyleSheet.create({
     color: colors.muted,
     fontSize: 12,
     fontWeight: '900',
+  },
+  closeCartButton: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    borderColor: colors.border,
+    borderRadius: 14,
+    borderWidth: 1,
+    height: 38,
+    justifyContent: 'center',
+    marginLeft: 8,
+    width: 38,
   },
   cartEmpty: {
     borderRadius: 20,
@@ -971,6 +1057,18 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '900',
   },
+  couponFeedback: {
+    fontSize: 12,
+    fontWeight: '800',
+    lineHeight: 17,
+    marginTop: 10,
+  },
+  couponFeedbackError: {
+    color: colors.orange,
+  },
+  couponFeedbackSuccess: {
+    color: colors.green,
+  },
   cartSummary: {
     marginTop: 16,
   },
@@ -1072,6 +1170,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(2,0,8,0.68)',
     flex: 1,
     justifyContent: 'flex-end',
+  },
+  cartModalAvoidingView: {
+    flex: 1,
   },
   cartBackdropPressable: {
     ...StyleSheet.absoluteFillObject,
