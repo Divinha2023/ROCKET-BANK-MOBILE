@@ -41,7 +41,9 @@ A proposta do projeto é demonstrar uma jornada completa de uso em um app financ
 
 ### 1. Inicialização do projeto
 
-[![Preview da inicialização do projeto](./docs/media/preview-inicializacao.gif)](./docs/media/video-inicializacao.mp4)
+<a href="./docs/media/video-inicializacao.mp4">
+  <img src="./docs/media/preview-inicializacao.gif" alt="Preview da inicialização do projeto" width="280" />
+</a>
 
 
 
@@ -49,7 +51,9 @@ O primeiro vídeo apresenta a abertura do aplicativo, destacando a identidade vi
 
 ### 2. Tela de login
 
-[![Preview da tela de login](./docs/media/preview-tela-login.gif)](./docs/media/video-tela-login.mp4)
+<a href="./docs/media/video-tela-login.mp4">
+  <img src="./docs/media/preview-tela-login.gif" alt="Preview da tela de login" width="280" />
+</a>
 
 
 
@@ -63,7 +67,9 @@ A home concentra as informações essenciais da conta: saldo disponível, rendim
 
 ### 4. Aba de cartões e pagamento de fatura
 
-[![Preview da aba de cartões e pagamento de fatura](./docs/media/preview-cartoes-fatura.gif)](./docs/media/video-cartoes-fatura.mp4)
+<a href="./docs/media/video-cartoes-fatura.mp4">
+  <img src="./docs/media/preview-cartoes-fatura.gif" alt="Preview da aba de cartões e pagamento de fatura" width="280" />
+</a>
 
 
 
@@ -71,7 +77,9 @@ Nesta demonstração, o usuário acessa a área de cartões para visualizar os c
 
 ### 5. Área Pix
 
-[![Preview da área Pix](./docs/media/preview-area-pix.gif)](./docs/media/video-area-pix.mp4)
+<a href="./docs/media/video-area-pix.mp4">
+  <img src="./docs/media/preview-area-pix.gif" alt="Preview da área Pix" width="280" />
+</a>
 
 
 
@@ -79,7 +87,9 @@ Na área Pix, o usuário realiza uma transferência usando o saldo disponível. 
 
 ### 6. Área de investimento
 
-[![Preview da área de investimento](./docs/media/preview-area-investimento.gif)](./docs/media/video-area-investimento.mp4)
+<a href="./docs/media/video-area-investimento.mp4">
+  <img src="./docs/media/preview-area-investimento.gif" alt="Preview da área de investimento" width="280" />
+</a>
 
 
 Nesta demonstração, o usuário acessa a área de investimentos para consultar opções disponíveis, visualizar informações de rendimento e simular uma aplicação usando o saldo da conta. O fluxo atualiza a carteira local do usuário e registra a movimentação financeira no extrato.
