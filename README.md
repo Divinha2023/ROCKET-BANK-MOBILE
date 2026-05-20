@@ -41,7 +41,11 @@ A proposta do projeto é demonstrar uma jornada completa de uso em um app financ
 
 ### 1. Inicialização do projeto
 
-<img width="1440" height="3014" alt="1- TELA PRINCIPAL" src="https://github.com/user-attachments/assets/25818043-4136-4f9a-9e9e-8e95b276f241" />
+
+
+https://github.com/user-attachments/assets/4c7d175b-8cad-4830-be55-8868d2db445f
+
+
 
 
 O primeiro vídeo apresenta a abertura do aplicativo, destacando a identidade visual da marca e a experiência de splash screen antes do acesso ao app.
