@@ -1,0 +1,9 @@
+# GitHub Linguist
+#
+# O app foi desenvolvido em TypeScript/TSX. Estas regras permitem que a barra
+# de linguagens do GitHub também considere documentação e configurações usadas
+# no projeto, além do código-fonte principal.
+*.ts linguist-language=TypeScript
+*.tsx linguist-language=TypeScript
+*.json linguist-language=JSON linguist-detectable=true
+*.md linguist-language=Markdown linguist-detectable=true

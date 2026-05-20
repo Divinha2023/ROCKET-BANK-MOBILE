@@ -114,13 +114,17 @@ Nesta demonstração, o usuário acessa a área de investimentos para consultar 
 
 ## Tecnologias
 
+- **TypeScript/TSX** como linguagem principal do código-fonte.
+- **JSON** para configurações do Expo, TypeScript e dependências.
+- **Markdown** para documentação do projeto.
 - **Expo 54** para execução e empacotamento do app.
 - **React 19** como base da interface.
 - **React Native 0.81** para construção mobile multiplataforma.
-- **TypeScript** para tipagem estática.
 - **Expo Linear Gradient** para os efeitos visuais dos cards.
 - **Expo Vector Icons** para a iconografia da interface.
 - **Lottie React Native** para a animação de inicialização.
+
+> Observação: a barra de linguagens do GitHub é calculada automaticamente pelo GitHub Linguist. Como o código do aplicativo está majoritariamente em arquivos `.ts` e `.tsx`, é esperado que TypeScript apareça como a linguagem predominante. React Native e Expo são frameworks/ferramentas, não linguagens de programação.
 
 ## Arquitetura do projeto
 
