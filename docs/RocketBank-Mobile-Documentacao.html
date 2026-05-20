@@ -10,6 +10,10 @@
       margin: 34mm 18mm 18mm;
     }
 
+    @page:first {
+      margin: 0;
+    }
+
     :root {
       --ink: #15101f;
       --ink-soft: #4e465f;
@@ -37,10 +41,12 @@
     body {
       margin: 0;
       color: var(--ink);
-      font-family: Arial, Helvetica, sans-serif;
-      font-size: 10.5pt;
-      line-height: 1.5;
+      font-family: "Segoe UI Variable", "Segoe UI", "Aptos", Arial, Helvetica, sans-serif;
+      font-size: 10.2pt;
+      line-height: 1.55;
       background: var(--paper);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
     }
 
     .page-header {
@@ -54,17 +60,22 @@
     }
 
     .cover {
-      min-height: 245mm;
-      margin: -34mm -18mm -18mm;
-      padding: 34mm 22mm 22mm;
+      height: 297mm;
+      min-height: 297mm;
+      margin: 0;
+      padding: 24mm 22mm 20mm;
       color: #ffffff;
       background:
-        radial-gradient(circle at 78% 16%, rgba(168, 85, 247, 0.38), transparent 29%),
-        radial-gradient(circle at 10% 78%, rgba(255, 122, 69, 0.22), transparent 26%),
-        linear-gradient(145deg, #040008 0%, #110621 54%, #05000a 100%);
+        radial-gradient(circle at 76% 17%, rgba(168, 85, 247, 0.48), transparent 31%),
+        radial-gradient(circle at 18% 84%, rgba(255, 122, 69, 0.27), transparent 30%),
+        radial-gradient(circle at 46% 46%, rgba(124, 45, 255, 0.18), transparent 36%),
+        linear-gradient(145deg, #030007 0%, #130526 49%, #06000d 100%);
       page-break-after: always;
       position: relative;
       overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
 
     .cover::before {
@@ -82,39 +93,60 @@
       grid-template-columns: 1fr 0.92fr;
       gap: 18mm;
       align-items: center;
-      min-height: 176mm;
+      min-height: 184mm;
+    }
+
+    .cover-art {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cover-art::before {
+      content: "";
+      position: absolute;
+      width: 82mm;
+      height: 82mm;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(124, 45, 255, 0.32), transparent 68%);
+      filter: blur(10px);
+      opacity: 0.95;
     }
 
     .cover-logo {
+      position: relative;
       width: 100%;
-      max-width: 330px;
+      max-width: 310px;
       margin: 0 auto;
       display: block;
-      filter: drop-shadow(0 20px 42px rgba(124, 45, 255, 0.34));
+      filter: drop-shadow(0 22px 34px rgba(0, 0, 0, 0.42));
     }
 
     .kicker {
       margin: 0 0 6mm;
       color: #ceb9ff;
-      font-size: 8.5pt;
+      font-size: 8.4pt;
       font-weight: 800;
-      letter-spacing: 0.18em;
+      letter-spacing: 0;
       text-transform: uppercase;
     }
 
     h1 {
       margin: 0;
       max-width: 470px;
-      font-size: 40pt;
+      font-family: "Segoe UI Display", "Segoe UI Variable", "Segoe UI", Arial, sans-serif;
+      font-size: 43pt;
+      font-weight: 800;
       line-height: 0.96;
-      letter-spacing: -0.045em;
+      letter-spacing: 0;
     }
 
     .cover-subtitle {
       margin: 8mm 0 0;
       max-width: 485px;
       color: #e7dcff;
-      font-size: 13.8pt;
+      font-size: 13.4pt;
       line-height: 1.48;
     }
 
@@ -164,15 +196,17 @@
       font-size: 8.5pt;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: 0;
     }
 
     h2 {
       margin: 0 0 5mm;
       color: #1e1231;
-      font-size: 20pt;
+      font-family: "Segoe UI Display", "Segoe UI Variable", "Segoe UI", Arial, sans-serif;
+      font-size: 20.5pt;
+      font-weight: 800;
       line-height: 1.12;
-      letter-spacing: -0.025em;
+      letter-spacing: 0;
     }
 
     h2::after {
@@ -189,6 +223,7 @@
       margin: 7mm 0 3mm;
       color: #321454;
       font-size: 13pt;
+      font-weight: 800;
       line-height: 1.2;
     }
 
@@ -271,7 +306,7 @@
 
     .lead {
       color: #4b435f;
-      font-size: 12pt;
+      font-size: 11.7pt;
       line-height: 1.58;
     }
 
@@ -355,7 +390,7 @@
       color: #eadfff;
       font-size: 8pt;
       font-weight: 800;
-      letter-spacing: 0.06em;
+      letter-spacing: 0;
       text-transform: uppercase;
     }
 
@@ -427,7 +462,7 @@
 </head>
 <body>
   <div class="page-header">
-    <img src="./media/rocket-bank-logo.png" alt="Rocket Bank" />
+    <img src="./media/rocket-bank-mark-transparent.png" alt="Rocket Bank" />
     <span>Rocket Bank Mobile | Relatório técnico e funcional</span>
   </div>
 
@@ -437,16 +472,16 @@
         <p class="kicker">Relatório técnico e funcional</p>
         <h1>Rocket Bank Mobile</h1>
         <p class="cover-subtitle">
-          Protótipo mobile de banco digital com jornada completa de conta, cartões, Pix, investimentos, shopping, cashback e extrato.
+          Banco digital mobile com jornada integrada de conta, cartões, Pix, investimentos, shopping, cashback e extrato em uma única experiência.
         </p>
         <div class="cover-band">
           <p><strong>Desenvolvido por:</strong> Divanildo Simões, Edoardo Famá, César Fraga e Djhonatah Wesley.</p>
           <p>Projeto desenvolvido durante a Academia de Java & I.A disponibilizada pela Accenture.</p>
-          <p>Stack principal: Expo, React Native, TypeScript e componentes mobile com estado local.</p>
+          <p>Base técnica: Expo, React Native, TypeScript, Lottie, Expo Linear Gradient e componentes mobile com estado local.</p>
         </div>
       </div>
-      <div>
-        <img class="cover-logo" src="../assets/images/icon.png" alt="Rocket Bank" />
+      <div class="cover-art">
+        <img class="cover-logo" src="./media/rocket-bank-mark-transparent.png" alt="Rocket Bank" />
       </div>
     </div>
     <div class="mini-metrics">
@@ -469,7 +504,7 @@
     <section>
       <h2>1. Sumário</h2>
       <p class="lead">
-        Este relatório descreve o produto, a arquitetura interna, os fluxos de estado, os contratos de dados e as principais decisões de implementação do Rocket Bank Mobile.
+        Este relatório apresenta a visão do produto, a arquitetura interna, os fluxos de estado, os contratos de dados e as decisões de implementação que sustentam o Rocket Bank Mobile.
       </p>
       <div class="toc">
         <a href="#visao">2. Visão do produto</a>
@@ -487,10 +522,10 @@
     <section id="visao" class="section">
       <h2>2. Visão do produto</h2>
       <p class="lead">
-        O Rocket Bank Mobile simula um app bancário moderno com foco em experiência mobile, clareza visual e continuidade entre operações financeiras. A aplicação organiza os principais serviços em uma navegação inferior fixa, com áreas dedicadas para conta, cartões, Pix, investimentos, shopping e perfil.
+        O Rocket Bank Mobile simula um banco digital completo, com navegação clara, identidade visual própria e continuidade entre operações financeiras. A experiência foi organizada para que o usuário transite de forma natural entre conta, cartões, Pix, investimentos, shopping e perfil.
       </p>
       <p>
-        O produto foi concebido como protótipo navegável, sem backend real, mas com regras locais suficientes para representar interações bancárias coerentes: saldo é debitado, cashback é acumulado, faturas são marcadas como pagas, Pix respeita limite diário e investimentos atualizam uma carteira local.
+        O produto funciona como protótipo navegável sem backend real, mas mantém regras locais consistentes: saldo é debitado, cashback é acumulado, faturas são marcadas como pagas, Pix respeita limite diário e investimentos atualizam uma carteira em memória.
       </p>
       <div class="grid-3">
         <div class="metric-card">
@@ -520,7 +555,7 @@
     <section id="arquitetura" class="section">
       <h2>3. Arquitetura interna</h2>
       <p>
-        A estrutura do projeto segue um modelo simples e direto para protótipo mobile: o componente raiz concentra o estado global e injeta callbacks nas telas. As telas cuidam da interação e da apresentação; componentes reutilizáveis padronizam cards, ações, menus, abas, transações e ícones.
+        A arquitetura prioriza leitura, demonstração e evolução incremental. O componente raiz concentra o estado de domínio e distribui callbacks para as telas, enquanto os componentes reutilizáveis mantêm consistência visual em cards, ações, menus, abas, transações e ícones.
       </p>
       <pre>.
 |-- assets/
@@ -610,7 +645,7 @@
     <section id="estado" class="section">
       <h2>4. Estado e regras de negócio</h2>
       <p>
-        O estado global fica em <code>src/App.tsx</code>. Essa decisão simplifica a leitura do protótipo: todas as operações que impactam saldo, cashback, extrato, carteira e faturas passam por um único ponto de controle.
+        O estado de domínio fica concentrado em <code>src/App.tsx</code>. Essa escolha deixa o protótipo mais fácil de demonstrar: qualquer operação que altera saldo, cashback, extrato, carteira ou faturas passa por um ponto único de controle.
       </p>
       <table>
         <thead>
@@ -716,7 +751,7 @@
     <section id="dados" class="section">
       <h2>5. Modelagem de dados</h2>
       <p>
-        Os contratos em <code>src/types/index.ts</code> definem o vocabulário principal do app. Eles reduzem erros de integração entre telas e ajudam a manter os fluxos previsíveis.
+        Os contratos em <code>src/types/index.ts</code> definem o vocabulário principal do aplicativo. Eles padronizam as informações compartilhadas entre telas e ajudam a manter previsíveis os fluxos de cartões, extrato, shopping e investimentos.
       </p>
       <h3>Tipos globais</h3>
       <table>
@@ -758,7 +793,7 @@
 
       <h3>Dados mockados</h3>
       <p>
-        <code>src/data/mockData.ts</code> fornece categorias de shopping, produtos, cartões do usuário, cartões virtuais disponíveis e itens de fatura. A ausência de backend é compensada pela riqueza dos dados locais, permitindo demonstrar jornadas completas sem dependências externas.
+        <code>src/data/mockData.ts</code> fornece categorias de shopping, produtos, cartões do usuário, cartões virtuais disponíveis e itens de fatura. A base local permite apresentar jornadas completas sem dependências externas, preservando coerência visual e funcional durante a navegação.
       </p>
       <div class="callout">
         <strong>Importante:</strong> valores financeiros são exibidos como texto formatado quando vêm dos mocks e convertidos para número com <code>parseCurrency</code> quando precisam participar de regras de negócio.
@@ -889,7 +924,7 @@
     <section id="design" class="section">
       <h2>8. Sistema visual e experiência</h2>
       <p>
-        O design do Rocket Bank utiliza fundo escuro, gradientes roxo/laranja, cards com bordas translúcidas e iconografia linear. A composição reforça uma linguagem de banco digital premium, com foco em contraste, hierarquia e leitura rápida.
+        A experiência visual do Rocket Bank combina fundos escuros, gradientes em roxo e laranja, cards translúcidos e iconografia linear. O resultado comunica uma proposta de banco digital premium, com hierarquia clara, contraste alto e leitura rápida em telas pequenas.
       </p>
       <div class="grid">
         <div class="card">
@@ -906,7 +941,7 @@
         </div>
         <div class="card">
           <strong>Feedback de operação</strong>
-          Fluxos críticos usam telas intermediárias de carregamento para comunicar processamento de Pix, pagamento e pedido.
+          Fluxos críticos exibem estados intermediários para comunicar processamento de Pix, pagamento de fatura, compra e aplicação.
         </div>
       </div>
 

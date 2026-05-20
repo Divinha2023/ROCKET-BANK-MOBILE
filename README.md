@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="./docs/media/rocket-bank-logo.png" alt="Logo Rocket Bank" width="220" />
+  <img src="./docs/media/rocket-bank-mark-transparent.png" alt="Logo Rocket Bank" width="220" />
 
   <h1>Rocket Bank Mobile</h1>
 
