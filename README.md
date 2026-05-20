@@ -43,7 +43,7 @@ A proposta do projeto é demonstrar uma jornada completa de uso em um app financ
 
 [![Preview da inicialização do projeto](./docs/media/preview-inicializacao.gif)](./docs/media/video-inicializacao.mp4)
 
-[Abrir vídeo completo de inicialização](./docs/media/video-inicializacao.mp4)
+
 
 O primeiro vídeo apresenta a abertura do aplicativo, destacando a identidade visual da marca e a experiência de splash screen antes do acesso ao app.
 
@@ -51,7 +51,7 @@ O primeiro vídeo apresenta a abertura do aplicativo, destacando a identidade vi
 
 [![Preview da tela de login](./docs/media/preview-tela-login.gif)](./docs/media/video-tela-login.mp4)
 
-[Abrir vídeo completo da tela de login](./docs/media/video-tela-login.mp4)
+
 
 Este fluxo demonstra a tela de autenticação, com campos para acesso por e-mail ou CPF, senha, opção de lembrar dados, recuperação de senha e login social simulado.
 
