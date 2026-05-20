@@ -61,7 +61,9 @@ Este fluxo demonstra a tela de autenticação, com campos para acesso por e-mail
 
 ### 3. Tela principal
 
-![Tela principal do Rocket Bank Mobile](./docs/media/tela-principal.png)
+<a href="./docs/media/video-tela-principal.mp4">
+  <img src="./docs/media/preview-tela-principal.gif" alt="Preview da tela principal do Rocket Bank Mobile" width="280" />
+</a>
 
 A home concentra as informações essenciais da conta: saldo disponível, rendimento, cashback acumulado, atalhos rápidos, benefícios Rocket e últimas movimentações.
 
