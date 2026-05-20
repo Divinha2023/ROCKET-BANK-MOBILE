@@ -55,6 +55,7 @@ const favoriteContacts: FavoriteContact[] = [
 ];
 
 const pixLoadingMinHeight = Dimensions.get('window').height - 180;
+const pixLoadingDurationMs = 800;
 
 const styles = StyleSheet.create({
   pixGrid: {
@@ -374,7 +375,7 @@ export function PixScreen({
       });
       setIsPixLoading(false);
       pixLoadingTimeoutRef.current = null;
-    }, 1400);
+    }, pixLoadingDurationMs);
   }
 
   if (isPixLoading) {
