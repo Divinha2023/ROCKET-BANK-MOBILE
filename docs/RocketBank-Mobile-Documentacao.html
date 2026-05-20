@@ -3,22 +3,31 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Rocket Bank Mobile - Documentação</title>
+  <title>Rocket Bank Mobile - Relatório Técnico</title>
   <style>
     @page {
       size: A4;
-      margin: 22mm 18mm 20mm;
+      margin: 34mm 18mm 18mm;
     }
 
     :root {
-      --bg: #07030f;
-      --ink: #14111f;
-      --muted: #5f5a6f;
+      --ink: #15101f;
+      --ink-soft: #4e465f;
+      --muted: #6d647d;
+      --paper: #ffffff;
+      --paper-soft: #fbf8ff;
+      --line: #ded6ed;
+      --line-strong: #c8b8e8;
+      --purple-950: #07020f;
+      --purple-900: #120725;
+      --purple-800: #24103f;
+      --purple-700: #4c1686;
       --purple: #7c2dff;
       --purple-soft: #a855f7;
+      --pink: #ff3c85;
       --orange: #ff7a45;
-      --line: #ded8ec;
-      --panel: #f7f3ff;
+      --green: #22c55e;
+      --blue: #38bdf8;
     }
 
     * {
@@ -29,25 +38,13 @@
       margin: 0;
       color: var(--ink);
       font-family: Arial, Helvetica, sans-serif;
-      font-size: 11pt;
-      line-height: 1.55;
-      background: #ffffff;
+      font-size: 10.5pt;
+      line-height: 1.5;
+      background: var(--paper);
     }
 
     .page-header {
-      position: fixed;
-      top: -14mm;
-      left: 0;
-      width: 100%;
-      height: 12mm;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      border-bottom: 1px solid rgba(124, 45, 255, 0.22);
-      color: #4b435f;
-      font-size: 8pt;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
+      display: none;
     }
 
     .page-header img {
@@ -57,131 +54,210 @@
     }
 
     .cover {
-      min-height: 248mm;
-      margin: -22mm -18mm -20mm;
-      padding: 28mm 22mm 24mm;
+      min-height: 245mm;
+      margin: -34mm -18mm -18mm;
+      padding: 34mm 22mm 22mm;
       color: #ffffff;
       background:
-        radial-gradient(circle at 80% 20%, rgba(168, 85, 247, 0.35), transparent 28%),
-        linear-gradient(145deg, #06010d 0%, #10061f 48%, #050008 100%);
+        radial-gradient(circle at 78% 16%, rgba(168, 85, 247, 0.38), transparent 29%),
+        radial-gradient(circle at 10% 78%, rgba(255, 122, 69, 0.22), transparent 26%),
+        linear-gradient(145deg, #040008 0%, #110621 54%, #05000a 100%);
       page-break-after: always;
+      position: relative;
+      overflow: hidden;
     }
 
-    .cover-mark {
-      width: 62%;
-      max-width: 430px;
+    .cover::before {
+      content: "";
+      position: absolute;
+      inset: 18mm;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 18px;
+      pointer-events: none;
+    }
+
+    .cover-grid {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr 0.92fr;
+      gap: 18mm;
+      align-items: center;
+      min-height: 176mm;
+    }
+
+    .cover-logo {
+      width: 100%;
+      max-width: 330px;
+      margin: 0 auto;
       display: block;
-      margin: 12mm auto 20mm;
+      filter: drop-shadow(0 20px 42px rgba(124, 45, 255, 0.34));
     }
 
-    .eyebrow {
-      color: #cdbbff;
-      font-size: 9pt;
-      font-weight: 700;
-      letter-spacing: 0.16em;
+    .kicker {
+      margin: 0 0 6mm;
+      color: #ceb9ff;
+      font-size: 8.5pt;
+      font-weight: 800;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
     }
 
     h1 {
       margin: 0;
-      font-size: 34pt;
-      line-height: 1.02;
-      letter-spacing: -0.03em;
+      max-width: 470px;
+      font-size: 40pt;
+      line-height: 0.96;
+      letter-spacing: -0.045em;
     }
 
     .cover-subtitle {
-      max-width: 560px;
-      margin-top: 8mm;
-      color: #dfd7f4;
-      font-size: 14pt;
+      margin: 8mm 0 0;
+      max-width: 485px;
+      color: #e7dcff;
+      font-size: 13.8pt;
+      line-height: 1.48;
     }
 
-    .cover-meta {
-      margin-top: 18mm;
-      padding: 8mm;
+    .cover-band {
+      position: relative;
+      margin-top: 12mm;
+      padding: 6mm;
       border: 1px solid rgba(255, 255, 255, 0.16);
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.06);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.065);
     }
 
-    .cover-meta p {
-      margin: 0 0 4mm;
+    .cover-band p {
+      margin: 0 0 3mm;
+      color: #f6efff;
     }
 
-    .cover-meta p:last-child {
+    .cover-band p:last-child {
       margin-bottom: 0;
     }
 
+    .mini-metrics {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4mm;
+      margin-top: 12mm;
+    }
+
+    .mini-metric {
+      padding: 5mm;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.075);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .mini-metric strong {
+      display: block;
+      font-size: 16pt;
+      line-height: 1;
+    }
+
+    .mini-metric span {
+      display: block;
+      margin-top: 2mm;
+      color: #d8caff;
+      font-size: 8.5pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
     h2 {
-      margin: 0 0 6mm;
-      color: #1f1235;
+      margin: 0 0 5mm;
+      color: #1e1231;
       font-size: 20pt;
       line-height: 1.12;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.025em;
+    }
+
+    h2::after {
+      content: "";
+      display: block;
+      width: 34mm;
+      height: 1.4mm;
+      margin-top: 3mm;
+      border-radius: 99px;
+      background: linear-gradient(90deg, var(--purple), var(--orange));
     }
 
     h3 {
       margin: 7mm 0 3mm;
-      color: #2e174d;
+      color: #321454;
       font-size: 13pt;
+      line-height: 1.2;
+    }
+
+    h4 {
+      margin: 5mm 0 2mm;
+      color: #4d2377;
+      font-size: 11pt;
     }
 
     p {
-      margin: 0 0 4mm;
+      margin: 0 0 3.5mm;
     }
 
-    ul {
+    ul,
+    ol {
       margin: 0 0 5mm 5mm;
       padding-left: 5mm;
     }
 
     li {
-      margin-bottom: 2mm;
+      margin-bottom: 1.8mm;
     }
 
     table {
       width: 100%;
       margin: 4mm 0 7mm;
       border-collapse: collapse;
-      font-size: 9.5pt;
+      font-size: 8.9pt;
     }
 
     th {
       color: #ffffff;
-      background: #2c1746;
+      background: linear-gradient(90deg, #2a1247, #4b1681);
       text-align: left;
+      font-weight: 800;
     }
 
     th,
     td {
-      padding: 3.2mm;
+      padding: 3mm;
       border: 1px solid var(--line);
       vertical-align: top;
     }
 
     tr:nth-child(even) td {
-      background: #faf8ff;
+      background: #fbf8ff;
     }
 
     code {
       padding: 1px 4px;
       border-radius: 4px;
-      color: #3c146c;
-      background: #f0e8ff;
+      color: #39105f;
+      background: #f1e9ff;
       font-family: Consolas, Monaco, monospace;
-      font-size: 9.5pt;
+      font-size: 8.7pt;
     }
 
     pre {
       margin: 4mm 0 6mm;
       padding: 5mm;
-      overflow: hidden;
-      border: 1px solid #ded6ed;
-      border-radius: 8px;
-      background: #10091c;
-      color: #f2eaff;
+      white-space: pre-wrap;
+      border: 1px solid #d9cbea;
+      border-radius: 10px;
+      color: #f7f0ff;
+      background:
+        linear-gradient(135deg, rgba(124, 45, 255, 0.12), transparent 42%),
+        #10091c;
       font-family: Consolas, Monaco, monospace;
-      font-size: 8.8pt;
+      font-size: 8.3pt;
       line-height: 1.45;
     }
 
@@ -195,37 +271,92 @@
 
     .lead {
       color: #4b435f;
-      font-size: 12.5pt;
+      font-size: 12pt;
+      line-height: 1.58;
+    }
+
+    .toc {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3mm 8mm;
+      margin-top: 7mm;
+    }
+
+    .toc a {
+      display: block;
+      padding: 3.2mm 0;
+      color: #2f174c;
+      border-bottom: 1px solid #e4dcee;
+      font-weight: 800;
+      text-decoration: none;
     }
 
     .callout {
       margin: 5mm 0 7mm;
       padding: 5mm;
       border-left: 5px solid var(--purple);
-      border-radius: 8px;
-      background: var(--panel);
+      border-radius: 10px;
+      background: linear-gradient(90deg, #f4edff, #ffffff);
+    }
+
+    .callout strong {
+      color: #2c124a;
     }
 
     .grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 5mm;
+      gap: 4.5mm;
+      margin: 5mm 0 7mm;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4mm;
       margin: 5mm 0 7mm;
     }
 
     .card {
-      min-height: 30mm;
       padding: 5mm;
-      border: 1px solid #e3dbf1;
-      border-radius: 8px;
-      background: #ffffff;
+      min-height: 31mm;
+      border: 1px solid #e1d7ef;
+      border-radius: 11px;
+      background:
+        linear-gradient(145deg, rgba(124, 45, 255, 0.06), transparent 50%),
+        #ffffff;
     }
 
     .card strong {
       display: block;
       margin-bottom: 2mm;
-      color: #2e174d;
-      font-size: 11.5pt;
+      color: #2f174c;
+      font-size: 11.2pt;
+    }
+
+    .metric-card {
+      padding: 5mm;
+      border-radius: 12px;
+      color: #ffffff;
+      background:
+        radial-gradient(circle at 85% 10%, rgba(255, 122, 69, 0.38), transparent 32%),
+        linear-gradient(145deg, #230d3c, #6515c5);
+    }
+
+    .metric-card strong {
+      display: block;
+      font-size: 17pt;
+      line-height: 1;
+    }
+
+    .metric-card span {
+      display: block;
+      margin-top: 2mm;
+      color: #eadfff;
+      font-size: 8pt;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
     }
 
     .pill-row {
@@ -237,297 +368,652 @@
 
     .pill {
       padding: 2mm 3mm;
+      border: 1px solid #e1d7ef;
       border-radius: 999px;
       color: #321454;
-      background: #eee6ff;
-      font-size: 9pt;
-      font-weight: 700;
+      background: #f2ebff;
+      font-size: 8.5pt;
+      font-weight: 800;
+    }
+
+    .timeline {
+      margin: 5mm 0 7mm;
+      border-left: 1.2mm solid #dcccf2;
+      padding-left: 5mm;
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 5mm;
+      padding: 4mm 4.5mm;
+      border: 1px solid #e1d7ef;
+      border-radius: 10px;
+      background: #ffffff;
+    }
+
+    .timeline-item::before {
+      content: "";
+      position: absolute;
+      left: -7.1mm;
+      top: 5.2mm;
+      width: 3.2mm;
+      height: 3.2mm;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--purple), var(--orange));
+    }
+
+    .timeline-item strong {
+      display: block;
+      color: #2f174c;
+      margin-bottom: 1.5mm;
+    }
+
+    .two-column-list {
+      columns: 2;
+      column-gap: 10mm;
+    }
+
+    .caption {
+      color: var(--muted);
+      font-size: 8.6pt;
     }
 
     .footer-note {
       margin-top: 8mm;
       color: var(--muted);
-      font-size: 9pt;
+      font-size: 8.6pt;
     }
   </style>
 </head>
 <body>
   <div class="page-header">
     <img src="./media/rocket-bank-logo.png" alt="Rocket Bank" />
-    <span>Rocket Bank Mobile | Documentação Técnica e Funcional</span>
+    <span>Rocket Bank Mobile | Relatório técnico e funcional</span>
   </div>
 
   <section class="cover">
-    <p class="eyebrow">Documentação profissional do projeto</p>
-    <img class="cover-mark" src="../assets/rocketbank-icon.png" alt="Rocket Bank" />
-    <h1>Rocket Bank Mobile</h1>
-    <p class="cover-subtitle">
-      Aplicativo mobile de banco digital construído com Expo, React Native e TypeScript, com fluxos simulados de conta, cartões, Pix, investimentos, cashback e extrato.
-    </p>
-    <div class="cover-meta">
-      <p><strong>Desenvolvido por:</strong> Divanildo Simões, Edoardo Famá, César Fraga e Djhonatah Wesley.</p>
-      <p><strong>Contexto:</strong> Projeto desenvolvido durante a Academia de Java & I.A disponibilizada pela Accenture.</p>
-      <p><strong>Versão:</strong> Documentação final do protótipo mobile.</p>
+    <div class="cover-grid">
+      <div>
+        <p class="kicker">Relatório técnico e funcional</p>
+        <h1>Rocket Bank Mobile</h1>
+        <p class="cover-subtitle">
+          Protótipo mobile de banco digital com jornada completa de conta, cartões, Pix, investimentos, shopping, cashback e extrato.
+        </p>
+        <div class="cover-band">
+          <p><strong>Desenvolvido por:</strong> Divanildo Simões, Edoardo Famá, César Fraga e Djhonatah Wesley.</p>
+          <p>Projeto desenvolvido durante a Academia de Java & I.A disponibilizada pela Accenture.</p>
+          <p>Stack principal: Expo, React Native, TypeScript e componentes mobile com estado local.</p>
+        </div>
+      </div>
+      <div>
+        <img class="cover-logo" src="../assets/images/icon.png" alt="Rocket Bank" />
+      </div>
+    </div>
+    <div class="mini-metrics">
+      <div class="mini-metric">
+        <strong>12</strong>
+        <span>Telas de produto</span>
+      </div>
+      <div class="mini-metric">
+        <strong>19</strong>
+        <span>Componentes reutilizáveis</span>
+      </div>
+      <div class="mini-metric">
+        <strong>5</strong>
+        <span>Fluxos financeiros</span>
+      </div>
     </div>
   </section>
 
   <main>
     <section>
-      <h2>1. Resumo executivo</h2>
+      <h2>1. Sumário</h2>
       <p class="lead">
-        O Rocket Bank Mobile é um protótipo funcional de banco digital que simula uma jornada bancária completa em ambiente mobile. O app foi desenhado para apresentar uma experiência moderna, visualmente consistente e orientada a interações financeiras comuns do dia a dia.
+        Este relatório descreve o produto, a arquitetura interna, os fluxos de estado, os contratos de dados e as principais decisões de implementação do Rocket Bank Mobile.
+      </p>
+      <div class="toc">
+        <a href="#visao">2. Visão do produto</a>
+        <a href="#arquitetura">3. Arquitetura interna</a>
+        <a href="#estado">4. Estado e regras de negócio</a>
+        <a href="#dados">5. Modelagem de dados</a>
+        <a href="#telas">6. Telas e responsabilidades</a>
+        <a href="#fluxos">7. Fluxos operacionais</a>
+        <a href="#design">8. Sistema visual</a>
+        <a href="#execucao">9. Execução e validação</a>
+        <a href="#riscos">10. Limitações e evolução</a>
+      </div>
+    </section>
+
+    <section id="visao" class="section">
+      <h2>2. Visão do produto</h2>
+      <p class="lead">
+        O Rocket Bank Mobile simula um app bancário moderno com foco em experiência mobile, clareza visual e continuidade entre operações financeiras. A aplicação organiza os principais serviços em uma navegação inferior fixa, com áreas dedicadas para conta, cartões, Pix, investimentos, shopping e perfil.
       </p>
       <p>
-        A aplicação permite que o usuário acesse a conta, consulte saldo, visualize cartões, pague faturas, envie Pix, simule investimentos, compre em parceiros, acompanhe cashback e consulte o extrato de movimentações. Todos os fluxos são locais e usam dados mockados, o que torna o projeto adequado para apresentação, estudo e evolução futura.
+        O produto foi concebido como protótipo navegável, sem backend real, mas com regras locais suficientes para representar interações bancárias coerentes: saldo é debitado, cashback é acumulado, faturas são marcadas como pagas, Pix respeita limite diário e investimentos atualizam uma carteira local.
       </p>
-      <div class="callout">
-        <strong>Objetivo principal:</strong> demonstrar domínio de construção de interfaces mobile com React Native, gerenciamento de estado local, organização modular do código e criação de fluxos financeiros simulados com boa experiência de uso.
-      </div>
-    </section>
-
-    <section class="section">
-      <h2>2. Escopo do produto</h2>
-      <div class="grid">
-        <div class="card">
-          <strong>Conta digital</strong>
-          Consulta de saldo, rendimento, cashback e atalhos para operações frequentes.
+      <div class="grid-3">
+        <div class="metric-card">
+          <strong>R$ 50.000</strong>
+          <span>Saldo inicial da conta</span>
         </div>
-        <div class="card">
-          <strong>Cartões e fatura</strong>
-          Visualização de cartões, total da fatura e pagamento com reflexo no extrato.
+        <div class="metric-card">
+          <strong>R$ 6.500</strong>
+          <span>Limite diário Pix</span>
         </div>
-        <div class="card">
-          <strong>Pix</strong>
-          Transferência simulada com validação de saldo, valor e limite diário.
-        </div>
-        <div class="card">
-          <strong>Investimentos</strong>
-          Consulta de ativos, simulação de aplicação e atualização da carteira.
-        </div>
-        <div class="card">
-          <strong>Shopping e cashback</strong>
-          Compra simulada em parceiros com geração de cashback.
-        </div>
-        <div class="card">
-          <strong>Extrato</strong>
-          Registro das movimentações criadas pelos fluxos financeiros.
+        <div class="metric-card">
+          <strong>3%</strong>
+          <span>Cashback da fatura</span>
         </div>
       </div>
+      <h3>Objetivos funcionais</h3>
+      <ul class="two-column-list">
+        <li>Apresentar uma experiência bancária completa em ambiente mobile.</li>
+        <li>Conectar saldo, cartões, Pix, investimentos, compras e extrato.</li>
+        <li>Simular operações financeiras com atualização imediata de estado.</li>
+        <li>Manter a identidade visual do Rocket Bank em todos os fluxos.</li>
+        <li>Centralizar regras de negócio no componente raiz para facilitar leitura.</li>
+        <li>Separar telas e componentes para manter evolução modular.</li>
+      </ul>
     </section>
 
-    <section class="section">
-      <h2>3. Tecnologias utilizadas</h2>
-      <div class="pill-row">
-        <span class="pill">TypeScript/TSX</span>
-        <span class="pill">React 19</span>
-        <span class="pill">React Native 0.81</span>
-        <span class="pill">Expo 54</span>
-        <span class="pill">Expo Linear Gradient</span>
-        <span class="pill">Expo Vector Icons</span>
-        <span class="pill">Lottie React Native</span>
-      </div>
-      <table>
-        <thead>
-          <tr>
-            <th>Tecnologia</th>
-            <th>Uso no projeto</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>TypeScript/TSX</td>
-            <td>Linguagem principal dos componentes, telas, tipos e regras de interação.</td>
-          </tr>
-          <tr>
-            <td>React Native</td>
-            <td>Construção da interface mobile e composição visual das telas.</td>
-          </tr>
-          <tr>
-            <td>Expo</td>
-            <td>Ambiente de execução, empacotamento e experiência de desenvolvimento.</td>
-          </tr>
-          <tr>
-            <td>Expo Linear Gradient</td>
-            <td>Gradientes usados nos cards, botões e elementos de destaque.</td>
-          </tr>
-          <tr>
-            <td>Expo Vector Icons</td>
-            <td>Iconografia das ações, menus e navegação inferior.</td>
-          </tr>
-          <tr>
-            <td>Lottie React Native</td>
-            <td>Animação de inicialização do aplicativo.</td>
-          </tr>
-        </tbody>
-      </table>
-      <p class="footer-note">
-        Observação: Expo e React Native são frameworks/ferramentas, não linguagens. Por isso, no GitHub, a linguagem predominante aparece como TypeScript.
-      </p>
-    </section>
-
-    <section class="section">
-      <h2>4. Arquitetura e organização</h2>
+    <section id="arquitetura" class="section">
+      <h2>3. Arquitetura interna</h2>
       <p>
-        O projeto foi estruturado separando telas, componentes, dados mockados, tema, tipos e utilitários. Essa organização facilita manutenção, evolução de funcionalidades e reaproveitamento de componentes visuais.
+        A estrutura do projeto segue um modelo simples e direto para protótipo mobile: o componente raiz concentra o estado global e injeta callbacks nas telas. As telas cuidam da interação e da apresentação; componentes reutilizáveis padronizam cards, ações, menus, abas, transações e ícones.
       </p>
       <pre>.
 |-- assets/
-|   |-- animations/
-|   `-- images/
-|-- docs/
-|   `-- media/
+|   |-- animations/       Animação Lottie da inicialização
+|   `-- images/           Logos, fotos, banners e imagens locais
+|-- docs/                 Documentação, PDFs e mídia do README
 |-- src/
-|   |-- components/
-|   |-- data/
-|   |-- screens/
-|   |-- theme/
-|   |-- types/
-|   `-- utils/
-|-- App.tsx
-|-- app.json
-|-- index.ts
-`-- package.json</pre>
+|   |-- components/       UI reutilizável e estrutura comum
+|   |-- data/             Dados mockados de cartões, produtos e fatura
+|   |-- screens/          Telas funcionais do aplicativo
+|   |-- theme/            Tokens de cores e estilos compartilhados
+|   |-- types/            Contratos TypeScript globais
+|   `-- utils/            Funções de moeda e parsing
+|-- App.tsx               Exporta o app raiz
+|-- index.ts              Registro do app no Expo
+|-- app.json              Configuração Expo
+`-- package.json          Scripts e dependências</pre>
+
+      <h3>Camadas de responsabilidade</h3>
       <table>
         <thead>
           <tr>
-            <th>Diretório</th>
+            <th>Camada</th>
             <th>Responsabilidade</th>
+            <th>Exemplos</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td><code>src/screens</code></td>
-            <td>Telas completas da aplicação, como login, home, Pix, cartões e investimentos.</td>
+            <td>Entrada</td>
+            <td>Registra a aplicação e entrega o componente principal ao Expo.</td>
+            <td><code>index.ts</code>, <code>App.tsx</code></td>
           </tr>
           <tr>
-            <td><code>src/components</code></td>
-            <td>Componentes reutilizáveis usados em múltiplas telas.</td>
+            <td>Orquestração</td>
+            <td>Controla login, splash, tela ativa, saldo, cashback, faturas, Pix, investimentos e extrato.</td>
+            <td><code>src/App.tsx</code></td>
           </tr>
           <tr>
-            <td><code>src/data</code></td>
-            <td>Dados mockados de cartões, produtos, faturas e conteúdo demonstrativo.</td>
+            <td>Layout</td>
+            <td>Aplica gradiente de fundo, área segura, rolagem e navegação inferior.</td>
+            <td><code>AppLayout</code>, <code>BottomTabs</code></td>
           </tr>
           <tr>
-            <td><code>src/theme</code></td>
-            <td>Cores, estilos compartilhados e tokens visuais do Rocket Bank.</td>
+            <td>Telas</td>
+            <td>Implementam jornadas específicas de produto.</td>
+            <td><code>HomeScreen</code>, <code>PixScreen</code>, <code>ShoppingScreen</code></td>
           </tr>
           <tr>
-            <td><code>src/types</code></td>
-            <td>Tipos globais usados para navegação, cartões e transações.</td>
+            <td>Componentes</td>
+            <td>Padronizam blocos visuais recorrentes e reduzem repetição.</td>
+            <td><code>RocketCard</code>, <code>QuickAction</code>, <code>Transaction</code></td>
           </tr>
           <tr>
-            <td><code>src/utils</code></td>
-            <td>Funções auxiliares, como formatação e parse de moeda.</td>
+            <td>Utilitários</td>
+            <td>Formatam e convertem valores monetários.</td>
+            <td><code>formatCurrency</code>, <code>parseCurrency</code></td>
           </tr>
         </tbody>
       </table>
-    </section>
 
-    <section class="section">
-      <h2>5. Fluxos funcionais</h2>
-      <h3>5.1 Inicialização</h3>
-      <p>
-        A aplicação inicia com uma tela de splash animada, reforçando a identidade visual do Rocket Bank antes de encaminhar o usuário para autenticação.
-      </p>
-      <h3>5.2 Login e cadastro</h3>
-      <p>
-        O login aceita e-mail ou CPF, senha e validações básicas. Também há fluxos de recuperação de acesso, cadastro simulado e login social demonstrativo.
-      </p>
-      <h3>5.3 Home</h3>
-      <p>
-        A tela principal mostra saldo, rendimento, cashback, atalhos rápidos, benefícios e últimas movimentações, funcionando como painel central da conta.
-      </p>
-      <h3>5.4 Cartões e fatura</h3>
-      <p>
-        O usuário visualiza cartões cadastrados, consulta fatura e simula pagamento. O pagamento debita o saldo da conta, gera cashback e registra as movimentações no extrato.
-      </p>
-      <h3>5.5 Pix</h3>
-      <p>
-        O fluxo de Pix valida valor, saldo disponível e limite diário. Após o envio, a transação é adicionada ao extrato.
-      </p>
-      <h3>5.6 Investimentos</h3>
-      <p>
-        A área de investimentos exibe ativos e permite simular uma aplicação, debitando o saldo e atualizando a carteira local.
-      </p>
-      <h3>5.7 Shopping e cashback</h3>
-      <p>
-        O Rocket Shopping apresenta produtos e parceiros, permitindo compras simuladas e geração de cashback para a conta.
-      </p>
-    </section>
-
-    <section class="section">
-      <h2>6. Regras de negócio simuladas</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Fluxo</th>
-            <th>Regra aplicada</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Pagamento de fatura</td>
-            <td>Debita o saldo, marca a fatura como paga, registra saída e adiciona cashback de 3%.</td>
-          </tr>
-          <tr>
-            <td>Pix</td>
-            <td>Impede valores inválidos, saldo insuficiente e envio acima do limite diário.</td>
-          </tr>
-          <tr>
-            <td>Investimentos</td>
-            <td>Debita o saldo e adiciona o valor aplicado à carteira local do usuário.</td>
-          </tr>
-          <tr>
-            <td>Shopping</td>
-            <td>Registra compra e adiciona cashback quando aplicável.</td>
-          </tr>
-          <tr>
-            <td>Extrato</td>
-            <td>Recebe automaticamente eventos financeiros gerados pelos demais módulos.</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
-
-    <section class="section">
-      <h2>7. Como executar o projeto</h2>
-      <p>Instale as dependências:</p>
-      <pre>npm install</pre>
-      <p>Inicie o servidor Expo:</p>
-      <pre>npm start</pre>
-      <p>Escolha a plataforma desejada:</p>
-      <pre>npm run android
-npm run ios
-npm run web</pre>
-      <p>
-        Para testar em um dispositivo físico, abra o Expo Go e leia o QR Code exibido no terminal.
-      </p>
-    </section>
-
-    <section class="section">
-      <h2>8. Validação e qualidade</h2>
-      <p>
-        O projeto possui script de validação TypeScript para conferir tipagem e contratos básicos do código.
-      </p>
-      <pre>npm run typecheck</pre>
-      <div class="callout">
-        Como o projeto ainda é um protótipo local, não há backend, banco de dados real ou autenticação remota. A próxima etapa natural seria incluir persistência, testes automatizados e integração com APIs simuladas.
+      <h3>Fluxo macro de renderização</h3>
+      <div class="timeline">
+        <div class="timeline-item">
+          <strong>1. Inicialização</strong>
+          O app é registrado pelo Expo e renderiza o provedor de área segura junto ao provedor de popups personalizados.
+        </div>
+        <div class="timeline-item">
+          <strong>2. Splash</strong>
+          A tela de abertura permanece visível por aproximadamente 3 segundos antes do login.
+        </div>
+        <div class="timeline-item">
+          <strong>3. Login</strong>
+          O usuário acessa a aplicação por login simulado. Ao autenticar, <code>logged</code> muda para verdadeiro.
+        </div>
+        <div class="timeline-item">
+          <strong>4. Área logada</strong>
+          <code>AppLayout</code> passa a envolver a tela ativa e a navegação inferior.
+        </div>
+        <div class="timeline-item">
+          <strong>5. Troca de tela</strong>
+          <code>activeScreen</code> define qual módulo é renderizado no momento.
+        </div>
       </div>
     </section>
 
-    <section class="section">
-      <h2>9. Evoluções recomendadas</h2>
-      <ul>
-        <li>Implementar autenticação real com persistência segura de sessão.</li>
-        <li>Adicionar backend para contas, cartões, extrato, Pix e investimentos.</li>
-        <li>Persistir dados localmente para manter estado entre sessões.</li>
-        <li>Criar testes unitários para regras financeiras e componentes críticos.</li>
-        <li>Adicionar testes de fluxo para login, Pix, pagamento de fatura e investimentos.</li>
-        <li>Preparar builds mobile com EAS Build para distribuição controlada.</li>
-      </ul>
-      <p class="footer-note">
-        Documento gerado para apresentação técnica e funcional do Rocket Bank Mobile.
+    <section id="estado" class="section">
+      <h2>4. Estado e regras de negócio</h2>
+      <p>
+        O estado global fica em <code>src/App.tsx</code>. Essa decisão simplifica a leitura do protótipo: todas as operações que impactam saldo, cashback, extrato, carteira e faturas passam por um único ponto de controle.
       </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Estado</th>
+            <th>Tipo/valor inicial</th>
+            <th>Função no app</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>showSplash</code></td>
+            <td><code>true</code></td>
+            <td>Controla a tela de inicialização antes do login.</td>
+          </tr>
+          <tr>
+            <td><code>logged</code></td>
+            <td><code>false</code></td>
+            <td>Define se o usuário está no login ou no ambiente logado.</td>
+          </tr>
+          <tr>
+            <td><code>activeScreen</code></td>
+            <td><code>'home'</code></td>
+            <td>Controla a tela atual da navegação interna.</td>
+          </tr>
+          <tr>
+            <td><code>accountBalance</code></td>
+            <td><code>50000</code></td>
+            <td>Saldo usado por Pix, fatura, shopping e investimentos.</td>
+          </tr>
+          <tr>
+            <td><code>cashbackBalance</code></td>
+            <td><code>248.9</code></td>
+            <td>Saldo acumulado de benefícios e recompensas.</td>
+          </tr>
+          <tr>
+            <td><code>cards</code></td>
+            <td><code>userCards</code></td>
+            <td>Cartões ativos exibidos na carteira.</td>
+          </tr>
+          <tr>
+            <td><code>investmentPortfolio</code></td>
+            <td><code>{}</code></td>
+            <td>Carteira de investimentos indexada pelo ID do ativo.</td>
+          </tr>
+          <tr>
+            <td><code>statementTransactions</code></td>
+            <td>Transações iniciais</td>
+            <td>Lista dinâmica de entradas, saídas e cashback.</td>
+          </tr>
+          <tr>
+            <td><code>pixDailyUsage</code></td>
+            <td><code>{ amount: 0, date }</code></td>
+            <td>Controla consumo do limite Pix no dia atual.</td>
+          </tr>
+          <tr>
+            <td><code>paidInvoiceCardIds</code></td>
+            <td><code>{}</code></td>
+            <td>Marca faturas já pagas por cartão.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Funções centrais de domínio</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Função</th>
+            <th>Entrada</th>
+            <th>Saída/efeito</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>debitAccount</code></td>
+            <td>Valor numérico</td>
+            <td>Debita saldo se houver valor válido e saldo suficiente.</td>
+          </tr>
+          <tr>
+            <td><code>payInvoice</code></td>
+            <td>Cartão selecionado</td>
+            <td>Debita fatura, marca como paga, registra extrato e aplica 3% de cashback.</td>
+          </tr>
+          <tr>
+            <td><code>sendPix</code></td>
+            <td>Valor e destinatário</td>
+            <td>Valida limite diário/saldo e registra Pix enviado no extrato.</td>
+          </tr>
+          <tr>
+            <td><code>finishShoppingPurchase</code></td>
+            <td>Total, cashback, itens e código</td>
+            <td>Registra compra e cashback recebido.</td>
+          </tr>
+          <tr>
+            <td><code>finishInvestment</code></td>
+            <td>Valor e ativo</td>
+            <td>Debita saldo e registra investimento no extrato.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="dados" class="section">
+      <h2>5. Modelagem de dados</h2>
+      <p>
+        Os contratos em <code>src/types/index.ts</code> definem o vocabulário principal do app. Eles reduzem erros de integração entre telas e ajudam a manter os fluxos previsíveis.
+      </p>
+      <h3>Tipos globais</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Tipo</th>
+            <th>Descrição</th>
+            <th>Campos/valores relevantes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>AppScreen</code></td>
+            <td>Enumeração textual das telas navegáveis.</td>
+            <td><code>home</code>, <code>cards</code>, <code>pix</code>, <code>investments</code>, <code>shopping</code>, <code>profile</code>, <code>invoice</code>.</td>
+          </tr>
+          <tr>
+            <td><code>UserCard</code></td>
+            <td>Representa cartões físicos ou virtuais.</td>
+            <td>ID, número, CVV, limite, fatura, vencimento, variante e titular.</td>
+          </tr>
+          <tr>
+            <td><code>BankStatementTransaction</code></td>
+            <td>Item de extrato financeiro.</td>
+            <td>Ícone, título, subtítulo, valor, sinal positivo e tipo.</td>
+          </tr>
+          <tr>
+            <td><code>ShoppingProduct</code></td>
+            <td>Produto do Rocket Shopping.</td>
+            <td>Preço, loja, categoria, cashback e imagem.</td>
+          </tr>
+          <tr>
+            <td><code>InvestmentAsset</code></td>
+            <td>Ativo financeiro exibido em investimentos.</td>
+            <td>Taxa anual, preço, risco, grupo de gráfico, cor e aplicação mínima.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Dados mockados</h3>
+      <p>
+        <code>src/data/mockData.ts</code> fornece categorias de shopping, produtos, cartões do usuário, cartões virtuais disponíveis e itens de fatura. A ausência de backend é compensada pela riqueza dos dados locais, permitindo demonstrar jornadas completas sem dependências externas.
+      </p>
+      <div class="callout">
+        <strong>Importante:</strong> valores financeiros são exibidos como texto formatado quando vêm dos mocks e convertidos para número com <code>parseCurrency</code> quando precisam participar de regras de negócio.
+      </div>
+    </section>
+
+    <section id="telas" class="section">
+      <h2>6. Telas e responsabilidades</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Tela</th>
+            <th>Responsabilidade</th>
+            <th>Integração com estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>SplashScreen</code></td>
+            <td>Apresenta a abertura animada com Lottie.</td>
+            <td>Controlada por <code>showSplash</code>.</td>
+          </tr>
+          <tr>
+            <td><code>LoginScreen</code></td>
+            <td>Login, cadastro, recuperação e acesso social simulado.</td>
+            <td>Chama <code>onLogin</code> para liberar a área logada.</td>
+          </tr>
+          <tr>
+            <td><code>HomeScreen</code></td>
+            <td>Exibe saldo, cashback, atalhos e últimas movimentações.</td>
+            <td>Recebe saldo, cashback e transações recentes.</td>
+          </tr>
+          <tr>
+            <td><code>CardsScreen</code></td>
+            <td>Gerencia cartões, fatura, visibilidade, bloqueio e cartões virtuais.</td>
+            <td>Recebe cartões, IDs pagos e callbacks de navegação/seleção.</td>
+          </tr>
+          <tr>
+            <td><code>InvoiceScreen</code></td>
+            <td>Detalha fatura e executa pagamento.</td>
+            <td>Chama <code>onPayInvoice</code> e respeita <code>invoicePaid</code>.</td>
+          </tr>
+          <tr>
+            <td><code>PixScreen</code></td>
+            <td>Seleciona contato, valor, valida envio e exibe comprovante.</td>
+            <td>Chama <code>onSendPix</code> e recebe limite restante.</td>
+          </tr>
+          <tr>
+            <td><code>InvestmentsScreen</code></td>
+            <td>Exibe ativos, carteira, gráficos e modal de aplicação.</td>
+            <td>Recebe saldo, carteira e função de finalização.</td>
+          </tr>
+          <tr>
+            <td><code>ShoppingScreen</code></td>
+            <td>Busca produtos, carrinho, cupom, checkout e rastreio.</td>
+            <td>Debita saldo, registra compra e adiciona cashback.</td>
+          </tr>
+          <tr>
+            <td><code>StatementScreen</code></td>
+            <td>Lista as movimentações registradas.</td>
+            <td>Recebe <code>statementTransactions</code>.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="fluxos" class="section">
+      <h2>7. Fluxos operacionais</h2>
+      <h3>7.1 Pagamento de fatura</h3>
+      <div class="timeline">
+        <div class="timeline-item">
+          <strong>Seleção do cartão</strong>
+          O usuário escolhe um cartão na área de cartões e abre a tela de fatura.
+        </div>
+        <div class="timeline-item">
+          <strong>Validação</strong>
+          O app verifica se a fatura já foi paga e se o saldo cobre o valor total.
+        </div>
+        <div class="timeline-item">
+          <strong>Baixa da fatura</strong>
+          O ID do cartão é marcado em <code>paidInvoiceCardIds</code>.
+        </div>
+        <div class="timeline-item">
+          <strong>Extrato e cashback</strong>
+          A saída é registrada no extrato e o cashback de 3% é adicionado ao saldo de benefícios.
+        </div>
+      </div>
+
+      <h3>7.2 Pix</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Validação</th>
+            <th>Resultado esperado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Valor menor ou igual a zero</td>
+            <td>Retorna <code>invalid</code> e não altera saldo.</td>
+          </tr>
+          <tr>
+            <td>Valor acima do limite diário restante</td>
+            <td>Retorna <code>daily-limit</code>.</td>
+          </tr>
+          <tr>
+            <td>Saldo insuficiente</td>
+            <td>Retorna <code>balance</code>.</td>
+          </tr>
+          <tr>
+            <td>Valor válido e permitido</td>
+            <td>Debita saldo, atualiza uso diário e registra Pix no extrato.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>7.3 Rocket Shopping</h3>
+      <p>
+        O carrinho calcula subtotal, desconto por cupom <code>ACCENTURE20</code>, limite de desconto de R$ 800 e cashback por produto. Ao finalizar, a compra debita o saldo, gera código de pedido e cria registros no extrato.
+      </p>
+
+      <h3>7.4 Investimentos</h3>
+      <p>
+        A tela calcula total investido, rentabilidade anual estimada, taxa mensal aproximada e maior posição. A carteira é armazenada em um objeto indexado pelo ID do ativo, permitindo somar aplicações sucessivas no mesmo produto.
+      </p>
+    </section>
+
+    <section id="design" class="section">
+      <h2>8. Sistema visual e experiência</h2>
+      <p>
+        O design do Rocket Bank utiliza fundo escuro, gradientes roxo/laranja, cards com bordas translúcidas e iconografia linear. A composição reforça uma linguagem de banco digital premium, com foco em contraste, hierarquia e leitura rápida.
+      </p>
+      <div class="grid">
+        <div class="card">
+          <strong>Paleta</strong>
+          Roxo como cor primária, laranja como acento de energia, verde para feedback financeiro positivo e tons escuros para profundidade.
+        </div>
+        <div class="card">
+          <strong>Navegação</strong>
+          Barra inferior fixa com seis destinos: início, cartões, transferência, investimentos, shopping e perfil.
+        </div>
+        <div class="card">
+          <strong>Alertas</strong>
+          <code>AppPopupProvider</code> intercepta <code>Alert.alert</code> e aplica modais personalizados por tom: informação, sucesso, aviso e erro.
+        </div>
+        <div class="card">
+          <strong>Feedback de operação</strong>
+          Fluxos críticos usam telas intermediárias de carregamento para comunicar processamento de Pix, pagamento e pedido.
+        </div>
+      </div>
+
+      <h3>Componentes reutilizáveis</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Componente</th>
+            <th>Função</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>AppLayout</code></td>
+            <td>Estrutura visual comum para telas logadas.</td>
+          </tr>
+          <tr>
+            <td><code>BottomTabs</code> e <code>TabButton</code></td>
+            <td>Navegação principal inferior.</td>
+          </tr>
+          <tr>
+            <td><code>RocketCard</code></td>
+            <td>Renderização visual dos cartões com variações de estilo.</td>
+          </tr>
+          <tr>
+            <td><code>QuickAction</code></td>
+            <td>Atalhos da home para operações rápidas.</td>
+          </tr>
+          <tr>
+            <td><code>ProductCard</code> e <code>ProductSection</code></td>
+            <td>Catálogo do Rocket Shopping.</td>
+          </tr>
+          <tr>
+            <td><code>Transaction</code></td>
+            <td>Item padronizado de extrato.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="execucao" class="section">
+      <h2>9. Execução, scripts e validação</h2>
+      <h3>Instalação</h3>
+      <pre>npm install</pre>
+      <h3>Execução</h3>
+      <pre>npm start
+npm run android
+npm run ios
+npm run web</pre>
+      <h3>Validação TypeScript</h3>
+      <pre>npm run typecheck</pre>
+      <table>
+        <thead>
+          <tr>
+            <th>Script</th>
+            <th>Descrição</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>npm start</code></td>
+            <td>Inicia o servidor Expo para desenvolvimento.</td>
+          </tr>
+          <tr>
+            <td><code>npm run android</code></td>
+            <td>Executa no Android via Expo.</td>
+          </tr>
+          <tr>
+            <td><code>npm run ios</code></td>
+            <td>Executa no iOS quando disponível no ambiente.</td>
+          </tr>
+          <tr>
+            <td><code>npm run web</code></td>
+            <td>Executa a versão web do app.</td>
+          </tr>
+          <tr>
+            <td><code>npm run typecheck</code></td>
+            <td>Executa <code>tsc --noEmit</code> para validar tipagem.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="riscos" class="section">
+      <h2>10. Limitações atuais e evolução</h2>
+      <h3>Limitações atuais</h3>
+      <ul>
+        <li>Os dados são mockados e ficam em memória durante a sessão.</li>
+        <li>Não há autenticação remota, backend ou persistência em banco de dados.</li>
+        <li>Fluxos financeiros são simulações locais para demonstração.</li>
+        <li>Não há testes automatizados unitários ou de integração.</li>
+        <li>As transações não persistem após reiniciar o aplicativo.</li>
+      </ul>
+
+      <h3>Evoluções recomendadas</h3>
+      <ol>
+        <li>Adicionar persistência local com armazenamento seguro para sessão e preferências.</li>
+        <li>Criar backend simulado para contas, cartões, Pix, faturas e investimentos.</li>
+        <li>Implementar testes unitários para <code>parseCurrency</code>, Pix, fatura, shopping e investimentos.</li>
+        <li>Adicionar testes de fluxo para jornadas críticas do usuário.</li>
+        <li>Separar regras financeiras em serviços de domínio para reduzir responsabilidades do componente raiz.</li>
+        <li>Preparar builds com EAS Build e configurar ambientes de distribuição.</li>
+      </ol>
+
+      <div class="callout">
+        <strong>Direção técnica:</strong> a evolução mais importante é mover regras de negócio para uma camada dedicada, mantendo as telas focadas em interação e apresentação. Isso facilitaria testes, manutenção e integração futura com APIs.
+      </div>
     </section>
   </main>
 </body>
