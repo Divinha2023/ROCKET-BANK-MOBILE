@@ -41,22 +41,17 @@ A proposta do projeto é demonstrar uma jornada completa de uso em um app financ
 
 ### 1. Inicialização do projeto
 
+[![Preview da inicialização do projeto](./docs/media/preview-inicializacao.gif)](./docs/media/video-inicializacao.mp4)
 
-
-https://github.com/user-attachments/assets/4c7d175b-8cad-4830-be55-8868d2db445f
-
-
-
+[Abrir vídeo completo de inicialização](./docs/media/video-inicializacao.mp4)
 
 O primeiro vídeo apresenta a abertura do aplicativo, destacando a identidade visual da marca e a experiência de splash screen antes do acesso ao app.
 
 ### 2. Tela de login
 
-<video src="./docs/media/video-tela-login.mp4" controls width="320">
-  Seu navegador não suporta a reprodução deste vídeo.
-</video>
+[![Preview da tela de login](./docs/media/preview-tela-login.gif)](./docs/media/video-tela-login.mp4)
 
-[Abrir vídeo da tela de login](./docs/media/video-tela-login.mp4)
+[Abrir vídeo completo da tela de login](./docs/media/video-tela-login.mp4)
 
 Este fluxo demonstra a tela de autenticação, com campos para acesso por e-mail ou CPF, senha, opção de lembrar dados, recuperação de senha e login social simulado.
 
@@ -68,31 +63,25 @@ A home concentra as informações essenciais da conta: saldo disponível, rendim
 
 ### 4. Aba de cartões e pagamento de fatura
 
-<video src="./docs/media/video-cartoes-fatura.mp4" controls width="320">
-  Seu navegador não suporta a reprodução deste vídeo.
-</video>
+[![Preview da aba de cartões e pagamento de fatura](./docs/media/preview-cartoes-fatura.gif)](./docs/media/video-cartoes-fatura.mp4)
 
-[Abrir vídeo da aba de cartões e pagamento de fatura](./docs/media/video-cartoes-fatura.mp4)
+[Abrir vídeo completo da aba de cartões e pagamento de fatura](./docs/media/video-cartoes-fatura.mp4)
 
 Nesta demonstração, o usuário acessa a área de cartões para visualizar os cartões disponíveis, conferir dados da fatura e concluir o pagamento pelo saldo da conta. O fluxo também simula a atualização do estado financeiro do app, registrando a movimentação no extrato e aplicando o cashback referente ao pagamento da fatura.
 
 ### 5. Área Pix
 
-<video src="./docs/media/video-area-pix.mp4" controls width="320">
-  Seu navegador não suporta a reprodução deste vídeo.
-</video>
+[![Preview da área Pix](./docs/media/preview-area-pix.gif)](./docs/media/video-area-pix.mp4)
 
-[Abrir vídeo da área Pix](./docs/media/video-area-pix.mp4)
+[Abrir vídeo completo da área Pix](./docs/media/video-area-pix.mp4)
 
 Na área Pix, o usuário realiza uma transferência usando o saldo disponível. O fluxo valida o valor informado, respeita o limite diário configurado e registra a transação no extrato após o envio.
 
 ### 6. Área de investimento
 
-<video src="./docs/media/video-area-investimento.mp4" controls width="320">
-  Seu navegador não suporta a reprodução deste vídeo.
-</video>
+[![Preview da área de investimento](./docs/media/preview-area-investimento.gif)](./docs/media/video-area-investimento.mp4)
 
-[Abrir vídeo da área de investimento](./docs/media/video-area-investimento.mp4)
+[Abrir vídeo completo da área de investimento](./docs/media/video-area-investimento.mp4)
 
 Nesta demonstração, o usuário acessa a área de investimentos para consultar opções disponíveis, visualizar informações de rendimento e simular uma aplicação usando o saldo da conta. O fluxo atualiza a carteira local do usuário e registra a movimentação financeira no extrato.
 
