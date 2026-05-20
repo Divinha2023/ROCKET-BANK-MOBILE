@@ -12,6 +12,10 @@
   </p>
 
   <p>
+    Projeto desenvolvido durante a Academia de Java & I.A disponibilizada pela Accenture.
+  </p>
+
+  <p>
     <img alt="Expo" src="https://img.shields.io/badge/Expo-54-000020?style=for-the-badge&logo=expo" />
     <img alt="React Native" src="https://img.shields.io/badge/React%20Native-0.81-61DAFB?style=for-the-badge&logo=react&logoColor=000" />
     <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=fff" />
