@@ -65,7 +65,7 @@ A home concentra as informações essenciais da conta: saldo disponível, rendim
 
 [![Preview da aba de cartões e pagamento de fatura](./docs/media/preview-cartoes-fatura.gif)](./docs/media/video-cartoes-fatura.mp4)
 
-[Abrir vídeo completo da aba de cartões e pagamento de fatura](./docs/media/video-cartoes-fatura.mp4)
+
 
 Nesta demonstração, o usuário acessa a área de cartões para visualizar os cartões disponíveis, conferir dados da fatura e concluir o pagamento pelo saldo da conta. O fluxo também simula a atualização do estado financeiro do app, registrando a movimentação no extrato e aplicando o cashback referente ao pagamento da fatura.
 
@@ -73,7 +73,7 @@ Nesta demonstração, o usuário acessa a área de cartões para visualizar os c
 
 [![Preview da área Pix](./docs/media/preview-area-pix.gif)](./docs/media/video-area-pix.mp4)
 
-[Abrir vídeo completo da área Pix](./docs/media/video-area-pix.mp4)
+
 
 Na área Pix, o usuário realiza uma transferência usando o saldo disponível. O fluxo valida o valor informado, respeita o limite diário configurado e registra a transação no extrato após o envio.
 
@@ -81,7 +81,6 @@ Na área Pix, o usuário realiza uma transferência usando o saldo disponível. 
 
 [![Preview da área de investimento](./docs/media/preview-area-investimento.gif)](./docs/media/video-area-investimento.mp4)
 
-[Abrir vídeo completo da área de investimento](./docs/media/video-area-investimento.mp4)
 
 Nesta demonstração, o usuário acessa a área de investimentos para consultar opções disponíveis, visualizar informações de rendimento e simular uma aplicação usando o saldo da conta. O fluxo atualiza a carteira local do usuário e registra a movimentação financeira no extrato.
 
