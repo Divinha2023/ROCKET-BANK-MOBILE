@@ -28,6 +28,12 @@ O **Rocket Bank Mobile** é um protótipo funcional de banco digital criado para
 
 A proposta do projeto é demonstrar uma jornada completa de uso em um app financeiro: o usuário inicia no splash screen, acessa a conta, consulta saldo, movimenta dinheiro, paga faturas, realiza Pix, simula investimentos e acompanha suas transações em tempo real dentro da aplicação.
 
+## Documentação completa
+
+A documentação profissional do projeto está disponível em PDF:
+
+[Abrir documentação do Rocket Bank Mobile](./docs/RocketBank-Mobile-Documentacao.pdf)
+
 ## Destaques do produto
 
 - Interface mobile com identidade visual própria do Rocket Bank.
