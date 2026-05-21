@@ -20,6 +20,9 @@
       --muted: #6d647d;
       --paper: #ffffff;
       --paper-soft: #fbf8ff;
+      --panel-purple: #16091f;
+      --panel-purple-alt: #21102d;
+      --panel-purple-strong: #c9aee6;
       --line: #ded6ed;
       --line-strong: #c8b8e8;
       --purple-950: #07020f;
@@ -173,6 +176,33 @@
       margin-bottom: 0;
     }
 
+    .academy-highlight {
+      display: flex;
+      align-items: center;
+      gap: 3mm;
+      margin: 3mm 0;
+      padding: 4mm;
+      border: 1px solid rgba(161, 0, 255, 0.42);
+      border-radius: 12px;
+      background:
+        linear-gradient(135deg, rgba(161, 0, 255, 0.22), rgba(255, 122, 69, 0.08)),
+        rgba(255, 255, 255, 0.075);
+    }
+
+    .academy-highlight img {
+      width: 9mm;
+      height: 9mm;
+      object-fit: contain;
+      flex: 0 0 auto;
+      filter: drop-shadow(0 0 8px rgba(161, 0, 255, 0.42));
+    }
+
+    .academy-highlight span {
+      color: #ffffff;
+      font-weight: 800;
+      line-height: 1.42;
+    }
+
     .mini-metrics {
       position: relative;
       display: grid;
@@ -257,15 +287,21 @@
     table {
       width: 100%;
       margin: 4mm 0 7mm;
-      border-collapse: collapse;
+      border-collapse: separate;
+      border-spacing: 0;
+      border: 1px solid rgba(217, 203, 234, 0.82);
+      border-radius: 8px;
       font-size: 8.9pt;
       break-inside: avoid;
       page-break-inside: avoid;
+      overflow: hidden;
     }
 
     th {
       color: #ffffff;
-      background: linear-gradient(90deg, #2a1247, #4b1681);
+      background:
+        linear-gradient(90deg, rgba(124, 45, 255, 0.30), rgba(168, 85, 247, 0.18)),
+        #13091c;
       text-align: left;
       font-weight: 800;
     }
@@ -273,24 +309,57 @@
     th,
     td {
       padding: 3mm;
-      border: 1px solid var(--line);
+      border-right: 1px solid rgba(217, 203, 234, 0.22);
+      border-bottom: 1px solid rgba(217, 203, 234, 0.22);
       vertical-align: top;
     }
 
+    th:last-child,
+    td:last-child {
+      border-right: 0;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    thead tr:first-child th:first-child {
+      border-top-left-radius: 7px;
+    }
+
+    thead tr:first-child th:last-child {
+      border-top-right-radius: 7px;
+    }
+
+    tbody tr:last-child td:first-child {
+      border-bottom-left-radius: 7px;
+    }
+
+    tbody tr:last-child td:last-child {
+      border-bottom-right-radius: 7px;
+    }
+
     td {
-      color: var(--ink-soft);
-      background: rgba(255, 255, 255, 0.97);
+      color: #f6efff;
+      background:
+        linear-gradient(135deg, rgba(168, 85, 247, 0.08), transparent 58%),
+        var(--panel-purple);
     }
 
     tr:nth-child(even) td {
-      background: #fbf8ff;
+      background:
+        linear-gradient(135deg, rgba(255, 122, 69, 0.05), transparent 58%),
+        var(--panel-purple-alt);
     }
 
     code {
       padding: 1px 4px;
       border-radius: 4px;
-      color: #39105f;
-      background: #f1e9ff;
+      color: #f5ecff;
+      background:
+        linear-gradient(135deg, rgba(168, 85, 247, 0.16), transparent 62%),
+        rgba(255, 255, 255, 0.075);
+      border: 1px solid rgba(217, 203, 234, 0.22);
       font-family: Consolas, Monaco, monospace;
       font-size: 8.7pt;
     }
@@ -322,7 +391,7 @@
       padding: 31mm 20mm 20mm;
       color: #f7f0ff;
       background: var(--doc-background);
-      overflow: hidden;
+      overflow: visible;
       -webkit-box-decoration-break: clone;
       box-decoration-break: clone;
     }
@@ -343,6 +412,12 @@
 
     .section:first-of-type {
       page-break-before: auto;
+    }
+
+    #arquitetura,
+    #estado,
+    #fluxos {
+      min-height: 594mm;
     }
 
     .lead {
@@ -377,21 +452,23 @@
     .callout {
       margin: 5mm 0 7mm;
       padding: 5mm;
-      color: var(--ink-soft);
-      border-left: 5px solid var(--orange);
+      color: #f4ecff;
+      border-left: 5px solid var(--purple-soft);
       border-radius: 10px;
-      background: rgba(255, 255, 255, 0.95);
+      background:
+        linear-gradient(135deg, rgba(168, 85, 247, 0.18), transparent 56%),
+        rgba(255, 255, 255, 0.075);
       break-inside: avoid;
       page-break-inside: avoid;
     }
 
     .callout strong {
-      color: #2c124a;
+      color: #ffffff;
     }
 
     .callout p,
     .callout li {
-      color: var(--ink-soft);
+      color: #f4ecff;
     }
 
     .grid {
@@ -415,18 +492,18 @@
     .card {
       padding: 5mm;
       min-height: 31mm;
-      border: 1px solid #e1d7ef;
+      border: 1px solid rgba(255, 255, 255, 0.13);
       border-radius: 11px;
-      color: var(--ink-soft);
+      color: #f4ecff;
       background:
-        linear-gradient(145deg, rgba(124, 45, 255, 0.06), transparent 50%),
-        rgba(255, 255, 255, 0.97);
+        linear-gradient(145deg, rgba(124, 45, 255, 0.16), transparent 50%),
+        rgba(255, 255, 255, 0.075);
     }
 
     .card strong {
       display: block;
       margin-bottom: 2mm;
-      color: #2f174c;
+      color: #ffffff;
       font-size: 11.2pt;
     }
 
@@ -465,10 +542,10 @@
 
     .pill {
       padding: 2mm 3mm;
-      border: 1px solid #e1d7ef;
+      border: 1px solid rgba(255, 255, 255, 0.13);
       border-radius: 999px;
-      color: #321454;
-      background: rgba(255, 255, 255, 0.96);
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.075);
       font-size: 8.5pt;
       font-weight: 800;
     }
@@ -477,18 +554,20 @@
       margin: 5mm 0 7mm;
       border-left: 1.2mm solid rgba(255, 255, 255, 0.22);
       padding-left: 5mm;
-      break-inside: avoid;
-      page-break-inside: avoid;
+      break-inside: auto;
+      page-break-inside: auto;
     }
 
     .timeline-item {
       position: relative;
       margin-bottom: 5mm;
       padding: 4mm 4.5mm;
-      border: 1px solid #e1d7ef;
+      border: 1px solid rgba(255, 255, 255, 0.13);
       border-radius: 10px;
-      color: var(--ink-soft);
-      background: rgba(255, 255, 255, 0.97);
+      color: #f4ecff;
+      background:
+        linear-gradient(135deg, rgba(168, 85, 247, 0.16), transparent 58%),
+        rgba(255, 255, 255, 0.075);
       break-inside: avoid;
       page-break-inside: avoid;
     }
@@ -506,13 +585,13 @@
 
     .timeline-item strong {
       display: block;
-      color: #2f174c;
+      color: #ffffff;
       margin-bottom: 1.5mm;
     }
 
     .timeline-item p,
     .timeline-item li {
-      color: var(--ink-soft);
+      color: #f4ecff;
     }
 
     .two-column-list {
@@ -548,7 +627,10 @@
         </p>
         <div class="cover-band">
           <p><strong>Desenvolvido por:</strong> Divanildo Simões, Edoardo Famá, César Fraga e Djhonatah Wesley.</p>
-          <p>Projeto desenvolvido durante a Academia de Java & I.A disponibilizada pela Accenture.</p>
+          <p class="academy-highlight">
+            <img src="./media/accenture-mark.svg" alt="Accenture" />
+            <span>Projeto desenvolvido durante a Academia de Java & I.A disponibilizada pela Accenture.</span>
+          </p>
           <p>Base técnica: Expo, React Native, TypeScript, Lottie, Expo Linear Gradient e componentes mobile com estado local.</p>
         </div>
       </div>
@@ -589,6 +671,18 @@
         <a href="#execucao">9. Execução e validação</a>
         <a href="#riscos">10. Limitações e evolução</a>
       </div>
+      <h3>Escopo do documento</h3>
+      <p>
+        A documentação foi organizada para apoiar apresentação e leitura técnica. Ela conecta a proposta do produto às decisões de implementação, mostrando onde ficam os estados principais, como as telas recebem dados e quais fluxos alteram saldo, extrato, cashback e carteira.
+      </p>
+      <ul class="two-column-list">
+        <li>Visão funcional do banco digital.</li>
+        <li>Arquitetura do app Expo/React Native.</li>
+        <li>Contratos de dados e estados globais.</li>
+        <li>Fluxos de Pix, fatura, shopping e investimentos.</li>
+        <li>Sistema visual e componentes reutilizáveis.</li>
+        <li>Riscos atuais e próximos passos técnicos.</li>
+      </ul>
     </section>
 
     <section id="visao" class="section">
@@ -597,7 +691,7 @@
         O Rocket Bank Mobile simula um banco digital completo, com navegação clara, identidade visual própria e continuidade entre operações financeiras. A experiência foi organizada para que o usuário transite de forma natural entre conta, cartões, Pix, investimentos, shopping e perfil.
       </p>
       <p>
-        O produto funciona como protótipo navegável sem backend real, mas mantém regras locais consistentes: saldo é debitado, cashback é acumulado, faturas são marcadas como pagas, Pix respeita limite diário e investimentos atualizam uma carteira em memória.
+        A experiência simula operações bancárias com lógica integrada: saldo é debitado, cashback é acumulado, faturas são marcadas como pagas, Pix respeita limite diário e investimentos atualizam uma carteira em memória.
       </p>
       <div class="grid-3">
         <div class="metric-card">
@@ -712,6 +806,25 @@
           <code>activeScreen</code> define qual módulo é renderizado no momento.
         </div>
       </div>
+      <h3>Pontos de integração</h3>
+      <div class="grid">
+        <div class="card">
+          <strong>Popups centralizados</strong>
+          O provedor personalizado mantém alertas consistentes entre pagamento, Pix, compras, investimentos e ações de perfil.
+        </div>
+        <div class="card">
+          <strong>Estado compartilhado</strong>
+          Saldo, cashback, extrato e carteira são atualizados no componente raiz e distribuídos por propriedades para as telas.
+        </div>
+        <div class="card">
+          <strong>Dados locais</strong>
+          Mocks de cartões, produtos e faturas permitem demonstrar jornadas completas sem depender de serviços externos.
+        </div>
+        <div class="card">
+          <strong>Layout comum</strong>
+          A navegação inferior e a área segura preservam continuidade visual enquanto o conteúdo ativo muda.
+        </div>
+      </div>
     </section>
 
     <section id="estado" class="section">
@@ -818,6 +931,15 @@
           </tr>
         </tbody>
       </table>
+      <h3>Regras preservadas durante as ações</h3>
+      <ul class="two-column-list">
+        <li>Nenhuma operação financeira aceita valores inválidos.</li>
+        <li>Pix respeita saldo disponível e limite diário restante.</li>
+        <li>Faturas pagas não são debitadas novamente.</li>
+        <li>Compras registram saída e cashback em lançamentos separados.</li>
+        <li>Investimentos acumulam aplicações no mesmo ativo.</li>
+        <li>Extrato prioriza operações recentes para leitura rápida.</li>
+      </ul>
     </section>
 
     <section id="dados" class="section">
@@ -991,6 +1113,35 @@
       <p>
         A tela calcula total investido, rentabilidade anual estimada, taxa mensal aproximada e maior posição. A carteira é armazenada em um objeto indexado pelo ID do ativo, permitindo somar aplicações sucessivas no mesmo produto.
       </p>
+      <h3>Consistência entre fluxos</h3>
+      <p>
+        As jornadas críticas seguem a mesma lógica de confirmação: validar entrada, verificar saldo ou limite, aplicar a alteração no estado e registrar o resultado no extrato. Esse padrão facilita demonstrar o app e reduz divergências entre módulos.
+      </p>
+      <ul class="two-column-list">
+        <li>Saldo é a fonte comum de Pix, faturas, compras e aplicações.</li>
+        <li>Cashback aparece como benefício separado das saídas.</li>
+        <li>Mensagens de sucesso e erro passam pelo mesmo provedor.</li>
+        <li>Transações registradas alimentam a tela de extrato.</li>
+      </ul>
+      <h3>Cenários de demonstração recomendados</h3>
+      <div class="grid">
+        <div class="card">
+          <strong>Pix com limite</strong>
+          Enviar um valor válido e, depois, simular um valor acima do limite restante para demonstrar validação e mensagem de erro.
+        </div>
+        <div class="card">
+          <strong>Fatura com cashback</strong>
+          Selecionar um cartão, pagar a fatura e conferir a baixa, a saída no extrato e o crédito de 3% em benefícios.
+        </div>
+        <div class="card">
+          <strong>Compra com cupom</strong>
+          Adicionar produtos ao carrinho, aplicar <code>ACCENTURE20</code> e finalizar o pedido com desconto e cashback.
+        </div>
+        <div class="card">
+          <strong>Aplicação acumulada</strong>
+          Investir duas vezes no mesmo ativo para mostrar como a carteira soma posições e atualiza os indicadores.
+        </div>
+      </div>
     </section>
 
     <section id="design" class="section">
@@ -1095,6 +1246,15 @@ npm run web</pre>
           </tr>
         </tbody>
       </table>
+      <h3>Checklist de validação manual</h3>
+      <ul class="two-column-list">
+        <li>Abrir o app e confirmar splash, login e navegação inferior.</li>
+        <li>Executar um Pix válido e um Pix acima do limite diário.</li>
+        <li>Pagar uma fatura e tentar repetir o pagamento.</li>
+        <li>Finalizar uma compra com cupom e conferir cashback.</li>
+        <li>Aplicar em um investimento e revisar carteira atualizada.</li>
+        <li>Conferir extrato após cada operação financeira.</li>
+      </ul>
     </section>
 
     <section id="riscos" class="section">
